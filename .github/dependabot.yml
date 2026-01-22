@@ -50,3 +50,16 @@ updates:
       - dependency-type: "production"
     ignore:
       - dependency-name: '*'
+
+  - package-ecosystem: uv
+    directories:
+      - /
+    schedule:
+      interval: weekly
+    labels:
+      - "dependencies"
+      - "python"
+    groups:
+      dependencies:
+        update-types: ["minor", "patch"]
+    open-pull-requests-limit: 10

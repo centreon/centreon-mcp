@@ -18,8 +18,6 @@ dependencies = [
 [tool.uv]
 package = true
 
-[project.scripts]
-mcp = "centreon_mcp.__main__:main"
 
 
 

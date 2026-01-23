@@ -28,7 +28,7 @@ export CENTREON_API_TOKEN="your_centreon_api_token"
 4. Start the MCP server
 
 ```shell
-uv run mcp
+uv run fastmcp run centreon_mcp/server.py --transport http --port 8000
 ```
 
 

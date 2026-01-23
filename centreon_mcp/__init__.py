@@ -6,5 +6,6 @@ CREDENTIALS = {
         ("CENTREON_HOST", "localhost"),
         ("CENTREON_PORT", "4000"),
         ("CENTREON_API_TOKEN", ""),
+        ("CENTREON_MCP_LOG_LEVEL", "INFO"),
     ]
 }

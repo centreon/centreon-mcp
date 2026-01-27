@@ -4,7 +4,8 @@ from typing import Annotated, List, Literal
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.type import Host, HostState
+from centreon_mcp.utils.base import BaseFilter
+from centreon_mcp.utils.type import Host
 
 host = FastMCP()
 
@@ -16,28 +17,10 @@ class HostOrder(BaseModel):
     order: Literal["ASC", "DESC"] = "ASC"
 
 
-class HostFilter(BaseModel):
-    host_id: int | None = Field(None, serialization_alias="host.id")
-    host_name: str | None = Field(None, serialization_alias="host.name")
-    host_alias: str | None = Field(None, serialization_alias="host.alias")
-    host_address: str | None = Field(None, serialization_alias="host.address")
-    host_state: HostState | None = Field(None, serialization_alias="host.state")
-    poller_id: int | None = Field(None, serialization_alias="poller.id")
-    group_id: int | None = Field(None, serialization_alias="host_group.id")
+class HostFilter(BaseFilter):
     host_is_acknowledged: bool | None = Field(
         None, serialization_alias="host.is_acknowledged"
     )
-
-    @property
-    def conditions(self) -> List:
-        """
-        Generate list of conditions dictionary for filtering.
-        """
-        return [
-            {name: {"$eq": value}}
-            for name, value in self.model_dump(by_alias=True).items()
-            if value is not None
-        ]
 
 
 @host.tool

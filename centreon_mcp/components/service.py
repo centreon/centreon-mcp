@@ -4,7 +4,8 @@ from typing import Annotated, List, Literal
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.type import HostState, Service, ServiceState
+from centreon_mcp.utils.base import BaseFilter
+from centreon_mcp.utils.type import Service, ServiceState
 
 service = FastMCP()
 
@@ -22,13 +23,7 @@ class ServiceOrder(BaseModel):
     order: Literal["ASC", "DESC"] = "ASC"
 
 
-class ServiceFilter(BaseModel):
-    host_id: int | None = Field(None, serialization_alias="host.id")
-    host_name: str | None = Field(None, serialization_alias="host.name")
-    host_alias: str | None = Field(None, serialization_alias="host.alias")
-    host_address: str | None = Field(None, serialization_alias="host.address")
-    host_state: HostState | None = Field(None, serialization_alias="host.state")
-    host_group_id: int | None = Field(None, serialization_alias="host_group.id")
+class ServiceFilter(BaseFilter):
     service_display_name: str | None = Field(
         None, serialization_alias="service.display_name"
     )
@@ -39,18 +34,6 @@ class ServiceFilter(BaseModel):
         None, serialization_alias="service.state"
     )
     service_group_id: int | None = Field(None, serialization_alias="service_group.id")
-    poller_id: int | None = Field(None, serialization_alias="poller_id")
-
-    @property
-    def conditions(self) -> List[dict]:
-        """
-        Generate list of conditions dictionary for filtering.
-        """
-        return [
-            {name: {"$eq": value}}
-            for name, value in self.model_dump(by_alias=True).items()
-            if value is not None
-        ]
 
 
 @service.tool

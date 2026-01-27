@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastmcp import FastMCP
 
 from centreon_mcp import CREDENTIALS
+from centreon_mcp.components import host, service
 from centreon_mcp.utils.logger import logger
 from centreon_mcp.utils.request import CentreonAPIError, request
 
@@ -25,6 +26,10 @@ async def lifespan(app: FastMCP):
     else:
         version = result["web"]["version"]
         logger.info(f"Connected to Centreon API version {version}")
+
+    # Import components
+    await app.import_server(host, prefix="host")
+    await app.import_server(service, prefix="service")
 
     yield
 

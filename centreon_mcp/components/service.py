@@ -4,7 +4,7 @@ from typing import Annotated, List, Literal
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
-from centreon_mcp.type import HostState, Service, ServiceState
+from centreon_mcp.utils.type import HostState, Service, ServiceState
 
 service = FastMCP()
 

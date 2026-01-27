@@ -26,7 +26,7 @@ class Host(BaseModel):
         cls, search: str, limit: int, page: int, sort_by: str
     ) -> list["Host"]:
         """
-        List hosts matching the search string.
+        List hosts in real-time monitoring matching the search string.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", "monitoring/hosts", params=params)
@@ -52,7 +52,7 @@ class Service(BaseModel):
         cls, search: str, limit: int, page: int, sort_by: str
     ) -> list["Service"]:
         """
-        List all services.
+        List services in real-time monitoring matching the search string.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", "monitoring/services", params=params)

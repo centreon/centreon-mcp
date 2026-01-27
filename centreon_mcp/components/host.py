@@ -1,5 +1,5 @@
 import json
-from typing import List, Literal
+from typing import Annotated, List, Literal
 
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -29,32 +29,37 @@ class HostFilter(BaseModel):
     )
 
     @property
-    def conditions(self) -> dict:
+    def conditions(self) -> List:
         """
-        Generate conditions dictionary for filtering.
+        Generate list of conditions dictionary for filtering.
         """
-        return {
-            "$and": [
-                {name: {"$eq": value}}
-                for name, value in self.model_dump(by_alias=True).items()
-                if value is not None
-            ]
-        }
+        return [
+            {name: {"$eq": value}}
+            for name, value in self.model_dump(by_alias=True).items()
+            if value is not None
+        ]
 
 
 @host.tool
 async def list(
     filters: List[HostFilter] | None = None,
-    limit: int = 20,
-    page: int = 1,
+    limit: Annotated[int, Field(ge=1)] = 10,
+    page: Annotated[int, Field(ge=1)] = 1,
     order: HostOrder | None = None,
 ) -> List[Host]:
     """
-    List hosts matching the given filters.
+    List hosts in real-time monitoring matching the given filters.
     """
-    filters = filters or []
     order = order or HostOrder()
-    conditions = {"$or": [filter.conditions for filter in filters]}
+    conditions = (
+        {
+            "$or": [
+                {"$and": filter.conditions} for filter in filters if filter.conditions
+            ]
+        }
+        if filters
+        else {}
+    )
     search = json.dumps(conditions)
     sort_by = json.dumps(order.model_dump())
     return await Host.list(search, limit, page, sort_by)

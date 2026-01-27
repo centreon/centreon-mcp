@@ -14,6 +14,8 @@ dependencies = [
     "fastmcp>=2.14.4",
     "httpx>=0.28.1",
 ]
+[project.scripts]
+mcp = "centreon_mcp.__main__:main"
 
 [tool.uv]
 package = true

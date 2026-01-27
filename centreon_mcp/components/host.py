@@ -44,5 +44,5 @@ async def list(
         else {}
     )
     search = json.dumps(conditions)
-    sort_by = json.dumps(order.model_dump())
+    sort_by = order.model_dump_json()
     return await Host.list(search, limit, page, sort_by)

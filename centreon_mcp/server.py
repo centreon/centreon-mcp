@@ -14,9 +14,10 @@ async def lifespan(app: FastMCP):
     Lifespan context manager for FastMCP application.
     """
     # Check if Centreon API token is provided
-    if not CREDENTIALS["CENTREON_API_TOKEN"]:
-        msg = "Centreon API token is missing. Don't starting MCP server."
-        raise RuntimeError(msg)
+    for credential in ["CENTREON_BASE_URL", "CENTREON_API_TOKEN"]:
+        if not CREDENTIALS[credential]:
+            msg = f"{credential} is missing. Don't starting MCP server."
+            raise RuntimeError(msg)
 
     # Test Centreon API connectivity
     try:

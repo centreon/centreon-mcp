@@ -1,4 +1,4 @@
-name: code-scan
+name: SECU - Code Scan
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

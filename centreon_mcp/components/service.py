@@ -36,7 +36,14 @@ class ServiceFilter(BaseFilter):
     service_group_id: int | None = Field(None, serialization_alias="service_group.id")
 
 
-@service.tool
+@service.tool(
+    annotations={
+        "title": "List services in real-time monitoring",
+        "readOnlyHint": True,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
 async def list(
     filters: List[ServiceFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,

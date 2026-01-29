@@ -23,7 +23,14 @@ class HostFilter(BaseFilter):
     )
 
 
-@host.tool
+@host.tool(
+    annotations={
+        "title": "List hosts in real-time monitoring",
+        "readOnlyHint": True,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
 async def list(
     filters: List[HostFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,

@@ -38,10 +38,9 @@ async def request(
     Make request to Centreon API.
     """
     # Build request arguments
-    host = CREDENTIALS["CENTREON_HOST"]
-    port = CREDENTIALS["CENTREON_PORT"]
+    base = CREDENTIALS["CENTREON_BASE_URL"]
     token = CREDENTIALS["CENTREON_API_TOKEN"]
-    url = f"http://{host}:{port}/centreon/api/latest/{endpoint}"
+    url = f"{base}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token}
 
     # Make request and handle response

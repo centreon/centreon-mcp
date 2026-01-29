@@ -2,19 +2,18 @@ import json
 from typing import Annotated, List, Literal
 
 from fastmcp import FastMCP
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.type import Host
 
 host = FastMCP()
 
 
-class HostOrder(BaseModel):
+class HostOrder(BaseOrder):
     field: Literal["host.name", "host.alias", "host.address", "host.state"] = (
         "host.name"
     )
-    order: Literal["ASC", "DESC"] = "ASC"
 
 
 class HostFilter(BaseFilter):

@@ -1,6 +1,12 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from centreon_mcp.utils.type import HostState
+
+
+class BaseOrder(BaseModel):
+    order: Literal["ASC", "DESC"] = "ASC"
 
 
 class BaseFilter(BaseModel):

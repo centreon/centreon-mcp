@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastmcp import FastMCP
 
 from centreon_mcp import CREDENTIALS
-from centreon_mcp.components import host, service
+from centreon_mcp.components import host, hostgroup, service
 from centreon_mcp.utils.logger import logger
 from centreon_mcp.utils.request import CentreonAPIError, request
 
@@ -31,6 +31,7 @@ async def lifespan(app: FastMCP):
     # Import components
     await app.import_server(host, prefix="host")
     await app.import_server(service, prefix="service")
+    await app.import_server(hostgroup, prefix="hostgroup")
 
     yield
 

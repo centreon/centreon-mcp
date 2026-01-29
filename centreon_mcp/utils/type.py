@@ -57,3 +57,19 @@ class Service(BaseModel):
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", "monitoring/services", params=params)
         return [cls(**item) for item in content["result"]]
+
+
+class HostGroup(BaseModel):
+    id: int
+    name: str
+
+    @classmethod
+    async def list(
+        cls, search: str, limit: int, page: int, sort_by: str
+    ) -> list["HostGroup"]:
+        """
+        List all host groups in real-time monitoring matching the search string.
+        """
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        content = await request("GET", "monitoring/hostgroups", params=params)
+        return [cls(**item) for item in content["result"]]

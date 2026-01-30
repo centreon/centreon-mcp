@@ -1,8 +1,31 @@
 from enum import Enum
+from typing import ClassVar, Type, TypeVar
 
 from pydantic import BaseModel
 
 from centreon_mcp.utils.request import request
+
+T = TypeVar("T", bound="CentreonBaseModel")
+
+
+class CentreonBaseModel(BaseModel):
+    endpoint: ClassVar[str]
+
+    @classmethod
+    async def list(
+        cls: Type[T],
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list[T]:
+        """
+        List ressource of type T in real-time monitoring matching the search string.
+        """
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        params = {name: value for name, value in params.items() if value is not None}
+        content = await request("GET", cls.endpoint, params=params)
+        return [cls(**item) for item in content["result"]]
 
 
 class HostState(int, Enum):
@@ -12,7 +35,9 @@ class HostState(int, Enum):
     PENDING = 4
 
 
-class Host(BaseModel):
+class Host(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/hosts"
+
     id: int
     name: str
     alias: str
@@ -20,17 +45,6 @@ class Host(BaseModel):
     state: HostState
     poller_id: int
     acknowledged: bool
-
-    @classmethod
-    async def list(
-        cls, search: str, limit: int, page: int, sort_by: str
-    ) -> list["Host"]:
-        """
-        List hosts in real-time monitoring matching the search string.
-        """
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        content = await request("GET", "monitoring/hosts", params=params)
-        return [cls(**item) for item in content["result"]]
 
 
 class ServiceState(int, Enum):
@@ -41,35 +55,24 @@ class ServiceState(int, Enum):
     PENDING = 4
 
 
-class Service(BaseModel):
+class Service(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/services"
+
     id: int
     description: str
     display_name: str
     state: ServiceState
 
-    @classmethod
-    async def list(
-        cls, search: str, limit: int, page: int, sort_by: str
-    ) -> list["Service"]:
-        """
-        List services in real-time monitoring matching the search string.
-        """
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        content = await request("GET", "monitoring/services", params=params)
-        return [cls(**item) for item in content["result"]]
 
+class HostGroup(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/hostgroups"
 
-class HostGroup(BaseModel):
     id: int
     name: str
 
-    @classmethod
-    async def list(
-        cls, search: str, limit: int, page: int, sort_by: str
-    ) -> list["HostGroup"]:
-        """
-        List all host groups in real-time monitoring matching the search string.
-        """
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        content = await request("GET", "monitoring/hostgroups", params=params)
-        return [cls(**item) for item in content["result"]]
+
+class ServiceGroup(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/servicegroups"
+
+    id: int
+    name: str

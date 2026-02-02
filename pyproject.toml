@@ -26,11 +26,3 @@ mcp = "centreon_mcp.__main__:main"
 
 [tool.uv]
 package = true
-
-
-
-
-
-
-
-

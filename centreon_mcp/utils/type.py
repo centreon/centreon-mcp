@@ -20,7 +20,7 @@ class CentreonBaseModel(BaseModel):
         sort_by: str | None = None,
     ) -> list[T]:
         """
-        List ressource of type T in real-time monitoring matching the search string.
+        List resource of type T in real-time monitoring matching the search string.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         params = {name: value for name, value in params.items() if value is not None}

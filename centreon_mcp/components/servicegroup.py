@@ -11,9 +11,15 @@ servicegroup = FastMCP()
 
 
 class ServiceGroupOrder(BaseOrder):
-    field: Literal["name", "host.name", "host.alias", "host.address", "host.state"] = (
-        "host.name"
-    )
+    field: Literal[
+        "name",
+        "host.name",
+        "host.alias",
+        "host.address",
+        "host.state",
+        "service.name",
+        "service.display_name",
+    ] = "name"
 
 
 class ServiceGroupFilter(BaseFilter):

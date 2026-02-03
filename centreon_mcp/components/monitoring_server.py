@@ -11,7 +11,7 @@ monitoring_server = FastMCP()
 
 
 class MonitoringServerOrder(BaseOrder):
-    field: Literal["id", "name", "is_active", "is_localhost", "address"] = "name"
+    field: Literal["id", "name", "is_activate", "is_localhost", "address"] = "name"
 
 
 class MonitoringServerFilter(BaseFilter):

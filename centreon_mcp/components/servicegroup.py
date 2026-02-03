@@ -56,7 +56,7 @@ async def list(
     """
     List service groups in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all services groups  except if explicitly intended.
+    to avoid retrieving all services groups except if explicitly intended.
     """
     order = order or ServiceGroupOrder()
     conditions = (

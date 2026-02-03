@@ -46,7 +46,7 @@ async def list(
     """
     List hosts in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all hosts  except if explicitly intended.
+    to avoid retrieving all hosts except if explicitly intended.
     """
     order = order or HostOrder()
     conditions = (

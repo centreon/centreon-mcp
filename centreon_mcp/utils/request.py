@@ -52,6 +52,7 @@ async def request(
             content = response.json()
             response.raise_for_status()
             return content
+
     except httpx.HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)

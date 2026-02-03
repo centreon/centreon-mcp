@@ -11,24 +11,18 @@ monitoring_server = FastMCP()
 
 
 class MonitoringServerOrder(BaseOrder):
-    field: Literal["id", "name", "is_activate", "is_localhost", "address"] = "name"
+    field: Literal["id", "name", "running"] = "name"
 
 
 class MonitoringServerFilter(BaseFilter):
     monitoring_server_id: int | None = Field(None, serialization_alias="id")
     monitoring_server_name: str | None = Field(None, serialization_alias="name")
-    monitoring_server_is_activate: bool | None = Field(
-        None, serialization_alias="is_activate"
-    )
-    monitoring_server_is_localhost: bool | None = Field(
-        None, serialization_alias="is_localhost"
-    )
-    monitoring_server_address: str | None = Field(None, serialization_alias="address")
+    monitoring_server_running: bool | None = Field(None, serialization_alias="running")
 
 
 @monitoring_server.tool(
     annotations={
-        "title": "List monitoring servers configurations",
+        "title": "List monitoring servers in real-time monitoring",
         "readOnlyHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
@@ -41,7 +35,7 @@ async def list(
     order: MonitoringServerOrder | None = None,
 ) -> List[MonitoringServer]:
     """
-    List monitoring servers configurations matching the given filters.
+    List monitoring servers in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all monitoring servers except if explicitly intended.
     """

@@ -1,11 +1,19 @@
+import asyncio
 import json
 from typing import Annotated, List, Literal
 
 from fastmcp import FastMCP
+from fastmcp.exceptions import ToolError
 from pydantic import Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import HostState, Service, ServiceState
+from centreon_mcp.utils.type import (
+    HostGroup,
+    HostState,
+    Service,
+    ServiceGroup,
+    ServiceState,
+)
 
 service = FastMCP()
 
@@ -23,6 +31,7 @@ class ServiceOrder(BaseOrder):
 
 
 class ServiceFilter(BaseFilter):
+    # Fields available for filtering in Centreon API
     host_id: int | None = Field(None, serialization_alias="host.id")
     host_name: str | None = Field(None, serialization_alias="host.name")
     host_alias: str | None = Field(None, serialization_alias="host.alias")
@@ -40,6 +49,38 @@ class ServiceFilter(BaseFilter):
         None, serialization_alias="service.state"
     )
     service_group_id: int | None = Field(None, serialization_alias="service_group.id")
+
+    # Fields not available in Centreon API but useful for filtering
+    host_group_name: str | None = Field(None, exclude=True)
+    service_group_name: str | None = Field(None, exclude=True)
+
+    async def complete(self) -> None:
+        """
+        Compute filters based on fields not available in Centreon API.
+        """
+        # Compute host_group_id if host_group_name is provided
+        if self.host_group_name is not None:
+            conditions = {"$and": [{"name": {"$eq": self.host_group_name}}]}
+            hostgroups = await HostGroup.list(search=json.dumps(conditions))
+            found = False
+            for hostgroup in hostgroups:
+                if hostgroup.name == self.host_group_name:
+                    self.host_group_id, found = hostgroup.id, True
+                    break
+            if not found:
+                raise ToolError(f"Host group '{self.host_group_name}' not found.")
+
+        # Compute service_group_id if service_group_name is provided
+        if self.service_group_name is not None:
+            conditions = {"$and": [{"name": {"$eq": self.service_group_name}}]}
+            servicegroups = await ServiceGroup.list(search=json.dumps(conditions))
+            found = False
+            for servicegroup in servicegroups:
+                if servicegroup.name == self.service_group_name:
+                    self.service_group_id, found = servicegroup.id, True
+                    break
+            if not found:
+                raise ToolError(f"Service group '{self.service_group_name}' not found.")
 
 
 @service.tool(
@@ -61,7 +102,9 @@ async def list(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all services except if explicitly intended.
     """
+    filters = filters or []
     order = order or ServiceOrder()
+    await asyncio.gather(*(filter.complete() for filter in filters))
     conditions = (
         {
             "$or": [

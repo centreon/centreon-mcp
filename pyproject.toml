@@ -14,14 +14,15 @@ dependencies = [
     "fastmcp>=2.14.4",
     "httpx>=0.28.1",
 ]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "ruff>=0.14.14",
+]
+
 [project.scripts]
 mcp = "centreon_mcp.__main__:main"
 
 [tool.uv]
 package = true
-
-
-
-
-
-

@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import Host
+from centreon_mcp.utils.type import Host, HostState
 
 host = FastMCP()
 
@@ -17,6 +17,13 @@ class HostOrder(BaseOrder):
 
 
 class HostFilter(BaseFilter):
+    host_id: int | None = Field(None, serialization_alias="host.id")
+    host_name: str | None = Field(None, serialization_alias="host.name")
+    host_alias: str | None = Field(None, serialization_alias="host.alias")
+    host_address: str | None = Field(None, serialization_alias="host.address")
+    host_state: HostState | None = Field(None, serialization_alias="host.state")
+    poller_id: int | None = Field(None, serialization_alias="poller.id")
+    host_group_id: int | None = Field(None, serialization_alias="host_group.id")
     host_is_acknowledged: bool | None = Field(
         None, serialization_alias="host.is_acknowledged"
     )
@@ -38,6 +45,8 @@ async def list(
 ) -> List[Host]:
     """
     List hosts in real-time monitoring matching the given filters.
+    If no filters are provided, ask users to provide at least one filter
+    to avoid retrieving all hosts  except if explicitly intended.
     """
     order = order or HostOrder()
     conditions = (

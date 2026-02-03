@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import Service, ServiceState
+from centreon_mcp.utils.type import HostState, Service, ServiceState
 
 service = FastMCP()
 
@@ -23,6 +23,13 @@ class ServiceOrder(BaseOrder):
 
 
 class ServiceFilter(BaseFilter):
+    host_id: int | None = Field(None, serialization_alias="host.id")
+    host_name: str | None = Field(None, serialization_alias="host.name")
+    host_alias: str | None = Field(None, serialization_alias="host.alias")
+    host_address: str | None = Field(None, serialization_alias="host.address")
+    host_state: HostState | None = Field(None, serialization_alias="host.state")
+    poller_id: int | None = Field(None, serialization_alias="poller.id")
+    host_group_id: int | None = Field(None, serialization_alias="host_group.id")
     service_display_name: str | None = Field(
         None, serialization_alias="service.display_name"
     )
@@ -51,6 +58,8 @@ async def list(
 ) -> List[Service]:
     """
     List services in real-time monitoring matching the given filters.
+    If no filters are provided, ask users to provide at least one filter
+    to avoid retrieving all services except if explicitly intended.
     """
     order = order or ServiceOrder()
     conditions = (

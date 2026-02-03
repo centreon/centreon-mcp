@@ -76,3 +76,28 @@ class ServiceGroup(CentreonBaseModel):
 
     id: int
     name: str
+
+
+class MonitoringServer(CentreonBaseModel):
+    endpoint: ClassVar[str] = "configuration/monitoring-servers"
+
+    id: int
+    name: str
+    address: str
+    is_localhost: bool
+    is_default: bool
+    is_activate: bool
+    engine_start_command: str | None
+    engine_stop_command: str | None
+    engine_restart_command: str | None
+    engine_reload_command: str | None
+    nagios_bin: str | None
+    nagiostats_bin: str | None
+    broker_reload_command: str | None
+    centreonbroker_cfg_path: str | None
+    centreonbroker_module_path: str | None
+    centreonbroker_logs_path: str | None
+    centreonconnector_path: str | None
+    remote_id: int | None
+    remote_server_use_as_proxy: bool
+    is_updated: bool

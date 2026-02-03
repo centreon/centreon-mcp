@@ -1,5 +1,6 @@
 from centreon_mcp.components.host import host
 from centreon_mcp.components.hostgroup import hostgroup
+from centreon_mcp.components.monitoring_server import monitoring_server
 from centreon_mcp.components.service import service
 from centreon_mcp.components.servicegroup import servicegroup
 
@@ -8,4 +9,5 @@ components = {
     "service": service,
     "hostgroup": hostgroup,
     "servicegroup": servicegroup,
+    "monitoring_server": monitoring_server,
 }

@@ -76,3 +76,15 @@ class ServiceGroup(CentreonBaseModel):
 
     id: int
     name: str
+
+
+class MonitoringServer(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/servers"
+
+    id: int
+    name: str
+    address: str | None
+    description: str | None
+    is_running: bool
+    last_alive: int | None
+    version: str | None

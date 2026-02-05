@@ -1,6 +1,7 @@
 import httpx
 
 from centreon_mcp import CREDENTIALS
+from centreon_mcp.utils.logger import logger
 
 
 class CentreonAPIError(Exception):
@@ -45,13 +46,19 @@ async def request(
 
     # Make request and handle response
     try:
+        logger.debug(
+            f"Centreon API Request: {method} {url} "
+            f"Headers: {headers} JSON: {json} Params: {params}"
+        )
         async with httpx.AsyncClient() as client:
             response = await client.request(
                 method, url, headers=headers, json=json, params=params, timeout=timeout
             )
             content = response.json()
+            logger.debug(f"Centreon API Response: {content}")
             response.raise_for_status()
             return content
+
     except httpx.HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)

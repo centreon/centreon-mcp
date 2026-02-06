@@ -1,3 +1,4 @@
+from centreon_mcp.components.acknowledgement import acknowledgement
 from centreon_mcp.components.host import host
 from centreon_mcp.components.hostgroup import hostgroup
 from centreon_mcp.components.monitoring_server import monitoring_server
@@ -10,4 +11,5 @@ components = {
     "hostgroup": hostgroup,
     "servicegroup": servicegroup,
     "monitoring_server": monitoring_server,
+    "acknowledgement": acknowledgement,
 }

@@ -6,7 +6,13 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import CentreonBaseModel, Host, HostGroup, HostState
+from centreon_mcp.utils.type import (
+    CentreonBaseModel,
+    Host,
+    HostGroup,
+    HostState,
+    MonitoringServer,
+)
 
 host = FastMCP()
 
@@ -18,7 +24,10 @@ class HostOrder(BaseOrder):
 
 
 class HostFilter(BaseFilter):
-    links: ClassVar[dict[str, Type[CentreonBaseModel]]] = {"host_group": HostGroup}
+    links: ClassVar[list[tuple[Type[CentreonBaseModel], str, list[str]]]] = [
+        (HostGroup, "host_group", ["name"]),
+        (MonitoringServer, "poller", ["name"]),
+    ]
 
     # Fields available for filtering in Centreon API
     host_id: int | None = Field(None, serialization_alias="host.id")
@@ -34,6 +43,7 @@ class HostFilter(BaseFilter):
 
     # Fields not available in Centreon API but useful for filtering
     host_group_name: str | None = Field(None, exclude=True)
+    poller_name: str | None = Field(None, exclude=True)
 
 
 @host.tool(

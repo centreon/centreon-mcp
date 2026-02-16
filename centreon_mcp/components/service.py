@@ -10,6 +10,7 @@ from centreon_mcp.utils.type import (
     CentreonBaseModel,
     HostGroup,
     HostState,
+    MonitoringServer,
     Service,
     ServiceGroup,
     ServiceState,
@@ -31,10 +32,11 @@ class ServiceOrder(BaseOrder):
 
 
 class ServiceFilter(BaseFilter):
-    links: ClassVar[dict[str, Type[CentreonBaseModel]]] = {
-        "host_group": HostGroup,
-        "service_group": ServiceGroup,
-    }
+    links: ClassVar[list[tuple[Type[CentreonBaseModel], str, list[str]]]] = [
+        (HostGroup, "host_group", ["name"]),
+        (ServiceGroup, "service_group", ["name"]),
+        (MonitoringServer, "poller", ["name"]),
+    ]
 
     # Fields available for filtering in Centreon API
     host_id: int | None = Field(None, serialization_alias="host.id")
@@ -58,6 +60,7 @@ class ServiceFilter(BaseFilter):
     # Fields not available in Centreon API but useful for filtering
     host_group_name: str | None = Field(None, exclude=True)
     service_group_name: str | None = Field(None, exclude=True)
+    poller_name: str | None = Field(None, exclude=True)
 
 
 @service.tool(

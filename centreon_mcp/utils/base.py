@@ -20,6 +20,10 @@ class BaseFilter(BaseModel):
         """
         Fill filter field id using field name and class.
         """
+        # If the objet id is already set, do nothing.
+        if getattr(self, f"{objet}_id", None) is not None:
+            return
+
         # Generate conditions for searching the item based on provided fields.
         conditions: list[dict] = []
         for field in fields:

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import ClassVar, Type, TypeVar
 
@@ -88,3 +89,30 @@ class MonitoringServer(CentreonBaseModel):
     is_running: bool
     last_alive: int | None
     version: str | None
+
+
+class BaseAcknowledgement(CentreonBaseModel):
+    id: int
+    host_id: int
+    author_id: int
+    author_name: str
+    comment: str
+    deletion_time: datetime | None
+    entry_time: datetime | None
+    is_notify_contacts: bool
+    is_persistent_comment: bool
+    is_sticky: bool
+    type: int
+
+
+class HostAcknowledgement(BaseAcknowledgement):
+    endpoint: ClassVar[str] = "monitoring/hosts/acknowledgements"
+
+    state: HostState
+
+
+class ServiceAcknowledgement(BaseAcknowledgement):
+    endpoint: ClassVar[str] = "monitoring/services/acknowledgements"
+
+    service_id: int
+    state: ServiceState

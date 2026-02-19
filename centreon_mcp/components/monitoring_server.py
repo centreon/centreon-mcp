@@ -27,7 +27,7 @@ class MonitoringServerFilter(BaseFilter):
         "openWorldHint": True,
     }
 )
-async def list(
+async def list_monitoring_servers(
     filters: List[MonitoringServerFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,

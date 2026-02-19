@@ -16,7 +16,7 @@ acknowledgement = FastMCP()
         "openWorldHint": True,
     }
 )
-async def list_host(
+async def list_host_acknowledgements(
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
 ) -> List[HostAcknowledgement]:
@@ -34,7 +34,7 @@ async def list_host(
         "openWorldHint": True,
     }
 )
-async def list_service(
+async def list_service_acknowledgements(
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
 ) -> List[ServiceAcknowledgement]:

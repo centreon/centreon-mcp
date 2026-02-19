@@ -6,12 +6,12 @@ from centreon_mcp.components.monitoring_server import monitoring_server
 from centreon_mcp.components.service import service
 from centreon_mcp.components.servicegroup import servicegroup
 
-components = {
-    "host": host,
-    "service": service,
-    "hostgroup": hostgroup,
-    "servicegroup": servicegroup,
-    "monitoring_server": monitoring_server,
-    "acknowledgement": acknowledgement,
-    "downtime": downtime,
-}
+components = [
+    host,
+    service,
+    hostgroup,
+    servicegroup,
+    monitoring_server,
+    downtime,
+    acknowledgement,
+]

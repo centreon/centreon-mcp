@@ -34,7 +34,7 @@ class HostGroupFilter(BaseFilter):
         "openWorldHint": True,
     }
 )
-async def list(
+async def list_hostgroups(
     filters: List[HostGroupFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,

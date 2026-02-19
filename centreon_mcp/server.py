@@ -29,8 +29,8 @@ async def lifespan(app: FastMCP):
         logger.info(f"Connected to Centreon API version {version}")
 
     # Import components
-    for prefix, server in components.items():
-        await app.import_server(server, prefix=prefix)
+    for server in components:
+        await app.import_server(server)
 
     yield
 

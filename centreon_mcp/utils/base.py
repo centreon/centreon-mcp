@@ -1,10 +1,13 @@
 import asyncio
 import json
-from typing import ClassVar, Literal, Type
+from typing import ClassVar, Literal, Type, TypeVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.type import CentreonBaseModel
+from centreon_mcp.utils.type import CentreonBaseModel, T
+
+O = TypeVar("O", bound="BaseOrder")
+F = TypeVar("F", bound="BaseFilter")
 
 
 class ConstraintLink(BaseModel):
@@ -67,3 +70,31 @@ class BaseFilter(BaseModel):
             for name, value in self.model_dump(by_alias=True).items()
             if value is not None
         ]
+
+
+async def _list(
+    model: Type[T],
+    order_cls: Type[O],
+    filters: list[F] | None = None,
+    limit: int = 10,
+    page: int = 1,
+    order: O | None = None,
+) -> list[T]:
+    """
+    Generic function to list ressources in real-time monitoring based on provided filters, pagination and order
+    """
+    filters = filters or []
+    order = order or order_cls()
+    await asyncio.gather(*(filter.complete() for filter in filters))
+    conditions = (
+        {
+            "$or": [
+                {"$and": filter.conditions} for filter in filters if filter.conditions
+            ]
+        }
+        if filters
+        else {}
+    )
+    search = json.dumps(conditions)
+    sort_by = order.model_dump_json()
+    return await model.list(search, limit, page, sort_by)

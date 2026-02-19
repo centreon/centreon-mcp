@@ -1,11 +1,9 @@
-import asyncio
-import json
 from typing import Annotated, ClassVar, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
     HostDowntime,
     HostState,
@@ -69,21 +67,7 @@ async def list_host(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all host downtimes except if explicitly intended.
     """
-    filters = filters or []
-    order = order or DowntimeOrder()
-    await asyncio.gather(*(filter.complete() for filter in filters))
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
-    sort_by = order.model_dump_json()
-    return await HostDowntime.list(search, limit, page, sort_by)
+    return await _list(HostDowntime, DowntimeOrder, filters, limit, page, order)
 
 
 @downtime.tool(
@@ -105,18 +89,4 @@ async def list_service(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all service downtimes except if explicitly intended.
     """
-    filters = filters or []
-    order = order or DowntimeOrder()
-    await asyncio.gather(*(filter.complete() for filter in filters))
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
-    sort_by = order.model_dump_json()
-    return await ServiceDowntime.list(search, limit, page, sort_by)
+    return await _list(ServiceDowntime, DowntimeOrder, filters, limit, page, order)

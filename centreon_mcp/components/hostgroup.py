@@ -1,10 +1,9 @@
-import json
 from typing import Annotated, List, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 from centreon_mcp.utils.type import HostGroup, HostState
 
 hostgroup = FastMCP()
@@ -46,16 +45,4 @@ async def list(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all host groups except if explicitly intended.
     """
-    order = order or HostGroupOrder()
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
-    sort_by = order.model_dump_json()
-    return await HostGroup.list(search, limit, page, sort_by)
+    return await _list(HostGroup, HostGroupOrder, filters, limit, page, order)

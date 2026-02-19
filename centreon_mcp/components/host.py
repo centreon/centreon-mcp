@@ -1,11 +1,9 @@
-import asyncio
-import json
 from typing import Annotated, ClassVar, List, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
     Host,
     HostGroup,
@@ -64,18 +62,4 @@ async def list(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all hosts except if explicitly intended.
     """
-    filters = filters or []
-    order = order or HostOrder()
-    await asyncio.gather(*(filter.complete() for filter in filters))
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
-    sort_by = order.model_dump_json()
-    return await Host.list(search, limit, page, sort_by)
+    return await _list(Host, HostOrder, filters, limit, page, order)

@@ -1,13 +1,12 @@
 import asyncio
 import json
-from typing import Annotated, ClassVar, List, Literal, Type
+from typing import Annotated, ClassVar, List, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink
 from centreon_mcp.utils.type import (
-    CentreonBaseModel,
     HostDowntime,
     HostState,
     MonitoringServer,
@@ -33,8 +32,8 @@ class DowntimeOrder(BaseOrder):
 
 
 class DowntimeFilter(BaseFilter):
-    links: ClassVar[list[tuple[Type[CentreonBaseModel], str, list[str]]]] = [
-        (MonitoringServer, "poller", ["name"]),
+    links: ClassVar[list[ConstraintLink]] = [
+        ConstraintLink(cls=MonitoringServer, object="poller", fields=["name"]),
     ]
 
     # Fields available for filtering in Centreon API

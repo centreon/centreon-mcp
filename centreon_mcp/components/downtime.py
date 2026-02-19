@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import Annotated, ClassVar, List, Literal
+from typing import Annotated, ClassVar, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -59,11 +59,11 @@ class DowntimeFilter(BaseFilter):
     }
 )
 async def list_host(
-    filters: List[DowntimeFilter] | None = None,
+    filters: list[DowntimeFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
     order: DowntimeOrder | None = None,
-) -> List[HostDowntime]:
+) -> list[HostDowntime]:
     """
     List host downtimes in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
@@ -95,11 +95,11 @@ async def list_host(
     }
 )
 async def list_service(
-    filters: List[DowntimeFilter] | None = None,
+    filters: list[DowntimeFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
     order: DowntimeOrder | None = None,
-) -> List[ServiceDowntime]:
+) -> list[ServiceDowntime]:
     """
     List service downtimes in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter

@@ -116,3 +116,32 @@ class ServiceAcknowledgement(BaseAcknowledgement):
 
     service_id: int
     state: ServiceState
+
+
+class BaseDowntime(CentreonBaseModel):
+    id: int
+    author_id: int
+    author_name: str
+    host_id: int
+    poller_id: int
+    comment: str
+    duration: int | None
+    entry_time: datetime | None
+    start_time: datetime | None
+    end_time: datetime | None
+    deletion_time: datetime | None
+    actual_start_time: datetime | None
+    actual_end_time: datetime | None
+    is_started: bool
+    is_fixed: bool
+    is_cancelled: bool
+
+
+class HostDowntime(BaseDowntime):
+    endpoint: ClassVar[str] = "monitoring/hosts/downtimes"
+
+
+class ServiceDowntime(BaseDowntime):
+    endpoint: ClassVar[str] = "monitoring/services/downtimes"
+
+    service_id: int

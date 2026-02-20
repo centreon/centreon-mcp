@@ -1,13 +1,10 @@
-import asyncio
-import json
-from typing import Annotated, ClassVar, List, Literal, Type
+from typing import Annotated, ClassVar, List, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
-    CentreonBaseModel,
     Host,
     HostGroup,
     HostState,
@@ -24,9 +21,9 @@ class HostOrder(BaseOrder):
 
 
 class HostFilter(BaseFilter):
-    links: ClassVar[list[tuple[Type[CentreonBaseModel], str, list[str]]]] = [
-        (HostGroup, "host_group", ["name"]),
-        (MonitoringServer, "poller", ["name"]),
+    links: ClassVar[list[ConstraintLink]] = [
+        ConstraintLink(cls=HostGroup, object="host_group", fields=["name"]),
+        ConstraintLink(cls=MonitoringServer, object="poller", fields=["name"]),
     ]
 
     # Fields available for filtering in Centreon API
@@ -54,7 +51,7 @@ class HostFilter(BaseFilter):
         "openWorldHint": True,
     }
 )
-async def list(
+async def list_hosts(
     filters: List[HostFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
@@ -65,18 +62,4 @@ async def list(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all hosts except if explicitly intended.
     """
-    filters = filters or []
-    order = order or HostOrder()
-    await asyncio.gather(*(filter.complete() for filter in filters))
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
-    sort_by = order.model_dump_json()
-    return await Host.list(search, limit, page, sort_by)
+    return await _list(Host, HostOrder, filters, limit, page, order)

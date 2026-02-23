@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import Annotated, ClassVar, Literal
 
 from fastmcp import FastMCP
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
@@ -48,6 +49,22 @@ class DowntimeFilter(BaseFilter):
     poller_name: str | None = Field(None, exclude=True)
 
 
+class DowntimeParams(BaseModel):
+    start_time: datetime
+    end_time: datetime
+    is_fixed: bool
+    duration: int
+    comment: str
+
+
+class HostDowntimeParams(DowntimeParams):
+    with_services: bool
+
+
+class ServiceDowntimeParams(DowntimeParams):
+    pass
+
+
 @downtime.tool(
     annotations={
         "title": "List hosts downtimes in real-time monitoring",
@@ -90,3 +107,57 @@ async def list_service_downtimes(
     to avoid retrieving all service downtimes except if explicitly intended.
     """
     return await _list(ServiceDowntime, DowntimeOrder, filters, limit, page, order)
+
+
+@downtime.tool(
+    annotations={
+        "title": "Add host downtimes in real-time monitoring",
+        "readOnlyHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def add_host_downtimes(
+    host_ids: list[int], downtimes: list[HostDowntimeParams]
+) -> bool:
+    """
+    Add host downtimes in real-time monitoring.
+    Use tool `list_hosts` first to get host IDs.
+    """
+    payload = [
+        {"resource_id": host_id, **downtime.model_dump(mode="json")}
+        for host_id in host_ids
+        for downtime in downtimes
+    ]
+    await HostDowntime.add(payload)
+    return True
+
+
+@downtime.tool(
+    annotations={
+        "title": "Add service downtimes in real-time monitoring",
+        "readOnlyHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def add_service_downtimes(
+    host_id: int,
+    service_ids: list[int],
+    downtimes: list[ServiceDowntimeParams],
+) -> bool:
+    """
+    Add service downtimes in real-time monitoring for services of a given host.
+    Use tool `list_services` first to get service IDs.
+    """
+    payload = [
+        {
+            "resource_id": service_id,
+            "parent_resource_id": host_id,
+            **downtime.model_dump(mode="json"),
+        }
+        for service_id in service_ids
+        for downtime in downtimes
+    ]
+    await ServiceDowntime.add(payload)
+    return True

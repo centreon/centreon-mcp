@@ -1,8 +1,8 @@
 from datetime import datetime
 from enum import Enum
-from typing import ClassVar, Type, TypeVar
+from typing import Any, ClassVar, Type, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from centreon_mcp.utils.request import request
 
@@ -63,6 +63,14 @@ class Service(CentreonBaseModel):
     description: str
     display_name: str
     state: ServiceState
+    host_id: int
+
+    @model_validator(mode="before")
+    @classmethod
+    def extract_host_id(cls, data: dict):
+        host = data.pop("host")
+        data["host_id"] = host["id"]
+        return data
 
 
 class HostGroup(CentreonBaseModel):
@@ -135,6 +143,13 @@ class BaseDowntime(CentreonBaseModel):
     is_started: bool
     is_fixed: bool
     is_cancelled: bool
+
+    @classmethod
+    async def add(cls, payload: list[dict[str, Any]]) -> None:
+        """
+        Add multiple downtimes on list of resources.
+        """
+        await request("POST", cls.endpoint, json=payload)
 
 
 class HostDowntime(BaseDowntime):

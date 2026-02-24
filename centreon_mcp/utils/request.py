@@ -54,7 +54,7 @@ async def request(
             response = await client.request(
                 method, url, headers=headers, json=json, params=params, timeout=timeout
             )
-            content = response.json()
+            content = response.json() if response.status_code != 204 else {}
             logger.debug(f"Centreon API Response: {content}")
             response.raise_for_status()
             return content

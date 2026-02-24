@@ -181,9 +181,9 @@ class ServiceDowntime(BaseDowntime):
 
 class Comment(CentreonBaseModel):
     @staticmethod
-    async def add(ressources: list[dict[str, Any]]) -> None:
+    async def add(resources: list[dict[str, Any]]) -> None:
         """
         Add a comments on multiple resources.
         """
         endpoint = "monitoring/resources/comments"
-        await request("POST", endpoint, json={"resources": ressources})
+        await request("POST", endpoint, json={"resources": resources})

@@ -121,7 +121,7 @@ async def add_host_downtimes(
     host_ids: list[int], downtimes: list[HostDowntimeParams]
 ) -> bool:
     """
-    Add host downtimes in real-time monitoring.
+    Add each downtime for each host in real-time monitoring.
     Use tool `list_hosts` first to get host IDs.
     """
     payload = [
@@ -147,7 +147,7 @@ async def add_service_downtimes(
     downtimes: list[ServiceDowntimeParams],
 ) -> bool:
     """
-    Add service downtimes in real-time monitoring for services of a given host.
+    Add each downtime for each service of a given host in real-time monitoring.
     Use tool `list_services` first to get service IDs.
     """
     payload = [

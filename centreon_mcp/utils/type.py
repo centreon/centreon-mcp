@@ -177,3 +177,13 @@ class ServiceDowntime(BaseDowntime):
     endpoint: ClassVar[str] = "monitoring/services/downtimes"
 
     service_id: int
+
+
+class Comment(CentreonBaseModel):
+    @staticmethod
+    async def add(ressources: list[dict[str, Any]]) -> None:
+        """
+        Add a comments on multiple resources.
+        """
+        endpoint = "monitoring/resources/comments"
+        await request("POST", endpoint, json={"resources": ressources})

@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from enum import Enum
 from typing import Any, ClassVar, Type, TypeVar
@@ -150,6 +151,22 @@ class BaseDowntime(CentreonBaseModel):
         Add multiple downtimes on list of resources.
         """
         await request("POST", cls.endpoint, json=payload)
+
+    @staticmethod
+    async def cancel(downtime_ids: list[int]) -> None:
+        """
+        Cancel multiple downtimes.
+        """
+
+        async def task(downtime_id: int) -> None:
+            """
+            Cancel a single downtime.
+            """
+            endpoint = f"monitoring/downtimes/{downtime_id}"
+            await request("DELETE", endpoint)
+
+        tasks = [asyncio.create_task(task(downtime_id)) for downtime_id in downtime_ids]
+        await asyncio.gather(*tasks)
 
 
 class HostDowntime(BaseDowntime):

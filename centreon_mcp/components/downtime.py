@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
+    BaseDowntime,
     HostDowntime,
     HostState,
     MonitoringServer,
@@ -160,4 +161,21 @@ async def add_service_downtimes(
         for downtime in downtimes
     ]
     await ServiceDowntime.add(payload)
+    return True
+
+
+@downtime.tool(
+    annotations={
+        "title": "Cancel downtimes in real-time monitoring",
+        "readOnlyHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def cancel_downtimes(downtime_ids: list[int]) -> bool:
+    """
+    Cancel multiple downtimes in real-time monitoring.
+    Use tools `list_host_downtimes` and/or `list_service_downtimes` first to get downtime IDs.
+    """
+    await BaseDowntime.cancel(downtime_ids)
     return True

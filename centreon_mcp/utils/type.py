@@ -1,13 +1,34 @@
 import asyncio
 from datetime import datetime
 from enum import Enum
-from typing import Any, ClassVar, Type, TypeVar
+from typing import Any, ClassVar, List, Literal, Type, TypeVar
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 
 from centreon_mcp.utils.request import request
 
 T = TypeVar("T", bound="CentreonBaseModel")
+
+ResourceType = Literal["host", "service"]
+StatusType = Literal["hard", "soft"]
+HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
+ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN"]
+ResourceStatus = HostStatus | ServiceStatus
+
+
+class HostState(int, Enum):
+    UP = 0
+    DOWN = 1
+    UNREACHABLE = 2
+    PENDING = 4
+
+
+class ServiceState(int, Enum):
+    OK = 0
+    WARNING = 1
+    CRITICAL = 2
+    UNKNOWN = 3
+    PENDING = 4
 
 
 class CentreonBaseModel(BaseModel):
@@ -30,48 +51,71 @@ class CentreonBaseModel(BaseModel):
         return [cls(**item) for item in content["result"]]
 
 
-class HostState(int, Enum):
-    UP = 0
-    DOWN = 1
-    UNREACHABLE = 2
-    PENDING = 4
+class Status(BaseModel):
+    code: int
+    name: ResourceStatus
+    severity_code: int
 
 
-class Host(CentreonBaseModel):
-    endpoint: ClassVar[str] = "monitoring/hosts"
+class Resource(BaseModel):
+    endpoint: ClassVar[str] = "monitoring/resources"
 
+    uuid: str
     id: int
+    type: ResourceType
     name: str
-    alias: str
-    address_ip: str
-    state: HostState
-    poller_id: int
-    acknowledged: bool
-
-
-class ServiceState(int, Enum):
-    OK = 0
-    WARNING = 1
-    CRITICAL = 2
-    UNKNOWN = 3
-    PENDING = 4
-
-
-class Service(CentreonBaseModel):
-    endpoint: ClassVar[str] = "monitoring/services"
-
-    id: int
-    description: str
-    display_name: str
-    state: ServiceState
+    alias: str | None
+    fqdn: str | None
     host_id: int
+    service_id: int | None
+    monitoring_server_name: str
+    is_in_downtime: bool
+    is_acknowledged: bool
+    is_in_flapping: bool
+    status: Status
+    information: str | None
+    has_active_checks_enabled: bool
+    has_passive_checks_enabled: bool
+    last_status_change: datetime
+    last_check: str | None
+    tries: str | None
 
-    @model_validator(mode="before")
     @classmethod
-    def extract_host_id(cls, data: dict):
-        host = data.pop("host")
-        data["host_id"] = host["id"]
-        return data
+    async def list(
+        cls,
+        search: str,
+        types: str,
+        statuses: str | None = None,
+        hostgroup_names: str | None = None,
+        servicegroup_names: str | None = None,
+        host_category_names: str | None = None,
+        service_category_names: str | None = None,
+        monitoring_server_names: str | None = None,
+        status_types: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> List["Resource"]:
+        """
+        List ressources (hosts and services) in real-time monitoring.
+        """
+        params = {
+            "search": search,
+            "limit": limit,
+            "page": page,
+            "sort_by": sort_by,
+            "types": types,
+            "statuses": statuses,
+            "hostgroup_names": hostgroup_names,
+            "servicegroup_names": servicegroup_names,
+            "host_category_names": host_category_names,
+            "service_category_names": service_category_names,
+            "monitoring_server_names": monitoring_server_names,
+            "status_types": status_types,
+        }
+        params = {name: value for name, value in params.items() if value is not None}
+        content = await request("GET", cls.endpoint, params=params)
+        return [cls(**item) for item in content["result"]]
 
 
 class HostGroup(CentreonBaseModel):

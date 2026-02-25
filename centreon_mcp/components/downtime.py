@@ -37,14 +37,14 @@ class DowntimeFilter(BaseFilter):
     ]
 
     # Fields available for filtering in Centreon API
-    host_id: int | None = Field(None, serialization_alias="host.id")
-    host_name: str | None = Field(None, serialization_alias="host.name")
-    host_alias: str | None = Field(None, serialization_alias="host.alias")
-    host_address: str | None = Field(None, serialization_alias="host.address")
-    host_state: HostState | None = Field(None, serialization_alias="host.state")
-    is_fixed: bool | None = Field(None, serialization_alias="is_fixed")
-    is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled")
-    poller_id: int | None = Field(None, serialization_alias="poller.id")
+    host_id: int | None = Field(None, serialization_alias="host.id $eq")
+    host_name: str | None = Field(None, serialization_alias="host.name $eq")
+    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
+    host_address: str | None = Field(None, serialization_alias="host.address $eq")
+    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
+    is_fixed: bool | None = Field(None, serialization_alias="is_fixed $eq")
+    is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled $eq")
+    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
 
     # Fields not available in Centreon API but useful for filtering
     poller_name: str | None = Field(None, exclude=True)
@@ -123,7 +123,7 @@ async def add_host_downtimes(
 ) -> bool:
     """
     Add each downtime for each host in real-time monitoring.
-    Use tool `list_hosts` first to get host IDs.
+    Use tool `list_resources` with type 'host' first to get host IDs.
     """
     payload = [
         {"resource_id": host_id, **downtime.model_dump(mode="json")}
@@ -149,7 +149,7 @@ async def add_service_downtimes(
 ) -> bool:
     """
     Add each downtime for each service of a given host in real-time monitoring.
-    Use tool `list_services` first to get service IDs.
+    Use tool `list_resources` with type 'service' first to get service IDs.
     """
     payload = [
         {

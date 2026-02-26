@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -21,18 +21,18 @@ class ResourceFilter(BaseFilter):
     # Fields available for filtering in Centreon API
     name: str | None = Field(
         None,
-        serialization_alias="name $re",
-        description="Name of the resource (host or service) supporting regex",
+        serialization_alias="name $lk",
+        description="Name of the resource (host or service)",
     )
     alias: str | None = Field(
         None,
-        serialization_alias="alias $re",
-        description="Alias of the resource (host or service) supporting regex",
+        serialization_alias="alias $lk",
+        description="Alias of the resource (host or service)",
     )
     parent_name: str | None = Field(
         None,
-        serialization_alias="parent_name $re",
-        description="Name of the parent resource (host or service) supporting regex",
+        serialization_alias="parent_name $lk",
+        description="Name of the parent resource (host or service)",
     )
 
 
@@ -45,19 +45,19 @@ class ResourceFilter(BaseFilter):
     }
 )
 async def list_resources(
-    filters: List[ResourceFilter] | None = None,
-    types: List[ResourceType] | None = None,
-    statuses: List[ResourceStatus] | None = None,
-    hostgroup_names: List[str] | None = None,
-    servicegroup_names: List[str] | None = None,
-    hostcategory_names: List[str] | None = None,
-    service_category_names: List[str] | None = None,
-    monitoring_server_names: List[str] | None = None,
-    status_types: List[StatusType] | None = None,
+    filters: list[ResourceFilter] | None = None,
+    types: list[ResourceType] | None = None,
+    statuses: list[ResourceStatus] | None = None,
+    hostgroup_names: list[str] | None = None,
+    servicegroup_names: list[str] | None = None,
+    host_category_names: list[str] | None = None,
+    service_category_names: list[str] | None = None,
+    monitoring_server_names: list[str] | None = None,
+    status_types: list[StatusType] | None = None,
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ResourceOrder | None = None,
-) -> List[Resource]:
+) -> list[Resource]:
     """
     List resources (hosts and services) in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
@@ -82,7 +82,7 @@ async def list_resources(
         statuses=json.dumps(statuses or []),
         hostgroup_names=json.dumps(hostgroup_names or []),
         servicegroup_names=json.dumps(servicegroup_names or []),
-        host_category_names=json.dumps(hostcategory_names or []),
+        host_category_names=json.dumps(host_category_names or []),
         service_category_names=json.dumps(service_category_names or []),
         monitoring_server_names=json.dumps(monitoring_server_names or []),
         status_types=json.dumps(status_types or []),

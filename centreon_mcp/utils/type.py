@@ -1,9 +1,9 @@
 import asyncio
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, ClassVar, List, Literal, Type, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from centreon_mcp.utils.request import request
 
@@ -12,7 +12,7 @@ T = TypeVar("T", bound="CentreonBaseModel")
 ResourceType = Literal["host", "service"]
 StatusType = Literal["hard", "soft"]
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
-ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN"]
+ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
 ResourceStatus = HostStatus | ServiceStatus
 
 
@@ -144,9 +144,40 @@ class MonitoringServer(CentreonBaseModel):
     version: str | None
 
 
-class BaseAcknowledgement(CentreonBaseModel):
+class AcknowledgementParams(BaseModel):
+    comment: str
+    with_services: bool = True
+    is_notify_contacts: bool = True
+    is_persistent_comment: bool = True
+    is_sticky: bool = True
+    force_active_checks: bool = True
+
+
+class BaseResource(BaseModel):
+    type: ResourceType
+    resource_id: int = Field(..., serialization_alias="id")
+    host_id: int
+
+    def dump(self) -> dict[str, Any]:
+        """
+        Dump the resource to a dict with the expected format for the API.
+        """
+        return {
+            "parent": {"id": self.host_id},
+            **self.model_dump(mode="json", by_alias=True, exclude={"host_id"}),
+        }
+
+
+class AcknowledgementResource(BaseResource):
+    pass
+
+
+class Acknowledgement(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/acknowledgements"
+
     id: int
     host_id: int
+    service_id: int | None
     author_id: int
     author_name: str
     comment: str
@@ -157,18 +188,31 @@ class BaseAcknowledgement(CentreonBaseModel):
     is_sticky: bool
     type: int
 
+    @staticmethod
+    async def add(
+        params: AcknowledgementParams, resources: list[AcknowledgementResource]
+    ) -> None:
+        """
+        Add an acknowledgement on multiple resources.
+        """
+        payload = {
+            "acknowledgement": params.model_dump(mode="json"),
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", "monitoring/resources/acknowledge", json=payload)
 
-class HostAcknowledgement(BaseAcknowledgement):
-    endpoint: ClassVar[str] = "monitoring/hosts/acknowledgements"
-
-    state: HostState
-
-
-class ServiceAcknowledgement(BaseAcknowledgement):
-    endpoint: ClassVar[str] = "monitoring/services/acknowledgements"
-
-    service_id: int
-    state: ServiceState
+    @staticmethod
+    async def cancel(
+        with_services: bool, resources: list[AcknowledgementResource]
+    ) -> None:
+        """
+        Cancel acknowledgements on multiple resources.
+        """
+        payload = {
+            "disacknowledgement": {"with_services": with_services},
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("DELETE", "monitoring/resources/acknowledgements", json=payload)
 
 
 class BaseDowntime(CentreonBaseModel):
@@ -223,11 +267,16 @@ class ServiceDowntime(BaseDowntime):
     service_id: int
 
 
+class CommentResource(BaseResource):
+    comment: str
+    date: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
+
+
 class Comment(CentreonBaseModel):
     @staticmethod
-    async def add(resources: list[dict[str, Any]]) -> None:
+    async def add(resources: list[CommentResource]) -> None:
         """
-        Add a comments on multiple resources.
+        Add comments on multiple resources.
         """
-        endpoint = "monitoring/resources/comments"
-        await request("POST", endpoint, json={"resources": resources})
+        payload = {"resources": [resource.dump() for resource in resources]}
+        await request("POST", "monitoring/resources/comments", json=payload)

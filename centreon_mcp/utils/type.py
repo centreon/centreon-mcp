@@ -12,7 +12,7 @@ T = TypeVar("T", bound="CentreonBaseModel")
 ResourceType = Literal["host", "service"]
 StatusType = Literal["hard", "soft"]
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
-ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN"]
+ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
 ResourceStatus = HostStatus | ServiceStatus
 
 

@@ -33,7 +33,7 @@ async def add_comments(resources: list[Resource]) -> bool:
         [
             {
                 "parent": {"id": resource.host_id},
-                **resource.model_dump(mode="json", exclude={"host_id"}),
+                **resource.model_dump(mode="json", by_alias=True, exclude={"host_id"}),
             }
             for resource in resources
         ]

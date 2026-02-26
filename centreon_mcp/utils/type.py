@@ -153,10 +153,23 @@ class AcknowledgementParams(BaseModel):
     force_active_checks: bool = True
 
 
-class AcknowledgementResource(BaseModel):
+class BaseResource(BaseModel):
     type: ResourceType
     resource_id: int = Field(..., serialization_alias="id")
     host_id: int
+
+    def dump(self) -> dict[str, Any]:
+        """
+        Dump the resource to a dict with the expected format for the API.
+        """
+        return {
+            "parent": {"id": self.host_id},
+            **self.model_dump(mode="json", by_alias=True, exclude={"host_id"}),
+        }
+
+
+class AcknowledgementResource(BaseResource):
+    pass
 
 
 class Acknowledgement(CentreonBaseModel):
@@ -183,14 +196,8 @@ class Acknowledgement(CentreonBaseModel):
         Add an acknowledgement on multiple resources.
         """
         payload = {
-            "acknowledgement": params.model_dump(),
-            "resources": [
-                {
-                    "parent": {"id": resource.host_id},
-                    **resource.model_dump(exclude={"host_id"}, by_alias=True),
-                }
-                for resource in resources
-            ],
+            "acknowledgement": params.model_dump(mode="json"),
+            "resources": [resource.dump() for resource in resources],
         }
         await request("POST", "monitoring/resources/acknowledge", json=payload)
 
@@ -203,13 +210,7 @@ class Acknowledgement(CentreonBaseModel):
         """
         payload = {
             "disacknowledgement": {"with_services": with_services},
-            "resources": [
-                {
-                    "parent": {"id": resource.host_id},
-                    **resource.model_dump(exclude={"host_id"}, by_alias=True),
-                }
-                for resource in resources
-            ],
+            "resources": [resource.dump() for resource in resources],
         }
         await request("DELETE", "monitoring/resources/acknowledgements", json=payload)
 
@@ -266,10 +267,7 @@ class ServiceDowntime(BaseDowntime):
     service_id: int
 
 
-class CommentResource(BaseModel):
-    type: ResourceType
-    resource_id: int = Field(..., serialization_alias="id")
-    host_id: int
+class CommentResource(BaseResource):
     comment: str
     date: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 
@@ -280,15 +278,5 @@ class Comment(CentreonBaseModel):
         """
         Add comments on multiple resources.
         """
-        payload = {
-            "resources": [
-                {
-                    "parent": {"id": resource.host_id},
-                    **resource.model_dump(
-                        mode="json", by_alias=True, exclude={"host_id"}
-                    ),
-                }
-                for resource in resources
-            ]
-        }
+        payload = {"resources": [resource.dump() for resource in resources]}
         await request("POST", "monitoring/resources/comments", json=payload)

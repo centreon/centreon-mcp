@@ -66,9 +66,12 @@ class BaseFilter(BaseModel):
         Generate list of conditions dictionary for filtering.
         """
         return [
-            {name: {"$eq": value}}
-            for name, value in self.model_dump(by_alias=True).items()
-            if value is not None
+            {name: {operator: value}}
+            for (name, operator), value in {
+                tuple(condition.split()): value
+                for condition, value in self.model_dump(by_alias=True).items()
+                if value is not None
+            }.items()
         ]
 
 

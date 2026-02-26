@@ -14,9 +14,11 @@ class MonitoringServerOrder(BaseOrder):
 
 
 class MonitoringServerFilter(BaseFilter):
-    monitoring_server_id: int | None = Field(None, serialization_alias="id")
-    monitoring_server_name: str | None = Field(None, serialization_alias="name")
-    monitoring_server_running: bool | None = Field(None, serialization_alias="running")
+    monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
+    monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
+    monitoring_server_running: bool | None = Field(
+        None, serialization_alias="running $eq"
+    )
 
 
 @monitoring_server.tool(

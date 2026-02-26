@@ -16,14 +16,14 @@ class HostGroupOrder(BaseOrder):
 
 
 class HostGroupFilter(BaseFilter):
-    host_id: int | None = Field(None, serialization_alias="host.id")
-    host_name: str | None = Field(None, serialization_alias="host.name")
-    host_alias: str | None = Field(None, serialization_alias="host.alias")
-    host_address: str | None = Field(None, serialization_alias="host.address")
-    host_state: HostState | None = Field(None, serialization_alias="host.state")
-    poller_id: int | None = Field(None, serialization_alias="poller.id")
-    host_group_id: int | None = Field(None, serialization_alias="id")
-    host_group_name: str | None = Field(None, serialization_alias="name")
+    host_id: int | None = Field(None, serialization_alias="host.id $eq")
+    host_name: str | None = Field(None, serialization_alias="host.name $eq")
+    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
+    host_address: str | None = Field(None, serialization_alias="host.address $eq")
+    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
+    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
+    host_group_id: int | None = Field(None, serialization_alias="id $eq")
+    host_group_name: str | None = Field(None, serialization_alias="name $eq")
 
 
 @hostgroup.tool(

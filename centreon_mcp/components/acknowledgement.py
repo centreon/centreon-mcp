@@ -1,4 +1,4 @@
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -46,7 +46,7 @@ async def list_acknowledgements(
     limit: Annotated[int, Field(ge=1)] = 10,
     page: Annotated[int, Field(ge=1)] = 1,
     order: AcknowledgementOrder | None = None,
-) -> List[Acknowledgement]:
+) -> list[Acknowledgement]:
     """
     List all acknowledgements in real-time monitoring.
     """

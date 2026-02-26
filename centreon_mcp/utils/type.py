@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, ClassVar, List, Literal, Type, TypeVar
 
@@ -266,11 +266,29 @@ class ServiceDowntime(BaseDowntime):
     service_id: int
 
 
+class CommentResource(BaseModel):
+    type: ResourceType
+    resource_id: int = Field(..., serialization_alias="id")
+    host_id: int
+    comment: str
+    date: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
+
+
 class Comment(CentreonBaseModel):
     @staticmethod
-    async def add(resources: list[dict[str, Any]]) -> None:
+    async def add(resources: list[CommentResource]) -> None:
         """
-        Add a comments on multiple resources.
+        Add comments on multiple resources.
         """
-        endpoint = "monitoring/resources/comments"
-        await request("POST", endpoint, json={"resources": resources})
+        payload = {
+            "resources": [
+                {
+                    "parent": {"id": resource.host_id},
+                    **resource.model_dump(
+                        mode="json", by_alias=True, exclude={"host_id"}
+                    ),
+                }
+                for resource in resources
+            ]
+        }
+        await request("POST", "monitoring/resources/comments", json=payload)

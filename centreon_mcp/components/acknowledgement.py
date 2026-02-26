@@ -91,7 +91,7 @@ async def cancel_acknowledgements(
 ) -> bool:
     """
     Cancel acknowledgements on multiple resources in real-time monitoring.
-    Use tool `list_acknowledgements` first to get  acknowledged resources IDs.
+    Use tool `list_acknowledgements` first to get acknowledged resources IDs.
     """
     await Acknowledgement.cancel(with_services, resources)
     return True

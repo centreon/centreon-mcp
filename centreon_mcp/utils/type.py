@@ -180,7 +180,7 @@ class Acknowledgement(CentreonBaseModel):
         params: AcknowledgementParams, resources: list[AcknowledgementResource]
     ) -> None:
         """
-        Add an acknowledgements on multiple resources.
+        Add an acknowledgement on multiple resources.
         """
         payload = {
             "acknowledgement": params.model_dump(),
@@ -199,7 +199,7 @@ class Acknowledgement(CentreonBaseModel):
         with_services: bool, resources: list[AcknowledgementResource]
     ) -> None:
         """
-        Cancel an acknowledgements on multiple resources.
+        Cancel acknowledgements on multiple resources.
         """
         payload = {
             "disacknowledgement": {"with_services": with_services},

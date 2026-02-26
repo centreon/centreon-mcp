@@ -21,18 +21,18 @@ class ResourceFilter(BaseFilter):
     # Fields available for filtering in Centreon API
     name: str | None = Field(
         None,
-        serialization_alias="name $re",
-        description="Name of the resource (host or service) supporting regex",
+        serialization_alias="name $lk",
+        description="Name of the resource (host or service)",
     )
     alias: str | None = Field(
         None,
-        serialization_alias="alias $re",
-        description="Alias of the resource (host or service) supporting regex",
+        serialization_alias="alias $lk",
+        description="Alias of the resource (host or service)",
     )
     parent_name: str | None = Field(
         None,
-        serialization_alias="parent_name $re",
-        description="Name of the parent resource (host or service) supporting regex",
+        serialization_alias="parent_name $lk",
+        description="Name of the parent resource (host or service)",
     )
 
 

@@ -1,4 +1,3 @@
-import asyncio
 from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, ClassVar, List, Literal, Type, TypeVar
@@ -144,15 +143,6 @@ class MonitoringServer(CentreonBaseModel):
     version: str | None
 
 
-class AcknowledgementParams(BaseModel):
-    comment: str
-    with_services: bool = True
-    is_notify_contacts: bool = True
-    is_persistent_comment: bool = True
-    is_sticky: bool = True
-    force_active_checks: bool = True
-
-
 class BaseResource(BaseModel):
     type: ResourceType
     resource_id: int = Field(..., serialization_alias="id")
@@ -166,6 +156,15 @@ class BaseResource(BaseModel):
             "parent": {"id": self.host_id},
             **self.model_dump(mode="json", by_alias=True, exclude={"host_id"}),
         }
+
+
+class AcknowledgementParams(BaseModel):
+    comment: str
+    with_services: bool = True
+    is_notify_contacts: bool = True
+    is_persistent_comment: bool = True
+    is_sticky: bool = True
+    force_active_checks: bool = True
 
 
 class AcknowledgementResource(BaseResource):
@@ -215,11 +214,27 @@ class Acknowledgement(CentreonBaseModel):
         await request("DELETE", "monitoring/resources/acknowledgements", json=payload)
 
 
-class BaseDowntime(CentreonBaseModel):
+class DowntimeParams(BaseModel):
+    start_time: datetime
+    end_time: datetime
+    is_fixed: bool
+    duration: int
+    comment: str
+    with_services: bool
+
+
+class DowntimeResource(BaseResource):
+    pass
+
+
+class Downtime(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/downtimes"
+
     id: int
     author_id: int
     author_name: str
     host_id: int
+    service_id: int | None
     poller_id: int
     comment: str
     duration: int | None
@@ -234,37 +249,24 @@ class BaseDowntime(CentreonBaseModel):
     is_cancelled: bool
 
     @classmethod
-    async def add(cls, payload: list[dict[str, Any]]) -> None:
+    async def set(
+        cls, params: DowntimeParams, resources: list[DowntimeResource]
+    ) -> None:
         """
-        Add multiple downtimes on list of resources.
+        Set a downtime on multiple resources.
         """
-        await request("POST", cls.endpoint, json=payload)
+        payload = {
+            "downtime": params.model_dump(mode="json"),
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", "monitoring/resources/downtime", json=payload)
 
     @staticmethod
-    async def cancel(downtime_ids: list[int]) -> None:
+    async def cancel(downtime_id: int) -> None:
         """
-        Cancel multiple downtimes.
+        Cancel a downtime.
         """
-
-        async def task(downtime_id: int) -> None:
-            """
-            Cancel a single downtime.
-            """
-            endpoint = f"monitoring/downtimes/{downtime_id}"
-            await request("DELETE", endpoint)
-
-        tasks = [asyncio.create_task(task(downtime_id)) for downtime_id in downtime_ids]
-        await asyncio.gather(*tasks)
-
-
-class HostDowntime(BaseDowntime):
-    endpoint: ClassVar[str] = "monitoring/hosts/downtimes"
-
-
-class ServiceDowntime(BaseDowntime):
-    endpoint: ClassVar[str] = "monitoring/services/downtimes"
-
-    service_id: int
+        await request("DELETE", f"monitoring/downtimes/{downtime_id}")
 
 
 class CommentResource(BaseResource):

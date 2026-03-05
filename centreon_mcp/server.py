@@ -28,6 +28,15 @@ async def lifespan(app: FastMCP):
         version = result["web"]["version"]
         logger.info(f"Connected to Centreon API version {version}")
 
+    # Validate Centreon credentials
+    try:
+        _ = await request("GET", "monitoring/servers")
+    except CentreonAPIError as e:
+        logger.error("Failed to validate Centreon credentials")
+        raise e
+    else:
+        logger.info("Centreon credentials validated")
+
     # Import components
     for server in components:
         await app.import_server(server)

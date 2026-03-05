@@ -5,6 +5,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
 
@@ -63,6 +64,7 @@ async def list_resources(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all resources except if explicitly intended.
     """
+    logger.info("Executing tool list_resource")
     filters = filters or []
     order = order or ResourceOrder()
     await asyncio.gather(*(filter.complete() for filter in filters))

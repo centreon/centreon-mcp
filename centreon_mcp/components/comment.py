@@ -1,5 +1,6 @@
 from fastmcp import FastMCP
 
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.type import Comment, CommentResource
 
 comment = FastMCP()
@@ -18,5 +19,6 @@ async def add_comments(resources: list[CommentResource]) -> bool:
     Add comments on resources (hosts and services) in real-time monitoring.
     Use `list_resources` tools first to get the resource IDs.
     """
+    logger.info("Executing tool add_comment")
     await Comment.add(resources)
     return True

@@ -3,6 +3,7 @@ from typing import Annotated, List, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 from centreon_mcp.utils.type import HostGroup, HostState
 
@@ -45,4 +46,5 @@ async def list_hostgroups(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all host groups except if explicitly intended.
     """
+    logger.info("Executing tool list_hostgroups")
     return await _list(HostGroup, HostGroupOrder, filters, limit, page, order)

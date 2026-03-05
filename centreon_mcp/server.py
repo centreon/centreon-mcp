@@ -4,7 +4,7 @@ from fastmcp import FastMCP
 
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.components import components
-from centreon_mcp.utils.logger import logger
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.request import CentreonAPIError, request
 
 

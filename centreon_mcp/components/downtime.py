@@ -4,6 +4,7 @@ from typing import Annotated, ClassVar, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
 from centreon_mcp.utils.type import (
     Downtime,
@@ -69,6 +70,7 @@ async def list_downtimes(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all downtimes except if explicitly intended.
     """
+    logger.info("Executing tool list_downtimes")
     return await _list(Downtime, DowntimeOrder, filters, limit, page, order)
 
 
@@ -87,6 +89,7 @@ async def set_downtimes(
     Add a downtime for multiple resources (host and services) in real-time monitoring.
     Use tool `list_resources` first to get resources IDs.
     """
+    logger.info("Executing tool set_downtimes")
     await Downtime.set(params, resources)
     return True
 
@@ -104,6 +107,7 @@ async def cancel_downtimes(downtime_ids: list[int]) -> bool:
     Cancel multiple downtimes in real-time monitoring.
     Use tools `list_downtimes` first to get downtime IDs.
     """
+    logger.info("Executing tool cancel_downtimes")
     tasks = [asyncio.create_task(Downtime.cancel(id)) for id in downtime_ids]
     await asyncio.gather(*tasks)
     return True

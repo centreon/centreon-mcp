@@ -37,7 +37,7 @@ class HostGroupFilter(BaseFilter):
 )
 async def list_hostgroups(
     filters: List[HostGroupFilter] | None = None,
-    limit: Annotated[int, Field(ge=1)] = 10,
+    limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: HostGroupOrder | None = None,
 ) -> List[HostGroup]:

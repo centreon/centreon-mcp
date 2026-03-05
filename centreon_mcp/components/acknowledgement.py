@@ -44,7 +44,7 @@ class AcknowledgementFilter(BaseFilter):
 )
 async def list_acknowledgements(
     filters: list[AcknowledgementFilter] | None = None,
-    limit: Annotated[int, Field(ge=1)] = 10,
+    limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: AcknowledgementOrder | None = None,
 ) -> list[Acknowledgement]:

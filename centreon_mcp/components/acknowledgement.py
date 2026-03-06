@@ -3,6 +3,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 from centreon_mcp.utils.type import (
     Acknowledgement,
@@ -43,13 +44,14 @@ class AcknowledgementFilter(BaseFilter):
 )
 async def list_acknowledgements(
     filters: list[AcknowledgementFilter] | None = None,
-    limit: Annotated[int, Field(ge=1)] = 10,
+    limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: AcknowledgementOrder | None = None,
 ) -> list[Acknowledgement]:
     """
     List all acknowledgements in real-time monitoring.
     """
+    logger.info("Executing tool list_acknowledgements")
     return await _list(
         Acknowledgement, AcknowledgementOrder, filters, limit, page, order
     )
@@ -71,6 +73,7 @@ async def add_acknowledgements(
     Add an acknowledgement on multiple resources in real-time monitoring.
     Use tool `list_resources` first to get resources IDs.
     """
+    logger.info("Executing tool add_acknowledgements")
     await Acknowledgement.add(params, resources)
     return True
 
@@ -93,5 +96,6 @@ async def cancel_acknowledgements(
     Cancel acknowledgements on multiple resources in real-time monitoring.
     Use tool `list_acknowledgements` first to get acknowledged resources IDs.
     """
+    logger.info("Executing tool cancel_acknowledgements")
     await Acknowledgement.cancel(with_services, resources)
     return True

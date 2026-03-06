@@ -1,7 +1,21 @@
+import json
+from copy import deepcopy
+
 import httpx
 
 from centreon_mcp import CREDENTIALS
-from centreon_mcp.utils.logger import logger
+from centreon_mcp.utils import logger
+
+
+def hide(headers: dict) -> dict:
+    """
+    Hide Centreon API token in headers for logging
+    """
+    hidden = deepcopy(headers)
+    token = headers["X-AUTH-TOKEN"]
+    size = 6
+    hidden["X-AUTH-TOKEN"] = (len(token) - size) * "*" + token[-size:]
+    return hidden
 
 
 class CentreonAPIError(Exception):
@@ -31,7 +45,7 @@ class CentreonAPIError(Exception):
 async def request(
     method: str,
     endpoint: str,
-    json: dict | None = None,
+    payload: dict | None = None,
     params: dict | None = None,
     timeout: float | None = None,
 ) -> dict:
@@ -47,15 +61,25 @@ async def request(
     # Make request and handle response
     try:
         logger.debug(
-            f"Centreon API Request: {method} {url} "
-            f"Headers: {headers} JSON: {json} Params: {params}"
+            f"Centreon API Request: {method} {url}\n"
+            f"Headers: {json.dumps(hide(headers), indent=2)}\n"
+            f"Params: {json.dumps(params, indent=2)}\n"
+            f"Payload: {json.dumps(payload, indent=2)}"
         )
         async with httpx.AsyncClient() as client:
             response = await client.request(
-                method, url, headers=headers, json=json, params=params, timeout=timeout
+                method,
+                url,
+                headers=headers,
+                json=payload,
+                params=params,
+                timeout=timeout,
             )
             content = response.json() if response.status_code != 204 else {}
-            logger.debug(f"Centreon API Response: {content}")
+            logger.debug(
+                f"Centreon API Response: {response.status_code}\n"
+                f"Content: {json.dumps(content, indent=2)}"
+            )
             response.raise_for_status()
             return content
 

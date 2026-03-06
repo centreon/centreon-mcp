@@ -13,7 +13,8 @@ def hide(headers: dict) -> dict:
     """
     hidden = deepcopy(headers)
     token = headers["X-AUTH-TOKEN"]
-    hidden["X-AUTH-TOKEN"] = token[:6] + (len(token) - 6) * "*"
+    size = 6
+    hidden["X-AUTH-TOKEN"] = (len(token) - size) * "*" + token[-size:]
     return hidden
 
 

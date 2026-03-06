@@ -11,7 +11,7 @@ def main():
     level = CREDENTIALS["CENTREON_MCP_LOG_LEVEL"]
     try:
         logger.setLevel(level)
-    except Exception:
+    except ValueError:
         logger.setLevel(logging.INFO)
         logger.warning(f"Invalid log level '{level}' set. Defaulting to INFO.")
 

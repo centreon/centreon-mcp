@@ -198,7 +198,7 @@ class Acknowledgement(CentreonBaseModel):
             "acknowledgement": params.model_dump(mode="json"),
             "resources": [resource.dump() for resource in resources],
         }
-        await request("POST", "monitoring/resources/acknowledge", json=payload)
+        await request("POST", "monitoring/resources/acknowledge", payload=payload)
 
     @staticmethod
     async def cancel(
@@ -211,7 +211,9 @@ class Acknowledgement(CentreonBaseModel):
             "disacknowledgement": {"with_services": with_services},
             "resources": [resource.dump() for resource in resources],
         }
-        await request("DELETE", "monitoring/resources/acknowledgements", json=payload)
+        await request(
+            "DELETE", "monitoring/resources/acknowledgements", payload=payload
+        )
 
 
 class DowntimeParams(BaseModel):
@@ -259,7 +261,7 @@ class Downtime(CentreonBaseModel):
             "downtime": params.model_dump(mode="json"),
             "resources": [resource.dump() for resource in resources],
         }
-        await request("POST", "monitoring/resources/downtime", json=payload)
+        await request("POST", "monitoring/resources/downtime", payload=payload)
 
     @staticmethod
     async def cancel(downtime_id: int) -> None:
@@ -281,4 +283,4 @@ class Comment(CentreonBaseModel):
         Add comments on multiple resources.
         """
         payload = {"resources": [resource.dump() for resource in resources]}
-        await request("POST", "monitoring/resources/comments", json=payload)
+        await request("POST", "monitoring/resources/comments", payload=payload)

@@ -19,6 +19,6 @@ async def add_comments(resources: list[CommentResource]) -> bool:
     Add comments on resources (hosts and services) in real-time monitoring.
     Use `list_resources` tools first to get the resource IDs.
     """
-    logger.info("Executing tool add_comment")
+    logger.info("Executing tool add_comments")
     await Comment.add(resources)
     return True

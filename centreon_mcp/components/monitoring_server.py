@@ -41,7 +41,7 @@ async def list_monitoring_servers(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all monitoring servers except if explicitly intended.
     """
-    logger.info("Executing tool list_monitoring_server")
+    logger.info("Executing tool list_monitoring_servers")
     return await _list(
         MonitoringServer, MonitoringServerOrder, filters, limit, page, order
     )

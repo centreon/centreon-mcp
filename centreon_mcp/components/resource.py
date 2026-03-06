@@ -64,7 +64,7 @@ async def list_resources(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all resources except if explicitly intended.
     """
-    logger.info("Executing tool list_resource")
+    logger.info("Executing tool list_resources")
     filters = filters or []
     order = order or ResourceOrder()
     await asyncio.gather(*(filter.complete() for filter in filters))

@@ -35,6 +35,16 @@ class ResourceFilter(BaseFilter):
         serialization_alias="parent_name $lk",
         description="Name of the parent resource (host or service)",
     )
+    information_like: str | None = Field(
+        None,
+        serialization_alias="information $lk",
+        description="Filter resources whose output/information contains this string (case-insensitive substring match)",
+    )
+    information_unlike: str | None = Field(
+        None,
+        serialization_alias="information $nk",
+        description="Filter resources whose output/information does not contain this string (case-insensitive substring exclusion)",
+    )
 
 
 @resource.tool(

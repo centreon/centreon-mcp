@@ -2,15 +2,19 @@ import json
 from copy import deepcopy
 
 import httpx
+from fastmcp.server.dependencies import get_http_headers
 
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.utils import logger
 
 
-def hide(headers: dict) -> dict:
+def hide(headers: dict | None) -> dict | None:
     """
     Hide Centreon API token in headers for logging
     """
+    if headers is None:
+        return None
+
     hidden = deepcopy(headers)
     token = headers["X-AUTH-TOKEN"]
     size = 6
@@ -54,9 +58,9 @@ async def request(
     """
     # Build request arguments
     base = CREDENTIALS["CENTREON_BASE_URL"]
-    token = CREDENTIALS["CENTREON_API_TOKEN"]
+    token = get_http_headers().get("centreon-api-token")
     url = f"{base}/api/latest/{endpoint}"
-    headers = {"X-AUTH-TOKEN": token}
+    headers = {"X-AUTH-TOKEN": token} if token else None
 
     # Make request and handle response
     try:

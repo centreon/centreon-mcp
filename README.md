@@ -22,7 +22,6 @@ uv sync
 | Name                     | Default | Description                                           |
 | ------------------------ | ------- | ----------------------------------------------------- |
 | `CENTREON_BASE_URL`      |         | Base URL of the Centreon instance.                    |
-| `CENTREON_API_TOKEN`     |         | Token used to access the Centreon API through MCP.    |
 | `CENTREON_MCP_PORT`      | `8000`  | Port used to start the Centreon MCP service.          |
 | `CENTREON_MCP_LOG_LEVEL` | `INFO`  | Minimal severity level for Centreon MCP service logs. |
 
@@ -51,6 +50,7 @@ ngrok http 8000
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
+   - **Headers**: Add valid Centreon API token in headers under field `centreon-api-token`
 5. Click **Save** to register the connector.
 
 Once the connector is added, ChatGPT will automatically discover and use the Centreon MCP tools in your conversations.
@@ -66,6 +66,7 @@ Once the connector is added, ChatGPT will automatically discover and use the Cen
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
+   - **Headers**: Add valid Centreon API token in headers under field `centreon-api-token`
 5. Click **Save** to register the connector.
 
 Once the connector is added, Le Chat will automatically discover and use the Centreon MCP tools in your conversations.
@@ -76,10 +77,10 @@ Once the connector is added, Le Chat will automatically discover and use the Cen
 <summary>Claude Code</summary>
 
 
-Register your MCP server using the HTTP transport with the local address:
+Register your MCP server using the HTTP transport with the local address and Centreon API token in headers
 
 ```shell
-claude mcp add --transport http centreon http://localhost:8000/mcp
+claude mcp add -t http centreon http://localhost:8000/mcp -H "centreon-api-token: <token>"
 ```
 
 > Replace `8000` with the value of `CENTREON_MCP_PORT` if you changed the default.

@@ -1,4 +1,6 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+# --- Builder ---
+
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 
 # Set working directory:
 WORKDIR /app
@@ -15,10 +17,20 @@ COPY centreon_mcp centreon_mcp
 
 # Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+    uv sync --frozen --no-editable --no-dev
+
+# --- Runtime ---
+
+FROM python:3.13-slim-bookworm
+
+# Set working directory:
+WORKDIR /app
+
+# Copy dependencies from previous stage:
+COPY --from=builder /app/.venv /app/.venv
 
 # Exposing port:
 EXPOSE 8000
 
-# Define process to run:
-ENTRYPOINT ["uv", "run", "--no-sync", "mcp"]
+# Run the application
+ENTRYPOINT ["/app/.venv/bin/mcp"]

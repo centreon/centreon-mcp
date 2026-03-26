@@ -16,7 +16,9 @@ def main():
         logger.warning(f"Invalid log level '{level}' set. Defaulting to INFO.")
 
     # Start Centreon MCP
-    mcp.run(transport="http", port=int(CREDENTIALS["CENTREON_MCP_PORT"]))
+    mcp.run(
+        transport="http", host="0.0.0.0", port=int(CREDENTIALS["CENTREON_MCP_PORT"])
+    )
 
 
 if __name__ == "__main__":

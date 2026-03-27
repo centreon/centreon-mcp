@@ -1,0 +1,35 @@
+name: mcp
+
+services:
+  server:
+    image: centreon/mcp:latest
+    container_name: server
+    ports:
+      - ${CENTREON_MCP_PORT:-8000}:8000
+    networks:
+      - mcp
+    environment:
+      CENTREON_BASE_URL: ${CENTREON_BASE_URL}
+      CENTREON_MCP_LOG_LEVEL: ${CENTREON_MCP_LOG_LEVEL:-INFO}
+      CENTREON_MCP_HOST: "0.0.0.0"
+    extra_hosts: 
+      - "host.docker.internal:host-gateway"
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok
+    profiles:
+      - ngrok
+    ports:
+      - 4040:4040
+    networks:
+      - mcp
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http server:8000
+    
+
+
+networks:
+  mcp:
+    driver: bridge

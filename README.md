@@ -11,19 +11,21 @@ git clone https://github.com/centreon/centreon-mcp.git
 cd centreon-mcp
 ```
 
-2. Install dependencies and synchronize
-
-```shell
-uv sync
-```
-
-3. Ensure all required environment variables are set. Default values are used for optional variables.
+2. Ensure all required environment variables are set. Default values are used for optional variables.
 
 | Name                     | Default | Description                                           |
 | ------------------------ | ------- | ----------------------------------------------------- |
 | `CENTREON_BASE_URL`      |         | Base URL of the Centreon instance.                    |
 | `CENTREON_MCP_PORT`      | `8000`  | Port used to start the Centreon MCP service.          |
 | `CENTREON_MCP_LOG_LEVEL` | `INFO`  | Minimal severity level for Centreon MCP service logs. |
+
+### Using UV 
+
+3. Install dependencies and synchronize
+
+```shell
+uv sync
+```
 
 4. Start the MCP server
 
@@ -38,6 +40,28 @@ ngrok http 8000
 ```
 
 > Replace `8000` with the value of `CENTREON_MCP_PORT` if you changed the default.
+
+### Using Docker
+
+3. Build Docker image
+
+```shell
+docker build -t centreon/mcp .
+```
+
+4. Start the MCP server
+
+```shell
+docker compose up
+```
+
+5. To make it reachable from the internet, export `NGROK_AUTHTOKEN` in the environment and enable `ngrok` profile.
+
+```shell
+docker compose --profile ngrok up
+```
+
+> Use `curl http://localhost:4040/api/tunnels` to retrieve public URL
 
 ## Integration
 

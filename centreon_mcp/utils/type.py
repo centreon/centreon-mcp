@@ -75,7 +75,7 @@ class Resource(BaseModel):
     information: str | None
     has_active_checks_enabled: bool
     has_passive_checks_enabled: bool
-    last_status_change: datetime
+    last_status_change: datetime | None
     last_check: str | None
     tries: str | None
 

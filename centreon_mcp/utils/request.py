@@ -3,6 +3,7 @@ from copy import deepcopy
 
 import httpx
 from fastmcp.server.dependencies import get_http_headers
+from httpx import AsyncClient
 
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.utils import logger
@@ -70,7 +71,7 @@ async def request(
             f"Params: {json.dumps(params, indent=2)}\n"
             f"Payload: {json.dumps(payload, indent=2)}"
         )
-        async with httpx.AsyncClient() as client:
+        async with AsyncClient() as client:
             response = await client.request(
                 method,
                 url,
@@ -80,6 +81,7 @@ async def request(
                 timeout=timeout,
             )
             content = response.json() if response.status_code != 204 else {}
+
             logger.debug(
                 f"Centreon API Response: {response.status_code}\n"
                 f"Content: {json.dumps(content, indent=2)}"

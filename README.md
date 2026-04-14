@@ -2,6 +2,50 @@
 
 This project offers an MCP server for Centreon. Built in Python with the [FastMCP](https://gofastmcp.com/getting-started/welcome) library, it enables users to perform operations on a Centreon instance using natural language commands.
 
+## Features
+
+The MCP server currently exposes 10 tools organized across five functional areas.
+
+### Resource Monitoring
+
+- **list_resources** is the central tool for querying your real-time monitoring data. It supports rich filtering across multiple dimensions simultaneously:
+- **By resource type**: filter on hosts only, services only, or both
+- **By status**: filter on OK, WARNING, CRITICAL, UNKNOWN, or PENDING states
+- **By status type**: distinguish between HARD and SOFT states
+- **By name, alias, or parent name**: substring matching on resource identifiers
+- **By output/information content**: find resources whose check output contains (or does not contain) a given string — ideal for surfacing specific error messages across your infrastructure
+- **By scope**: filter by host group, service group, host category, service category, or monitoring server (poller)
+- **Pagination and sorting**: results are paginated and sortable by host name, alias, address, or state
+
+This combination of filters makes it possible to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'" and get precise, actionable results directly in the conversation.
+
+### Infrastructure Inventory
+
+Three read-only tools allow AI assistants to explore your monitoring topology:
+- **list_hostgroups** — List host groups, filterable by host name, alias, address, state, poller, or group ID
+- **list_servicegroups** — List service groups, filterable by host, service, host group, or poller attributes
+- **list_monitoring_servers** — List pollers, with the ability to filter by name, ID, or running status
+
+These tools serve as natural building blocks: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
+
+### Acknowledgements
+
+Acknowledge alerts without ever leaving your conversation:
+- **list_acknowledgements** — List current acknowledgements, with pagination and sorting (by ID, host, start time, entry time, etc.)
+- **add_acknowledgements** — Acknowledge one or more resources at once, applying a message and configuring options such as sticky acknowledgement and notifications
+- **cancel_acknowledgements** — Remove acknowledgements from one or more resources, with the option to also cancel service acknowledgements when a host is unacknowledged
+
+### Downtimes
+
+Full downtime lifecycle management through conversation:
+- **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
+- **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
+- **cancel_downtimes** — Cancel one or more downtimes by their IDs
+
+### Comments
+
+- **add_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
+
 ## Quick Start
 
 1. Clone the repository

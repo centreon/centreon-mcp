@@ -12,5 +12,8 @@ wheels/
 # Personal environment variables
 .env
 
+# Coverage
+.coverage
+
 
 

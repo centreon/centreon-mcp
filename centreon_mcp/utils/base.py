@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 from centreon_mcp.utils.type import T
 
-O = TypeVar("O", bound="BaseOrder")
-F = TypeVar("F", bound="BaseFilter")
+OrderType = TypeVar("OrderType", bound="BaseOrder")
+FilterType = TypeVar("FilterType", bound="BaseFilter")
 
 
 class BaseOrder(BaseModel):
@@ -31,11 +31,11 @@ class BaseFilter(BaseModel):
 
 async def _list(
     model: Type[T],
-    order_cls: Type[O],
-    filters: list[F] | None = None,
+    order_cls: Type[OrderType],
+    filters: list[FilterType] | None = None,
     limit: int = 10,
     page: int = 1,
-    order: O | None = None,
+    order: OrderType | None = None,
 ) -> list[T]:
     """
     Generic function to list ressources in real-time monitoring based on provided filters, pagination and order

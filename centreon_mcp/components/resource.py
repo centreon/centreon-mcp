@@ -1,4 +1,3 @@
-import asyncio
 import json
 from typing import Annotated, Literal
 
@@ -77,7 +76,6 @@ async def list_resources(
     logger.info("Executing tool list_resources")
     filters = filters or []
     order = order or ResourceOrder()
-    await asyncio.gather(*(filter.complete() for filter in filters))
     conditions = (
         {
             "$or": [

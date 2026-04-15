@@ -3,16 +3,10 @@ from typing import Literal, Type, TypeVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.type import CentreonBaseModel, T
+from centreon_mcp.utils.type import T
 
 O = TypeVar("O", bound="BaseOrder")
 F = TypeVar("F", bound="BaseFilter")
-
-
-class ConstraintLink(BaseModel):
-    cls: Type[CentreonBaseModel]
-    object: str
-    fields: list[str]
 
 
 class BaseOrder(BaseModel):

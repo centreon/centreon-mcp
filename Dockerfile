@@ -36,4 +36,4 @@ RUN useradd -U -u 1000 appuser && chown -R 1000:1000 /app
 USER 1000
 
 # Run the application
-ENTRYPOINT ["/app/.venv/bin/mcp"]
+ENTRYPOINT ["/app/.venv/bin/centreon-mcp-server"]

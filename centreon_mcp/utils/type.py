@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, ClassVar, List, Literal, Type, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from centreon_mcp.utils.request import request
 
@@ -115,6 +115,54 @@ class Resource(BaseModel):
         params = {name: value for name, value in params.items() if value is not None}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
+
+
+class StatusCount(BaseModel):
+    pending: int
+    total: int
+
+    @model_validator(mode="before")
+    @classmethod
+    def flatten(cls, data: dict[str, Any]):
+        return {
+            "total": data.pop("total"),
+            **{status: count["total"] for status, count in data.items()},
+        }
+
+
+class HostStatusCount(StatusCount):
+    up: int
+    down: int
+    unreachable: int
+
+
+class Host(BaseModel):
+    @staticmethod
+    async def count_by_status(search: str | None) -> HostStatusCount:
+        """
+        Count hosts by status.
+        """
+        params = {"search": search}
+        content = await request("GET", "monitoring/hosts/status", params=params)
+        return HostStatusCount(**content)
+
+
+class ServiceStatusCount(StatusCount):
+    critical: int
+    unknown: int
+    ok: int
+    warning: int
+
+
+class Service(BaseModel):
+    @staticmethod
+    async def count_by_status(search: str | None) -> ServiceStatusCount:
+        """
+        Count services by status.
+        """
+        params = {"search": search}
+        content = await request("GET", "monitoring/services/status", params=params)
+        return ServiceStatusCount(**content)
 
 
 class HostGroup(CentreonBaseModel):

@@ -1,4 +1,5 @@
 import json
+from typing import List
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.resource import (
@@ -6,7 +7,7 @@ from centreon_mcp.components.resource import (
     ResourceOrder,
     list_resources,
 )
-from centreon_mcp.utils.type import Resource
+from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
 
 MODULE = "centreon_mcp.components.resource"
 
@@ -16,15 +17,15 @@ MODULE = "centreon_mcp.components.resource"
 async def test_list_resources(logger: MagicMock, list: AsyncMock):
 
     # Setup args
-    filters = [ResourceFilter(name="name", alias="alias")]
-    types = ["host", "service"]
-    statuses = ["UP", "WARNING"]
+    filters = [ResourceFilter.model_construct()]
+    types: List[ResourceType] = ["host", "service"]
+    statuses: List[ResourceStatus] = ["UP", "WARNING"]
     hostgroup_names = ["hostgroup_name"]
     servicegroup_names = ["servicegroup_name"]
     host_category_names = ["host_category_name"]
     service_category_names = ["service_category_name"]
     monitoring_server_names = ["monitoring_server_name"]
-    status_types = ["hard"]
+    status_types: List[StatusType] = ["hard"]
     limit = 50
     page = 1
     order = ResourceOrder()

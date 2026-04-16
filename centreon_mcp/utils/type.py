@@ -137,7 +137,7 @@ class MonitoringServer(CentreonBaseModel):
     id: int
     name: str
     address: str | None
-    description: str | None
+    description: str | None = None
     is_running: bool
     last_alive: int | None
     version: str | None

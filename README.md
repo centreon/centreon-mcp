@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 10 tools organized across five functional areas.
+The MCP server currently exposes 12 tools organized across five functional areas.
 
 ### Resource Monitoring
 
@@ -18,6 +18,12 @@ The MCP server currently exposes 10 tools organized across five functional areas
 - **Pagination and sorting**: results are paginated and sortable by host name, alias, address, or state
 
 This combination of filters makes it possible to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'" and get precise, actionable results directly in the conversation.
+
+Two dedicated counting tools provide a fast status summary without retrieving individual resources:
+- **count_hosts_by_status** — returns the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped to one or more host groups or host categories
+- **count_services_by_status** — returns the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host name, host group, host category, service group, or service category
+
+Both tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
 
 ### Infrastructure Inventory
 
@@ -74,7 +80,7 @@ uv sync
 4. Start the MCP server
 
 ```shell
-uv run mcp
+uv run centreon-mcp-server
 ```
 
 5. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):

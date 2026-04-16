@@ -1,17 +1,16 @@
 import asyncio
-from typing import Annotated, ClassVar, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, ConstraintLink, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 from centreon_mcp.utils.type import (
     Downtime,
     DowntimeParams,
     DowntimeResource,
     HostState,
-    MonitoringServer,
 )
 
 downtime = FastMCP()
@@ -33,11 +32,6 @@ class DowntimeOrder(BaseOrder):
 
 
 class DowntimeFilter(BaseFilter):
-    links: ClassVar[list[ConstraintLink]] = [
-        ConstraintLink(cls=MonitoringServer, object="poller", fields=["name"]),
-    ]
-
-    # Fields available for filtering in Centreon API
     host_id: int | None = Field(None, serialization_alias="host.id $eq")
     host_name: str | None = Field(None, serialization_alias="host.name $eq")
     host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
@@ -46,9 +40,6 @@ class DowntimeFilter(BaseFilter):
     is_fixed: bool | None = Field(None, serialization_alias="is_fixed $eq")
     is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled $eq")
     poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
-
-    # Fields not available in Centreon API but useful for filtering
-    poller_name: str | None = Field(None, exclude=True)
 
 
 @downtime.tool(

@@ -74,20 +74,9 @@ async def list_resources(
     to avoid retrieving all resources except if explicitly intended.
     """
     logger.info("Executing tool list_resources")
-    filters = filters or []
     order = order or ResourceOrder()
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    sort_by = order.model_dump_json()
     return await Resource.list(
-        search=json.dumps(conditions),
+        search=json.dumps(ResourceFilter.join(filters)),
         types=json.dumps(types or []),
         statuses=json.dumps(statuses or []),
         hostgroup_names=json.dumps(hostgroup_names or []),
@@ -98,5 +87,5 @@ async def list_resources(
         status_types=json.dumps(status_types or []),
         limit=limit,
         page=page,
-        sort_by=sort_by,
+        sort_by=order.model_dump_json(),
     )

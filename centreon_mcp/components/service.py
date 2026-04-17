@@ -49,13 +49,5 @@ async def count_services_by_status(
     Count services by status in real-time monitoring matching the given filters.
     """
     logger.info("Executing tool count_services_by_status")
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    return await Service.count_by_status(search=json.dumps(conditions))
+    search = json.dumps(ServiceFilter.join(filters))
+    return await Service.count_by_status(search)

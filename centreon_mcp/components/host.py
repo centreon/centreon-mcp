@@ -36,13 +36,5 @@ async def count_hosts_by_status(
     Count hosts by status in real-time monitoring matching the given filters.
     """
     logger.info("Executing tool count_hosts_by_status")
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    return await Host.count_by_status(search=json.dumps(conditions))
+    search = json.dumps(HostFilter.join(filters))
+    return await Host.count_by_status(search)

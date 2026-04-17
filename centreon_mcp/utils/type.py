@@ -112,7 +112,6 @@ class Resource(BaseModel):
             "monitoring_server_names": monitoring_server_names,
             "status_types": status_types,
         }
-        params = {name: value for name, value in params.items() if value is not None}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
 

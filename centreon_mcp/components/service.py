@@ -46,7 +46,12 @@ async def count_services_by_status(
     filters: list[ServiceFilter] | None = None,
 ) -> ServiceStatusCount:
     """
-    Count services by status in real-time monitoring matching the given filters.
+    Count services by status in real-time monitoring.
+    Returns the total number of services in each state: OK, WARNING, CRITICAL, UNKNONW and PENDING.
+    Each filter object narrows results by host group, host category, service group, service category or host.
+    Fields within a single filter are ANDed together, multiple filter objects are ORed.
+    Omit filters to count all services.
+    Use this tool instead of list_resources when only aggregate counts are needed
     """
     logger.info("Executing tool count_services_by_status")
     search = json.dumps(ServiceFilter.join(filters))

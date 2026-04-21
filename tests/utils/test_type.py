@@ -10,7 +10,12 @@ from centreon_mcp.utils.type import (
     Downtime,
     DowntimeParams,
     DowntimeResource,
+    Host,
+    HostStatusCount,
     Resource,
+    Service,
+    ServiceStatusCount,
+    StatusCount,
 )
 
 MODULE = "centreon_mcp.utils.type"
@@ -72,6 +77,87 @@ async def test_list_resources(request: AsyncMock):
 
     # Assert result
     assert len(result) == 0
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_host_count_by_status(request: AsyncMock):
+
+    # Setup args
+    search = ""
+
+    # Mock request
+    content: dict = {
+        "up": {"total": 10},
+        "down": {"total": 10},
+        "unreachable": {"total": 10},
+        "pending": {"total": 10},
+        "total": 40,
+    }
+    request.return_value = content
+
+    # Call test function
+    result = await Host.count_by_status(search)
+
+    # Assert request called with right args
+    params = {"search": search}
+    request.assert_awaited_once_with("GET", "monitoring/hosts/status", params=params)
+
+    # Assert result
+    assert result == HostStatusCount(**content)
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_service_count_by_status(request: AsyncMock):
+
+    # Setup args
+    search = ""
+
+    # Mock request
+    content: dict = {
+        "ok": {"total": 10},
+        "warning": {"total": 10},
+        "critical": {"total": 10},
+        "unknown": {"total": 10},
+        "pending": {"total": 10},
+        "total": 50,
+    }
+    request.return_value = content
+
+    # Call test function
+    result = await Service.count_by_status(search)
+
+    # Assert request called with right args
+    params = {"search": search}
+    request.assert_awaited_once_with("GET", "monitoring/services/status", params=params)
+
+    # Assert result
+    assert result == ServiceStatusCount(**content)
+
+
+async def test_status_count_flatten():
+
+    # Setup args
+    data: dict = {
+        "ok": {"total": 10},
+        "warning": {"total": 10},
+        "critical": {"total": 10},
+        "unknown": {"total": 10},
+        "pending": {"total": 10},
+        "total": 50,
+    }
+
+    # Call test function
+    result = StatusCount.flatten(data)
+
+    # Assert result
+    assert result == {
+        "ok": 10,
+        "warning": 10,
+        "critical": 10,
+        "unknown": 10,
+        "pending": 10,
+        "total": 50,
+    }
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -150,7 +236,6 @@ async def test_set_downtime(request: AsyncMock):
     )
 
 
-@staticmethod
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_cancel_downtime(request: AsyncMock):
 

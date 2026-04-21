@@ -62,6 +62,8 @@ async def request(
     token = get_http_headers().get("centreon-api-token")
     url = f"{base}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token} if token else None
+    params = params or {}
+    params = {name: value for name, value in params.items() if value is not None}
 
     # Make request and handle response
     try:

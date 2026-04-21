@@ -1,5 +1,5 @@
 import json
-from typing import Literal, Type, TypeVar
+from typing import Literal, Sequence, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -14,6 +14,23 @@ class BaseOrder(BaseModel):
 
 
 class BaseFilter(BaseModel):
+    @staticmethod
+    def join(filters: Sequence["BaseFilter"] | None) -> dict:
+        """
+        Join multiple filters conditions using OR operaror.
+        """
+        return (
+            {
+                "$or": [
+                    {"$and": filter.conditions}
+                    for filter in filters
+                    if filter.conditions
+                ]
+            }
+            if filters
+            else {}
+        )
+
     @property
     def conditions(self) -> list:
         """
@@ -40,17 +57,7 @@ async def _list(
     """
     Generic function to list ressources in real-time monitoring based on provided filters, pagination and order
     """
-    filters = filters or []
     order = order or order_cls()
-    conditions = (
-        {
-            "$or": [
-                {"$and": filter.conditions} for filter in filters if filter.conditions
-            ]
-        }
-        if filters
-        else {}
-    )
-    search = json.dumps(conditions)
+    search = json.dumps(BaseFilter.join(filters))
     sort_by = order.model_dump_json()
     return await model.list(search, limit, page, sort_by)

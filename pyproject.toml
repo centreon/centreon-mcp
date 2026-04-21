@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-mcp = "centreon_mcp.__main__:main"
+centreon-mcp-server = "centreon_mcp.__main__:main"
 
 [tool.uv]
 package = true

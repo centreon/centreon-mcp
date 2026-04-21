@@ -11,7 +11,7 @@ MODULE = "centreon_mcp.components.service"
 @patch(f"{MODULE}.ServiceFilter.join", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_count_services_by_status(
-    logger: MagicMock, join: MagicMock, count_by_status: AsyncMock
+    logger: MagicMock, filter_join: MagicMock, service_count_by_status: AsyncMock
 ):
 
     # Setup args
@@ -22,17 +22,17 @@ async def test_count_services_by_status(
 
     # Mock ServiceFilter.join
     conditions: dict = {}
-    join.return_value = conditions
+    filter_join.return_value = conditions
 
     # Mock request
     count = ServiceStatusCount.model_construct()
-    count_by_status.return_value = count
+    service_count_by_status.return_value = count
 
     # Call test fonction
     result = await count_services_by_status(filters)
 
     # Assert request called with right args
-    count_by_status.assert_awaited_once_with(json.dumps(conditions))
+    service_count_by_status.assert_awaited_once_with(json.dumps({}))
 
     # Assert result
     assert result == count

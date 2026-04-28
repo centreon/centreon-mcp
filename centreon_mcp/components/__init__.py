@@ -1,4 +1,5 @@
 from centreon_mcp.components.acknowledgement import acknowledgement
+from centreon_mcp.components.command import command
 from centreon_mcp.components.comment import comment
 from centreon_mcp.components.downtime import downtime
 from centreon_mcp.components.host import host
@@ -18,4 +19,5 @@ components = [
     acknowledgement,
     comment,
     service,
+    command,
 ]

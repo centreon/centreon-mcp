@@ -1,10 +1,11 @@
-from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
 from centreon_mcp.utils.type import (
     Acknowledgement,
     AcknowledgementParams,
     AcknowledgementResource,
+    Command,
+    CommandParams,
     Comment,
     CommentResource,
     Downtime,
@@ -164,8 +165,8 @@ async def test_status_count_flatten():
 async def test_add_acknowledgement(request: AsyncMock):
 
     # Setup args
-    params = AcknowledgementParams(comment="Comment")
-    resources = [AcknowledgementResource(type="host", resource_id=10, host_id=10)]
+    params = AcknowledgementParams.model_construct()
+    resources = [AcknowledgementResource.model_construct(host_id=10)]
 
     # Mock request
     request.return_value = None
@@ -178,9 +179,7 @@ async def test_add_acknowledgement(request: AsyncMock):
         "acknowledgement": params.model_dump(mode="json"),
         "resources": [resource.dump() for resource in resources],
     }
-    request.assert_awaited_once_with(
-        "POST", "monitoring/resources/acknowledge", payload=payload
-    )
+    request.assert_awaited_once_with("POST", "monitoring/resources/acknowledge", payload=payload)
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -188,7 +187,7 @@ async def test_cancel_acknowledgement(request: AsyncMock):
 
     # Setup args
     with_services = True
-    resources = [AcknowledgementResource(type="host", resource_id=10, host_id=10)]
+    resources = [AcknowledgementResource.model_construct(host_id=10)]
 
     # Mock request
     request.return_value = None
@@ -210,15 +209,8 @@ async def test_cancel_acknowledgement(request: AsyncMock):
 async def test_set_downtime(request: AsyncMock):
 
     # Setup args
-    params = DowntimeParams(
-        start_time=datetime(2026, 4, 1),
-        end_time=datetime(2026, 4, 30),
-        is_fixed=True,
-        duration=1,
-        comment="Comment",
-        with_services=True,
-    )
-    resources = [DowntimeResource(type="host", resource_id=10, host_id=10)]
+    params = DowntimeParams.model_construct()
+    resources = [DowntimeResource.model_construct(host_id=10)]
 
     # Mock request
     request.return_value = None
@@ -231,9 +223,7 @@ async def test_set_downtime(request: AsyncMock):
         "downtime": params.model_dump(mode="json"),
         "resources": [resource.dump() for resource in resources],
     }
-    request.assert_awaited_once_with(
-        "POST", "monitoring/resources/downtime", payload=payload
-    )
+    request.assert_awaited_once_with("POST", "monitoring/resources/downtime", payload=payload)
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -256,15 +246,7 @@ async def test_cancel_downtime(request: AsyncMock):
 async def test_add_comment(request: AsyncMock):
 
     # Setup args
-    resources = [
-        CommentResource(
-            type="host",
-            resource_id=10,
-            host_id=10,
-            comment="Comment",
-            date=datetime(2026, 4, 7),
-        )
-    ]
+    resources = [CommentResource.model_construct(host_id=10)]
 
     # Mock request
     request.return_value = None
@@ -274,6 +256,21 @@ async def test_add_comment(request: AsyncMock):
 
     # Assert request called with right args
     payload = {"resources": [resource.dump() for resource in resources]}
-    request.assert_awaited_once_with(
-        "POST", "monitoring/resources/comments", payload=payload
-    )
+    request.assert_awaited_once_with("POST", "monitoring/resources/comments", payload=payload)
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_add_command(request: AsyncMock):
+
+    # Setup args
+    params = CommandParams.model_construct()
+
+    # Mock request
+    request.return_value = None
+
+    # Call test function
+    await Command.add(params)
+
+    # Assert request called with right args
+    payload = params.model_dump(mode="json")
+    request.assert_awaited_once_with("POST", "configuration/commands", payload=payload)

@@ -94,4 +94,4 @@ async def request(
     except httpx.HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)
-        raise CentreonAPIError(status, url, method, content)
+        raise CentreonAPIError(status, url, method, content) from e

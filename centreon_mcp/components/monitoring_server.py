@@ -1,4 +1,4 @@
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -17,9 +17,7 @@ class MonitoringServerOrder(BaseOrder):
 class MonitoringServerFilter(BaseFilter):
     monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
     monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
-    monitoring_server_running: bool | None = Field(
-        None, serialization_alias="running $eq"
-    )
+    monitoring_server_running: bool | None = Field(None, serialization_alias="running $eq")
 
 
 @monitoring_server.tool(
@@ -31,17 +29,15 @@ class MonitoringServerFilter(BaseFilter):
     }
 )
 async def list_monitoring_servers(
-    filters: List[MonitoringServerFilter] | None = None,
+    filters: list[MonitoringServerFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: MonitoringServerOrder | None = None,
-) -> List[MonitoringServer]:
+) -> list[MonitoringServer]:
     """
     List monitoring servers in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all monitoring servers except if explicitly intended.
     """
     logger.info("Executing tool list_monitoring_servers")
-    return await _list(
-        MonitoringServer, MonitoringServerOrder, filters, limit, page, order
-    )
+    return await _list(MonitoringServer, MonitoringServerOrder, filters, limit, page, order)

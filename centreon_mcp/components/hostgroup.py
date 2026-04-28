@@ -1,4 +1,4 @@
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -11,9 +11,7 @@ hostgroup = FastMCP()
 
 
 class HostGroupOrder(BaseOrder):
-    field: Literal["name", "host.name", "host.alias", "host.address", "host.state"] = (
-        "host.name"
-    )
+    field: Literal["name", "host.name", "host.alias", "host.address", "host.state"] = "host.name"
 
 
 class HostGroupFilter(BaseFilter):
@@ -36,11 +34,11 @@ class HostGroupFilter(BaseFilter):
     }
 )
 async def list_hostgroups(
-    filters: List[HostGroupFilter] | None = None,
+    filters: list[HostGroupFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: HostGroupOrder | None = None,
-) -> List[HostGroup]:
+) -> list[HostGroup]:
     """
     List host groups in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter

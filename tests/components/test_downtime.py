@@ -45,7 +45,7 @@ async def test_list_downtimes(logger: MagicMock, _list: AsyncMock):
 
 @patch(f"{MODULE}.Downtime.set", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_set_downtime(logger: MagicMock, set: AsyncMock):
+async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
 
     # Setup args
     params = DowntimeParams.model_construct()
@@ -55,13 +55,13 @@ async def test_set_downtime(logger: MagicMock, set: AsyncMock):
     logger.info.return_value = None
 
     # Mock Downtime.set
-    set.return_value = None
+    downtime_set.return_value = None
 
     # Call test fonction
     result = await set_downtimes(params, resources)
 
     # Assert Downtime.set called with right args
-    set.assert_awaited_once_with(params, resources)
+    downtime_set.assert_awaited_once_with(params, resources)
 
     # Assert result
     assert result

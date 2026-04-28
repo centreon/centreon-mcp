@@ -73,9 +73,7 @@ async def list_downtimes(
         "openWorldHint": True,
     }
 )
-async def set_downtimes(
-    params: DowntimeParams, resources: list[DowntimeResource]
-) -> bool:
+async def set_downtimes(params: DowntimeParams, resources: list[DowntimeResource]) -> bool:
     """
     Add a downtime for multiple resources (host and services) in real-time monitoring.
     Use tool `list_resources` first to get resources IDs.
@@ -99,6 +97,6 @@ async def cancel_downtimes(downtime_ids: list[int]) -> bool:
     Use tools `list_downtimes` first to get downtime IDs.
     """
     logger.info("Executing tool cancel_downtimes")
-    tasks = [asyncio.create_task(Downtime.cancel(id)) for id in downtime_ids]
+    tasks = [asyncio.create_task(Downtime.cancel(downtime_id)) for downtime_id in downtime_ids]
     await asyncio.gather(*tasks)
     return True

@@ -1,4 +1,4 @@
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -33,9 +33,7 @@ class ServiceGroupFilter(BaseFilter):
     service_group_id: int | None = Field(None, serialization_alias="id $eq")
     service_group_name: str | None = Field(None, serialization_alias="name $eq")
     service_name: str | None = Field(None, serialization_alias="service.name $eq")
-    service_display_name: str | None = Field(
-        None, serialization_alias="service.display_name $eq"
-    )
+    service_display_name: str | None = Field(None, serialization_alias="service.display_name $eq")
     host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
 
 
@@ -48,11 +46,11 @@ class ServiceGroupFilter(BaseFilter):
     }
 )
 async def list_servicegroups(
-    filters: List[ServiceGroupFilter] | None = None,
+    filters: list[ServiceGroupFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ServiceGroupOrder | None = None,
-) -> List[ServiceGroup]:
+) -> list[ServiceGroup]:
     """
     List service groups in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter

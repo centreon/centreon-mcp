@@ -15,7 +15,7 @@ class BaseFilter(BaseModel):
     @staticmethod
     def join(filters: Sequence["BaseFilter"] | None) -> dict:
         """
-        Join multiple filters conditions using OR operaror.
+        Join multiple filters conditions using OR operator.
         """
         return {"$or": [{"$and": f.conditions} for f in filters if f.conditions]} if filters else {}
 

@@ -360,7 +360,9 @@ class CommandParams(BaseModel):
             "Note that commands that require shell features are slowing down the poller server."
         ),
     )
-    argument_example: str | None = Field(description="Example of command argument values")
+    argument_example: str | None = Field(
+        default=None, description="Example of command argument values"
+    )
     arguments: list[CommandArgument] = Field(
         default_factory=list,
         description="descriptions of arguments used in the command line",
@@ -370,9 +372,12 @@ class CommandParams(BaseModel):
         description="descriptions of macros used in the command line",
     )
     connector_id: int | None = Field(
-        description="A connector is run in the background and executes specific commands without the need to execute a binary."
+        default=None,
+        description="A connector is run in the background and executes specific commands without the need to execute a binary.",
     )
-    graph_template_id: int | None = Field(description="Graph template for the command")
+    graph_template_id: int | None = Field(
+        default=None, description="Graph template for the command"
+    )
 
 
 class Command(CentreonBaseModel):

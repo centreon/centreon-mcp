@@ -45,7 +45,6 @@ class CentreonBaseModel(BaseModel):
         List resource of type T in real-time monitoring matching the search string.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        params = {name: value for name, value in params.items() if value is not None}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
 

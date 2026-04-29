@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
-from enum import Enum
-from typing import Any, ClassVar, List, Literal, Type, TypeVar
+from enum import IntEnum
+from typing import Any, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -15,14 +15,14 @@ ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
 ResourceStatus = HostStatus | ServiceStatus
 
 
-class HostState(int, Enum):
+class HostState(IntEnum):
     UP = 0
     DOWN = 1
     UNREACHABLE = 2
     PENDING = 4
 
 
-class ServiceState(int, Enum):
+class ServiceState(IntEnum):
     OK = 0
     WARNING = 1
     CRITICAL = 2
@@ -35,7 +35,7 @@ class CentreonBaseModel(BaseModel):
 
     @classmethod
     async def list(
-        cls: Type[T],
+        cls: type[T],
         search: str | None = None,
         limit: int | None = None,
         page: int | None = None,
@@ -45,7 +45,6 @@ class CentreonBaseModel(BaseModel):
         List resource of type T in real-time monitoring matching the search string.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        params = {name: value for name, value in params.items() if value is not None}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
 
@@ -94,7 +93,7 @@ class Resource(BaseModel):
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> List["Resource"]:
+    ) -> list["Resource"]:
         """
         List ressources (hosts and services) in real-time monitoring.
         """
@@ -235,9 +234,7 @@ class Acknowledgement(CentreonBaseModel):
     type: int
 
     @staticmethod
-    async def add(
-        params: AcknowledgementParams, resources: list[AcknowledgementResource]
-    ) -> None:
+    async def add(params: AcknowledgementParams, resources: list[AcknowledgementResource]) -> None:
         """
         Add an acknowledgement on multiple resources.
         """
@@ -248,9 +245,7 @@ class Acknowledgement(CentreonBaseModel):
         await request("POST", "monitoring/resources/acknowledge", payload=payload)
 
     @staticmethod
-    async def cancel(
-        with_services: bool, resources: list[AcknowledgementResource]
-    ) -> None:
+    async def cancel(with_services: bool, resources: list[AcknowledgementResource]) -> None:
         """
         Cancel acknowledgements on multiple resources.
         """
@@ -258,9 +253,7 @@ class Acknowledgement(CentreonBaseModel):
             "disacknowledgement": {"with_services": with_services},
             "resources": [resource.dump() for resource in resources],
         }
-        await request(
-            "DELETE", "monitoring/resources/acknowledgements", payload=payload
-        )
+        await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)
 
 
 class DowntimeParams(BaseModel):
@@ -298,9 +291,7 @@ class Downtime(CentreonBaseModel):
     is_cancelled: bool
 
     @classmethod
-    async def set(
-        cls, params: DowntimeParams, resources: list[DowntimeResource]
-    ) -> None:
+    async def set(cls, params: DowntimeParams, resources: list[DowntimeResource]) -> None:
         """
         Set a downtime on multiple resources.
         """
@@ -331,3 +322,78 @@ class Comment(CentreonBaseModel):
         """
         payload = {"resources": [resource.dump() for resource in resources]}
         await request("POST", "monitoring/resources/comments", payload=payload)
+
+
+class CommandType(IntEnum):
+    NOTIFICATION = 1
+    CHECK = 2
+    MISCELLANEOUS = 3
+    DISCOVERY = 4
+
+
+class CommandArgument(BaseModel):
+    name: str
+    description: str
+
+
+class CommandMacroType(IntEnum):
+    HOST = 1
+    SERVICE = 2
+
+
+class CommandMacro(BaseModel):
+    name: str
+    type: CommandMacroType
+    description: str
+
+
+class CommandParams(BaseModel):
+    name: str
+    type: CommandType
+    command_line: str
+    is_shell: bool = Field(
+        default=False,
+        description=(
+            "Is required if your command requires shell features like pipes, redirections, globbing etc."
+            "If you are using the monitoring engine this option cannot be disabled."
+            "Note that commands that require shell features are slowing down the poller server."
+        ),
+    )
+    argument_example: str | None = Field(
+        default=None, description="Example of command argument values"
+    )
+    arguments: list[CommandArgument] = Field(
+        default_factory=list,
+        description="descriptions of arguments used in the command line",
+    )
+    macros: list[CommandMacro] = Field(
+        default_factory=list,
+        description="descriptions of macros used in the command line",
+    )
+    connector_id: int | None = Field(
+        default=None,
+        description="A connector is run in the background and executes specific commands without the need to execute a binary.",
+    )
+    graph_template_id: int | None = Field(
+        default=None, description="Graph template for the command"
+    )
+
+
+class Command(CentreonBaseModel):
+    endpoint: ClassVar[str] = "configuration/commands"
+
+    id: int
+    name: str
+    type: CommandType
+    command_line: str
+    is_activated: bool
+    is_shell: bool
+    is_locked: bool
+
+    @staticmethod
+    async def add(params: CommandParams) -> None:
+        """
+        Add a command.
+        """
+        payload = params.model_dump(mode="json")
+        await request("POST", "configuration/commands", payload=payload)

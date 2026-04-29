@@ -1,12 +1,10 @@
 import json
-from typing import Literal, Sequence, Type, TypeVar
+from collections.abc import Sequence
+from typing import Literal
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.type import T
-
-OrderType = TypeVar("OrderType", bound="BaseOrder")
-FilterType = TypeVar("FilterType", bound="BaseFilter")
+from centreon_mcp.utils.type import CentreonBaseModel
 
 
 class BaseOrder(BaseModel):
@@ -17,19 +15,9 @@ class BaseFilter(BaseModel):
     @staticmethod
     def join(filters: Sequence["BaseFilter"] | None) -> dict:
         """
-        Join multiple filters conditions using OR operaror.
+        Join multiple filters conditions using OR operator.
         """
-        return (
-            {
-                "$or": [
-                    {"$and": filter.conditions}
-                    for filter in filters
-                    if filter.conditions
-                ]
-            }
-            if filters
-            else {}
-        )
+        return {"$or": [{"$and": f.conditions} for f in filters if f.conditions]} if filters else {}
 
     @property
     def conditions(self) -> list:
@@ -46,14 +34,14 @@ class BaseFilter(BaseModel):
         ]
 
 
-async def _list(
-    model: Type[T],
-    order_cls: Type[OrderType],
+async def _list[CentreonModelType: CentreonBaseModel, OrderType: BaseOrder, FilterType: BaseFilter](
+    model: type[CentreonModelType],
+    order_cls: type[OrderType],
     filters: list[FilterType] | None = None,
     limit: int = 10,
     page: int = 1,
     order: OrderType | None = None,
-) -> list[T]:
+) -> list[CentreonModelType]:
     """
     Generic function to list ressources in real-time monitoring based on provided filters, pagination and order
     """

@@ -48,11 +48,7 @@ class CentreonAPIError(Exception):
 
 
 async def request(
-    method: str,
-    endpoint: str,
-    payload: dict | None = None,
-    params: dict | None = None,
-    timeout: float | None = None,
+    method: str, endpoint: str, payload: dict | None = None, params: dict | None = None
 ) -> dict:
     """
     Make request to Centreon API.
@@ -75,12 +71,7 @@ async def request(
         )
         async with AsyncClient() as client:
             response = await client.request(
-                method,
-                url,
-                headers=headers,
-                json=payload,
-                params=params,
-                timeout=timeout,
+                method, url, headers=headers, json=payload, params=params
             )
             content = response.json() if response.status_code != 204 else {}
 
@@ -94,4 +85,4 @@ async def request(
     except httpx.HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)
-        raise CentreonAPIError(status, url, method, content)
+        raise CentreonAPIError(status, url, method, content) from e

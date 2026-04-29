@@ -14,24 +14,12 @@ class ServiceFilter(BaseFilter):
     host_name: str | None = Field(None, serialization_alias="host.name $eq")
     host_group_id: int | None = Field(None, serialization_alias="host_group.id $eq")
     host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
-    host_category_id: int | None = Field(
-        None, serialization_alias="host_category.id $eq"
-    )
-    host_category_name: str | None = Field(
-        None, serialization_alias="host_category.name $eq"
-    )
-    service_group_id: int | None = Field(
-        None, serialization_alias="service_group.id $eq"
-    )
-    service_group_name: str | None = Field(
-        None, serialization_alias="service_group.name $eq"
-    )
-    service_category_id: int | None = Field(
-        None, serialization_alias="service_category.id $eq"
-    )
-    service_category_name: str | None = Field(
-        None, serialization_alias="service_category.name $eq"
-    )
+    host_category_id: int | None = Field(None, serialization_alias="host_category.id $eq")
+    host_category_name: str | None = Field(None, serialization_alias="host_category.name $eq")
+    service_group_id: int | None = Field(None, serialization_alias="service_group.id $eq")
+    service_group_name: str | None = Field(None, serialization_alias="service_group.name $eq")
+    service_category_id: int | None = Field(None, serialization_alias="service_category.id $eq")
+    service_category_name: str | None = Field(None, serialization_alias="service_category.name $eq")
 
 
 @service.tool(
@@ -47,7 +35,7 @@ async def count_services_by_status(
 ) -> ServiceStatusCount:
     """
     Count services by status in real-time monitoring.
-    Returns the total number of services in each state: OK, WARNING, CRITICAL, UNKNONW and PENDING.
+    Returns the total number of services in each state: OK, WARNING, CRITICAL, UNKNOWN and PENDING.
     Each filter object narrows results by host group, host category, service group, service category or host.
     Fields within a single filter are ANDed together, multiple filter objects are ORed.
     Omit filters to count all services.

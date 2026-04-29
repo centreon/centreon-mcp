@@ -1,5 +1,4 @@
 import json
-from typing import List
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.resource import (
@@ -15,18 +14,18 @@ MODULE = "centreon_mcp.components.resource"
 @patch(f"{MODULE}.Resource.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.ResourceFilter.join", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_resources(logger: MagicMock, join: MagicMock, list: AsyncMock):
+async def test_list_resources(logger: MagicMock, join: MagicMock, resource_list: AsyncMock):
 
     # Setup args
     filters = [ResourceFilter.model_construct()]
-    types: List[ResourceType] = ["host", "service"]
-    statuses: List[ResourceStatus] = ["UP", "WARNING"]
+    types: list[ResourceType] = ["host", "service"]
+    statuses: list[ResourceStatus] = ["UP", "WARNING"]
     hostgroup_names = ["hostgroup_name"]
     servicegroup_names = ["servicegroup_name"]
     host_category_names = ["host_category_name"]
     service_category_names = ["service_category_name"]
     monitoring_server_names = ["monitoring_server_name"]
-    status_types: List[StatusType] = ["hard"]
+    status_types: list[StatusType] = ["hard"]
     limit = 50
     page = 1
     order = ResourceOrder()
@@ -40,7 +39,7 @@ async def test_list_resources(logger: MagicMock, join: MagicMock, list: AsyncMoc
 
     # Mock request
     resource = Resource.model_construct()
-    list.return_value = [resource]
+    resource_list.return_value = [resource]
 
     # Call test fonction
     results = await list_resources(
@@ -60,7 +59,7 @@ async def test_list_resources(logger: MagicMock, join: MagicMock, list: AsyncMoc
 
     # Assert request called with right args
     sort_by = order.model_dump_json()
-    list.assert_awaited_once_with(
+    resource_list.assert_awaited_once_with(
         search=json.dumps(conditions),
         types=json.dumps(types or []),
         statuses=json.dumps(statuses or []),

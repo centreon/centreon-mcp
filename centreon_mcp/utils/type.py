@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from enum import Enum, IntEnum
+from enum import IntEnum
 from typing import Any, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, Field, model_validator
@@ -15,14 +15,14 @@ ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
 ResourceStatus = HostStatus | ServiceStatus
 
 
-class HostState(int, Enum):
+class HostState(IntEnum):
     UP = 0
     DOWN = 1
     UNREACHABLE = 2
     PENDING = 4
 
 
-class ServiceState(int, Enum):
+class ServiceState(IntEnum):
     OK = 0
     WARNING = 1
     CRITICAL = 2

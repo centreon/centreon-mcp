@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Any, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, Field, model_validator
@@ -324,7 +324,7 @@ class Comment(CentreonBaseModel):
         await request("POST", "monitoring/resources/comments", payload=payload)
 
 
-class CommandType(int, Enum):
+class CommandType(IntEnum):
     NOTIFICATION = 1
     CHECK = 2
     MISCELLANEOUS = 3
@@ -336,7 +336,7 @@ class CommandArgument(BaseModel):
     description: str
 
 
-class CommandMacroType(int, Enum):
+class CommandMacroType(IntEnum):
     HOST = 1
     SERVICE = 2
 

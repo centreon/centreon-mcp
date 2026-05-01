@@ -1,5 +1,7 @@
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
 from centreon_mcp.utils.type import (
     Acknowledgement,
     AcknowledgementParams,
@@ -17,6 +19,8 @@ from centreon_mcp.utils.type import (
     Service,
     ServiceStatusCount,
     StatusCount,
+    TimelineEvent,
+    TimelineResource,
 )
 
 MODULE = "centreon_mcp.utils.type"
@@ -274,3 +278,60 @@ async def test_add_command(request: AsyncMock):
     # Assert request called with right args
     payload = params.model_dump(mode="json")
     request.assert_awaited_once_with("POST", "configuration/commands", payload=payload)
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_timeline_list_for_host(request: AsyncMock):
+
+    # Setup args
+    resource = TimelineResource(type="host", host_id=11)
+    search = '{"$or": []}'
+    limit = 50
+    page = 1
+    sort_by = '{"field":"date","order":"DESC"}'
+
+    # Mock request
+    request.return_value = {"result": []}
+
+    # Call test function
+    events = await TimelineEvent.list_for(resource, search, limit, page, sort_by)
+
+    # Assert request called with right args
+    request.assert_awaited_once_with(
+        "GET",
+        "monitoring/hosts/11/timeline",
+        params={"search": search, "limit": limit, "page": page, "sort_by": sort_by},
+    )
+    assert events == []
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_timeline_list_for_service(request: AsyncMock):
+
+    # Setup args
+    resource = TimelineResource(type="service", host_id=11, service_id=42)
+    search = '{"$or": []}'
+
+    # Mock request
+    request.return_value = {"result": []}
+
+    # Call test function
+    await TimelineEvent.list_for(resource, search, 50, 1, "")
+
+    # Assert request called with the service-scoped endpoint
+    request.assert_awaited_once_with(
+        "GET",
+        "monitoring/hosts/11/services/42/timeline",
+        params={"search": search, "limit": 50, "page": 1, "sort_by": ""},
+    )
+
+
+def test_timeline_resource_requires_service_id_when_service():
+    with pytest.raises(ValueError, match="service_id is required"):
+        TimelineResource(type="service", host_id=11)
+
+
+def test_timeline_resource_host_does_not_require_service_id():
+    # Should not raise
+    r = TimelineResource(type="host", host_id=11)
+    assert r.service_id is None

@@ -55,6 +55,60 @@ class Status(BaseModel):
     severity_code: int
 
 
+TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
+
+
+class TimelineContact(BaseModel):
+    id: int | None = None
+    name: str | None = None
+
+
+class TimelineResource(BaseModel):
+    type: ResourceType
+    host_id: int
+    service_id: int | None = None
+
+    @model_validator(mode="after")
+    def _check_service_id(self) -> "TimelineResource":
+        if self.type == "service" and self.service_id is None:
+            raise ValueError("service_id is required when type='service'")
+        return self
+
+
+class TimelineEvent(BaseModel):
+    id: int
+    type: TimelineEventType
+    date: datetime
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    content: str
+    contact: TimelineContact | None = None
+    status: Status | None = None
+    tries: int | None = None
+
+    @staticmethod
+    async def list_for(
+        resource: TimelineResource,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        List timeline events for a host or a service.
+        """
+        if resource.type == "service":
+            endpoint = (
+                f"monitoring/hosts/{resource.host_id}"
+                f"/services/{resource.service_id}/timeline"
+            )
+        else:
+            endpoint = f"monitoring/hosts/{resource.host_id}/timeline"
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        content = await request("GET", endpoint, params=params)
+        return [TimelineEvent(**item) for item in content["result"]]
+
+
 class Resource(BaseModel):
     endpoint: ClassVar[str] = "monitoring/resources"
 

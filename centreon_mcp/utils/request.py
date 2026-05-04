@@ -73,7 +73,10 @@ async def request(
             response = await client.request(
                 method, url, headers=headers, json=payload, params=params
             )
-            content = response.json() if response.status_code != 204 else {}
+            try:
+                content = response.json() if (response.status_code != 204 and response.content) else {}
+            except json.JSONDecodeError:
+                content = {"raw": response.text}
 
             logger.debug(
                 f"Centreon API Response: {response.status_code}\n"

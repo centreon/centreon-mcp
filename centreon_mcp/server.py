@@ -25,7 +25,7 @@ async def lifespan(app: FastMCP):
     except CentreonAPIError as e:
         raise e
     else:
-        version = result["web"]["version"]
+        version = result.get("web", {}).get("version", "unknown")
         logger.info(f"Connected to Centreon API version {version}")
 
     # Import components

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from centreon_mcp.components.comment import (
     add_comments,
 )
-from centreon_mcp.utils.type import CommentResource
+from centreon_mcp.types.comment import CommentResource
 
 MODULE = "centreon_mcp.components.comment"
 

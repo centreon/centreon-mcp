@@ -397,3 +397,84 @@ class Command(CentreonBaseModel):
         """
         payload = params.model_dump(mode="json")
         await request("POST", "configuration/commands", payload=payload)
+
+
+class Metric(BaseModel):
+    id: int
+    name: str
+    unit: str | None = None
+    current_value: float | None = None
+    warning_high_threshold: float | None = None
+    warning_low_threshold: float | None = None
+    critical_high_threshold: float | None = None
+    critical_low_threshold: float | None = None
+
+    @staticmethod
+    async def list(host_id: int, service_id: int) -> list["Metric"]:
+        """
+        List all metrics of a service with their thresholds and current value.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/metrics"
+        content = await request("GET", endpoint)
+        return [Metric(**item) for item in content]
+
+
+class MetricSeries(BaseModel):
+    metric_id: int
+    metric: str
+    unit: str | None = None
+    legend: str | None = None
+    data: list[float | None]
+    warning_high_threshold: float | None = None
+    warning_low_threshold: float | None = None
+    critical_high_threshold: float | None = None
+    critical_low_threshold: float | None = None
+
+
+class PerformanceData(BaseModel):
+    base: int
+    metrics: list[MetricSeries]
+    times: list[str]
+
+    @staticmethod
+    async def get(
+        host_id: int,
+        service_id: int,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> "PerformanceData":
+        """
+        Get performance data (time series) for all metrics of a service.
+        """
+        endpoint = (
+            f"monitoring/hosts/{host_id}/services/{service_id}/metrics/performance"
+        )
+        params = {"start": start, "end": end}
+        content = await request("GET", endpoint, params=params)
+        return PerformanceData(**content)
+
+
+class TopMetricResource(BaseModel):
+    host_id: int | None = None
+    host_name: str | None = None
+    service_id: int | None = None
+    service_display_name: str | None = None
+    current_value: float | None = None
+
+
+class TopMetricResult(BaseModel):
+    name: str
+    unit: str | None = None
+    sort: str | None = None
+    limit: int | None = None
+    resources: list[TopMetricResource]
+
+    @staticmethod
+    async def get(metric_name: str) -> "TopMetricResult":
+        """
+        Get top/bottom resources for a given metric name.
+        """
+        endpoint = "monitoring/dashboard/metrics/top"
+        params = {"metric_name": metric_name}
+        content = await request("GET", endpoint, params=params)
+        return TopMetricResult(**content)

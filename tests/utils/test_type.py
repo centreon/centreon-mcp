@@ -13,10 +13,13 @@ from centreon_mcp.utils.type import (
     DowntimeResource,
     Host,
     HostStatusCount,
+    Metric,
+    PerformanceData,
     Resource,
     Service,
     ServiceStatusCount,
     StatusCount,
+    TopMetricResult,
 )
 
 MODULE = "centreon_mcp.utils.type"
@@ -274,3 +277,171 @@ async def test_add_command(request: AsyncMock):
     # Assert request called with right args
     payload = params.model_dump(mode="json")
     request.assert_awaited_once_with("POST", "configuration/commands", payload=payload)
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_metric_list(request: AsyncMock):
+
+    # Setup args
+    host_id = 12
+    service_id = 5
+
+    # Mock request
+    content = [
+        {
+            "id": 1,
+            "name": "rta",
+            "unit": "ms",
+            "current_value": 0.025,
+            "warning_high_threshold": 200.0,
+            "warning_low_threshold": None,
+            "critical_high_threshold": 400.0,
+            "critical_low_threshold": None,
+        },
+        {
+            "id": 2,
+            "name": "pl",
+            "unit": "%",
+            "current_value": 0.0,
+            "warning_high_threshold": 20.0,
+            "warning_low_threshold": None,
+            "critical_high_threshold": 50.0,
+            "critical_low_threshold": None,
+        },
+    ]
+    request.return_value = content
+
+    # Call test function
+    result = await Metric.list(host_id, service_id)
+
+    # Assert request called with right args
+    endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/metrics"
+    request.assert_awaited_once_with("GET", endpoint)
+
+    # Assert result
+    assert len(result) == 2
+    assert result[0].name == "rta"
+    assert result[0].unit == "ms"
+    assert result[0].current_value == 0.025
+    assert result[1].name == "pl"
+    assert result[1].critical_high_threshold == 50.0
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_performance_data_get(request: AsyncMock):
+
+    # Setup args
+    host_id = 12
+    service_id = 5
+    start = "2024-01-15T08:00:00Z"
+    end = "2024-01-15T20:00:00Z"
+
+    # Mock request
+    content = {
+        "base": 1024,
+        "metrics": [
+            {
+                "metric_id": 1,
+                "metric": "used",
+                "unit": "B",
+                "legend": "used",
+                "data": [1073741824.0, 1174405120.0, 1275068416.0],
+                "warning_high_threshold": 2147483648.0,
+                "warning_low_threshold": None,
+                "critical_high_threshold": 3221225472.0,
+                "critical_low_threshold": None,
+            }
+        ],
+        "times": ["1705305600", "1705309200", "1705312800"],
+    }
+    request.return_value = content
+
+    # Call test function
+    result = await PerformanceData.get(host_id, service_id, start, end)
+
+    # Assert request called with right args
+    endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/metrics/performance"
+    request.assert_awaited_once_with("GET", endpoint, params={"start": start, "end": end})
+
+    # Assert result
+    assert result.base == 1024
+    assert len(result.metrics) == 1
+    assert result.metrics[0].metric == "used"
+    assert result.metrics[0].unit == "B"
+    assert len(result.metrics[0].data) == 3
+    assert result.metrics[0].data[0] == 1073741824.0
+    assert result.metrics[0].warning_high_threshold == 2147483648.0
+    assert len(result.times) == 3
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_performance_data_get_defaults(request: AsyncMock):
+
+    # Setup args
+    host_id = 12
+    service_id = 5
+
+    # Mock request
+    content = {"base": 1000, "metrics": [], "times": []}
+    request.return_value = content
+
+    # Call test function (no start/end, should default)
+    result = await PerformanceData.get(host_id, service_id)
+
+    # Assert request called with None params (filtered by request util)
+    endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/metrics/performance"
+    request.assert_awaited_once_with("GET", endpoint, params={"start": None, "end": None})
+
+    # Assert result
+    assert result.base == 1000
+    assert result.metrics == []
+    assert result.times == []
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_top_metric_result_get(request: AsyncMock):
+
+    # Setup args
+    metric_name = "cpu"
+
+    # Mock request
+    content = {
+        "name": "cpu",
+        "unit": "%",
+        "sort": "top",
+        "limit": 10,
+        "resources": [
+            {
+                "host_id": 14,
+                "host_name": "db-prod-01",
+                "service_id": 42,
+                "service_display_name": "CPU",
+                "current_value": 95.2,
+            },
+            {
+                "host_id": 23,
+                "host_name": "web-prod-03",
+                "service_id": 55,
+                "service_display_name": "CPU",
+                "current_value": 87.1,
+            },
+        ],
+    }
+    request.return_value = content
+
+    # Call test function
+    result = await TopMetricResult.get(metric_name)
+
+    # Assert request called with right args
+    request.assert_awaited_once_with(
+        "GET", "monitoring/dashboard/metrics/top", params={"metric_name": metric_name}
+    )
+
+    # Assert result
+    assert result.name == "cpu"
+    assert result.unit == "%"
+    assert result.sort == "top"
+    assert len(result.resources) == 2
+    assert result.resources[0].host_name == "db-prod-01"
+    assert result.resources[0].current_value == 95.2
+    assert result.resources[1].service_display_name == "CPU"

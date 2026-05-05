@@ -262,9 +262,9 @@ class CheckResource(BaseResource):
 
 class Check(BaseModel):
     @staticmethod
-    async def submit(is_forced: bool, resources: list[CheckResource]) -> None:
+    async def request(is_forced: bool, resources: list[CheckResource]) -> None:
         """
-        Submit a check request on multiple resources (hosts and services).
+        Requestt a check on multiple resources (hosts and services).
         When `is_forced` is True, the check is executed immediately regardless of
         the configured check interval. Otherwise, the check is scheduled for the
         next available execution slot.

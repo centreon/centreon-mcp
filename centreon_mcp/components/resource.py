@@ -140,7 +140,8 @@ class TimelineFilter(BaseFilter):
     }
 )
 async def get_resource_timeline(
-    resource: TimelineResource,
+    host_id: int,
+    service_id: int | None
     filters: list[TimelineFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
@@ -151,15 +152,14 @@ async def get_resource_timeline(
     Events include state changes, notifications, downtimes, acknowledgements and comments,
     each with a timestamp and content. Useful to answer "what happened recently on this
     resource ?" without leaving the conversation.
-    Use tool `list_resources` first to get the host_id (and service_id when type='service').
+    Use tool `list_resources` first to get the host_id (and service_id if resource is a service).
     Results are sorted by date descending by default (most recent first).
     """
     logger.info("Executing tool get_resource_timeline")
     order = order or TimelineOrder()
-    return await TimelineEvent.list_for(
-        resource=resource,
-        search=json.dumps(TimelineFilter.join(filters)),
-        limit=limit,
-        page=page,
-        sort_by=order.model_dump_json(),
-    )
+    search = json.dumps(TimelineFilter.join(filters))
+    sort_by = order.model_dump_json()
+    if service_id is None:
+      return await TimelineEvent.list_for_host(host_id, search, limit, page, sort_by)
+    else:
+      return await TimelineEvent.list_for_service(host_id, service_id, search, limit, page, sort_by)

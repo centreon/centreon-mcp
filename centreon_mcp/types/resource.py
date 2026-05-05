@@ -3,6 +3,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
+from centreon_mcp.types.base import ResourceType
 from centreon_mcp.types.host import HostStatus
 from centreon_mcp.types.service import ServiceStatus
 from centreon_mcp.utils.request import request

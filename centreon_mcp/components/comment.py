@@ -1,7 +1,7 @@
 from fastmcp import FastMCP
 
+from centreon_mcp.types.comment import Comment, CommentResource
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.type import Comment, CommentResource
 
 comment = FastMCP()
 

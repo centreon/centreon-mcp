@@ -4,17 +4,16 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.types.base import ResourceType, StatusType
+from centreon_mcp.types.resource import Resource, ResourceStatus
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
 
 resource = FastMCP()
 
 
 class ResourceOrder(BaseOrder):
-    field: Literal["host.name", "host.alias", "host.address", "host.state"] = (
-        "host.name"
-    )
+    field: Literal["host.name", "host.alias", "host.address", "host.state"] = "host.name"
 
 
 class ResourceFilter(BaseFilter):

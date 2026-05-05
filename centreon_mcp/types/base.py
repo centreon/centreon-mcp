@@ -8,6 +8,8 @@ T = TypeVar("T", bound="CentreonBaseModel")
 
 ResourceType = Literal["host", "service"]
 
+StatusType = Literal["soft", "hard"]
+
 
 class StatusCount(BaseModel):
     pending: int

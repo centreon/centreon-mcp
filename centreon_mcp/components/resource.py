@@ -100,7 +100,7 @@ async def list_resources(
 
 @resource.tool(
     annotations={
-        "title": "Force a check on resources (hosts and services) in real-time monitoring",
+        "title": "Request a check on resources (hosts and services) in real-time monitoring",
         "readOnlyHint": False,
         "idempotentHint": False,
         "openWorldHint": True,

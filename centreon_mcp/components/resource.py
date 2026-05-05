@@ -125,6 +125,6 @@ async def request_check(
     for example, right after a remediation action.
     Use tool `list_resources` first to get the resource IDs.
     """
-    logger.info("Executing tool force_check")
+    logger.info("Executing tool request_check")
     await Check.submit(is_forced, resources)
     return True

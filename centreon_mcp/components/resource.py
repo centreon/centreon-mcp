@@ -15,7 +15,7 @@ from centreon_mcp.utils.type import (
     StatusType,
 )
 
-resource = FastMCP()
+check = FastMCP()
 
 
 class ResourceOrder(BaseOrder):

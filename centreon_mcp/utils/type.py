@@ -63,16 +63,6 @@ class TimelineContact(BaseModel):
     name: str | None = None
 
 
-class TimelineResource(BaseModel):
-    type: ResourceType
-    host_id: int
-    service_id: int | None = None
-
-    @model_validator(mode="after")
-    def _check_service_id(self) -> "TimelineResource":
-        if self.type == "service" and self.service_id is None:
-            raise ValueError("service_id is required when type='service'")
-        return self
 
 
 class TimelineEvent(BaseModel):

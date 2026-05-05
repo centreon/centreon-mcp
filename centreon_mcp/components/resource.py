@@ -15,8 +15,6 @@ from centreon_mcp.utils.type import (
     StatusType,
 )
 
-check = FastMCP()
-
 
 class ResourceOrder(BaseOrder):
     field: Literal["host.name", "host.alias", "host.address", "host.state"] = (

@@ -106,7 +106,50 @@ class TimelineEvent(BaseModel):
             endpoint = f"monitoring/hosts/{resource.host_id}/timeline"
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", endpoint, params=params)
+
+   @staticmethod
+    async def _list(
+        endpoint: str,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        Internal method to list timeline events for a resource.
+        """
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        content = await request("GET", endpoint, params=params)
         return [TimelineEvent(**item) for item in content["result"]]
+        
+    @staticmethod
+    async def list_for_host(
+        host_id: int,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        List timeline events for a host.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/timeline"
+        return self._list(endpoint, search, limit, page, sort_by)
+        
+    @staticmethod
+    async def list_for_service(
+        host_id: int,
+        service_id,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        List timeline events for a service.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/timeline"
+        return self._list(endpoint, search, limit, page, sort_by)
 
 
 class Resource(BaseModel):

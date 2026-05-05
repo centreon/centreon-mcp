@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 12 tools organized across five functional areas.
+The MCP server currently exposes 13 tools organized across six functional areas.
 
 ### Resource Monitoring
 
@@ -51,6 +51,10 @@ Full downtime lifecycle management through conversation:
 ### Comments
 
 - **add_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
+
+### Metrics
+
+- **get_service_metrics** — Retrieve all metrics of a service with their current values, units, and warning/critical thresholds. Useful for answering questions like "what is the current CPU usage?" or "how close is disk usage to the critical threshold?" without leaving the conversation.
 
 ## Quick Start
 

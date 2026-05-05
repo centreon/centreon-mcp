@@ -397,3 +397,23 @@ class Command(CentreonBaseModel):
         """
         payload = params.model_dump(mode="json")
         await request("POST", "configuration/commands", payload=payload)
+
+
+class Metric(BaseModel):
+    id: int
+    name: str
+    unit: str | None = None
+    current_value: float | None = None
+    warning_high_threshold: float | None = None
+    warning_low_threshold: float | None = None
+    critical_high_threshold: float | None = None
+    critical_low_threshold: float | None = None
+
+    @staticmethod
+    async def list(host_id: int, service_id: int) -> list["Metric"]:
+        """
+        List all metrics of a service with their thresholds and current value.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/metrics"
+        content = await request("GET", endpoint)
+        return [Metric(**item) for item in content]

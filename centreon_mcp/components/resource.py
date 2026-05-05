@@ -106,7 +106,7 @@ async def list_resources(
         "openWorldHint": True,
     }
 )
-async def force_check(
+async def request_check(
     resources: list[CheckResource],
     is_forced: Annotated[
         bool,

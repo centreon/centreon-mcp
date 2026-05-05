@@ -1,0 +1,59 @@
+from datetime import datetime
+from typing import ClassVar
+
+from pydantic import BaseModel
+
+from centreon_mcp.types.base import BaseResource, CentreonBaseModel
+from centreon_mcp.utils.request import request
+
+
+class AcknowledgementParams(BaseModel):
+    comment: str
+    with_services: bool = True
+    is_notify_contacts: bool = True
+    is_persistent_comment: bool = True
+    is_sticky: bool = True
+    force_active_checks: bool = True
+
+
+class AcknowledgementResource(BaseResource):
+    pass
+
+
+class Acknowledgement(CentreonBaseModel):
+    endpoint: ClassVar[str] = "monitoring/acknowledgements"
+
+    id: int
+    host_id: int
+    service_id: int | None
+    author_id: int
+    author_name: str
+    comment: str
+    deletion_time: datetime | None
+    entry_time: datetime | None
+    is_notify_contacts: bool
+    is_persistent_comment: bool
+    is_sticky: bool
+    type: int
+
+    @staticmethod
+    async def add(params: AcknowledgementParams, resources: list[AcknowledgementResource]) -> None:
+        """
+        Add an acknowledgement on multiple resources.
+        """
+        payload = {
+            "acknowledgement": params.model_dump(mode="json"),
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", "monitoring/resources/acknowledge", payload=payload)
+
+    @staticmethod
+    async def cancel(with_services: bool, resources: list[AcknowledgementResource]) -> None:
+        """
+        Cancel acknowledgements on multiple resources.
+        """
+        payload = {
+            "disacknowledgement": {"with_services": with_services},
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)

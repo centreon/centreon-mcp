@@ -4,16 +4,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from centreon_mcp.components.resource import (
     ResourceFilter,
     ResourceOrder,
-    force_check,
     list_resources,
 )
-from centreon_mcp.utils.type import (
-    CheckResource,
-    Resource,
-    ResourceStatus,
-    ResourceType,
-    StatusType,
-)
+from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
 
 MODULE = "centreon_mcp.components.resource"
 
@@ -83,49 +76,3 @@ async def test_list_resources(logger: MagicMock, join: MagicMock, resource_list:
 
     # Assert result
     assert results[0] == resource
-
-
-@patch(f"{MODULE}.Check.submit", new_callable=AsyncMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_force_check_default(logger: MagicMock, submit: AsyncMock):
-
-    # Setup args
-    resources = [CheckResource.model_construct(host_id=10)]
-
-    # Mock logger
-    logger.info.return_value = None
-
-    # Mock Check.submit
-    submit.return_value = None
-
-    # Call test function (default is_forced=True)
-    result = await force_check(resources)
-
-    # Assert Check.submit called with right args
-    submit.assert_awaited_once_with(True, resources)
-
-    # Assert result
-    assert result
-
-
-@patch(f"{MODULE}.Check.submit", new_callable=AsyncMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_force_check_not_forced(logger: MagicMock, submit: AsyncMock):
-
-    # Setup args
-    resources = [CheckResource.model_construct(host_id=10)]
-
-    # Mock logger
-    logger.info.return_value = None
-
-    # Mock Check.submit
-    submit.return_value = None
-
-    # Call test function with is_forced=False
-    result = await force_check(resources, is_forced=False)
-
-    # Assert Check.submit called with right args
-    submit.assert_awaited_once_with(False, resources)
-
-    # Assert result
-    assert result

@@ -14,7 +14,7 @@ MODULE = "centreon_mcp.components.timeline"
 @patch(f"{MODULE}.TimelineEvent.list_for_host", new_callable=AsyncMock)
 @patch(f"{MODULE}.TimelineFilter.join", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_get_host_timeline_default_order(
+async def test_get_host_timeline(
     logger: MagicMock, join: MagicMock, timeline_list_for_host: AsyncMock
 ):
 
@@ -89,5 +89,5 @@ async def test_get_service_timeline(
         sort_by=order.model_dump_json(),
     )
 
-    # Asser result
+    # Assert result
     assert events == []

@@ -26,7 +26,11 @@ Two dedicated counting tools provide a fast status summary without retrieving in
 Both tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
 
 A dedicated tool lets the assistant inspect what happened on a single resource:
-- **get_resource_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
+- **get_host_timeline / get_service_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
+
+A dedicated tool lets the assistant refresh state on demand:
+- **request_check** — Trigger a check on one or more resources (hosts and services) without waiting for the next polling cycle. Useful right after a remediation action to confirm recovery in conversation. The `is_forced` flag (default `true`) controls whether the configured check interval is bypassed.
+
 
 ### Infrastructure Inventory
 

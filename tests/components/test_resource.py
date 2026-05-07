@@ -4,9 +4,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from centreon_mcp.components.resource import (
     ResourceFilter,
     ResourceOrder,
-    TimelineFilter,
-    TimelineOrder,
-    get_resource_timeline,
     list_resources,
 )
 from centreon_mcp.utils.type import (
@@ -14,7 +11,6 @@ from centreon_mcp.utils.type import (
     ResourceStatus,
     ResourceType,
     StatusType,
-    TimelineResource,
 )
 
 MODULE = "centreon_mcp.components.resource"
@@ -85,74 +81,3 @@ async def test_list_resources(logger: MagicMock, join: MagicMock, resource_list:
 
     # Assert result
     assert results[0] == resource
-
-
-@patch(f"{MODULE}.TimelineEvent.list_for", new_callable=AsyncMock)
-@patch(f"{MODULE}.TimelineFilter.join", new_callable=MagicMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_get_resource_timeline_default_order(
-    logger: MagicMock, join: MagicMock, list_for: AsyncMock
-):
-
-    # Setup args
-    resource = TimelineResource(type="host", host_id=11)
-    filters = [TimelineFilter.model_construct()]
-    limit = 50
-    page = 1
-
-    # Mock logger
-    logger.info.return_value = None
-
-    # Mock TimelineFilter.join
-    conditions: dict = {}
-    join.return_value = conditions
-
-    # Mock TimelineEvent.list_for
-    list_for.return_value = []
-
-    # Call test function (no order, should default to date DESC)
-    await get_resource_timeline(resource, filters, limit, page, None)
-
-    # Assert TimelineEvent.list_for called with right args
-    expected_sort_by = TimelineOrder().model_dump_json()
-    list_for.assert_awaited_once_with(
-        resource=resource,
-        search=json.dumps(conditions),
-        limit=limit,
-        page=page,
-        sort_by=expected_sort_by,
-    )
-
-    # Verify default order is date DESC (most recent first)
-    assert '"field":"date"' in expected_sort_by
-    assert '"order":"DESC"' in expected_sort_by
-
-
-@patch(f"{MODULE}.TimelineEvent.list_for", new_callable=AsyncMock)
-@patch(f"{MODULE}.TimelineFilter.join", new_callable=MagicMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_get_resource_timeline_explicit_order(
-    logger: MagicMock, join: MagicMock, list_for: AsyncMock
-):
-
-    # Setup args
-    resource = TimelineResource(type="service", host_id=11, service_id=42)
-    filters = [TimelineFilter.model_construct()]
-    order = TimelineOrder(field="type", order="ASC")
-
-    # Mocks
-    logger.info.return_value = None
-    join.return_value = {}
-    list_for.return_value = []
-
-    # Call
-    await get_resource_timeline(resource, filters, 50, 1, order)
-
-    # Assert sort_by reflects the explicit order
-    list_for.assert_awaited_once_with(
-        resource=resource,
-        search=json.dumps({}),
-        limit=50,
-        page=1,
-        sort_by=order.model_dump_json(),
-    )

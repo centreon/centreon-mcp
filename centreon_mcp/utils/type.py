@@ -55,93 +55,6 @@ class Status(BaseModel):
     severity_code: int
 
 
-TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
-
-
-class TimelineContact(BaseModel):
-    id: int | None = None
-    name: str | None = None
-
-
-
-
-class TimelineEvent(BaseModel):
-    id: int
-    type: TimelineEventType
-    date: datetime
-    start_date: datetime | None = None
-    end_date: datetime | None = None
-    content: str
-    contact: TimelineContact | None = None
-    status: Status | None = None
-    tries: int | None = None
-
-    @staticmethod
-    async def list_for(
-        resource: TimelineResource,
-        search: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
-        """
-        List timeline events for a host or a service.
-        """
-        if resource.type == "service":
-            endpoint = (
-                f"monitoring/hosts/{resource.host_id}"
-                f"/services/{resource.service_id}/timeline"
-            )
-        else:
-            endpoint = f"monitoring/hosts/{resource.host_id}/timeline"
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        content = await request("GET", endpoint, params=params)
-
-   @staticmethod
-    async def _list(
-        endpoint: str,
-        search: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
-        """
-        Internal method to list timeline events for a resource.
-        """
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-        content = await request("GET", endpoint, params=params)
-        return [TimelineEvent(**item) for item in content["result"]]
-        
-    @staticmethod
-    async def list_for_host(
-        host_id: int,
-        search: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
-        """
-        List timeline events for a host.
-        """
-        endpoint = f"monitoring/hosts/{host_id}/timeline"
-        return self._list(endpoint, search, limit, page, sort_by)
-        
-    @staticmethod
-    async def list_for_service(
-        host_id: int,
-        service_id,
-        search: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
-        """
-        List timeline events for a service.
-        """
-        endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/timeline"
-        return self._list(endpoint, search, limit, page, sort_by)
-
-
 class Resource(BaseModel):
     endpoint: ClassVar[str] = "monitoring/resources"
 
@@ -343,6 +256,26 @@ class Acknowledgement(CentreonBaseModel):
         await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)
 
 
+class CheckResource(BaseResource):
+    pass
+
+
+class Check(BaseModel):
+    @staticmethod
+    async def request(is_forced: bool, resources: list[CheckResource]) -> None:
+        """
+        Request a check on multiple resources (hosts and services).
+        When `is_forced` is True, the check is executed immediately regardless of
+        the configured check interval. Otherwise, the check is scheduled for the
+        next available execution slot.
+        """
+        payload = {
+            "check": {"is_forced": is_forced},
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", "monitoring/resources/check", payload=payload)
+
+
 class DowntimeParams(BaseModel):
     start_time: datetime
     end_time: datetime
@@ -484,3 +417,67 @@ class Command(CentreonBaseModel):
         """
         payload = params.model_dump(mode="json")
         await request("POST", "configuration/commands", payload=payload)
+
+
+TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
+
+
+class TimelineContact(BaseModel):
+    id: int | None = None
+    name: str | None = None
+
+
+class TimelineEvent(BaseModel):
+    id: int
+    type: TimelineEventType
+    date: datetime
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    content: str
+    contact: TimelineContact | None = None
+    status: Status | None = None
+    tries: int | None = None
+
+    @staticmethod
+    async def _list(
+        endpoint: str,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        Internal method to list timeline events for a resource.
+        """
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        content = await request("GET", endpoint, params=params)
+        return [TimelineEvent(**item) for item in content["result"]]
+
+    @staticmethod
+    async def list_for_host(
+        host_id: int,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        List timeline events for a host.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/timeline"
+        return await TimelineEvent._list(endpoint, search, limit, page, sort_by)
+
+    @staticmethod
+    async def list_for_service(
+        host_id: int,
+        service_id,
+        search: str | None = None,
+        limit: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+    ) -> list["TimelineEvent"]:
+        """
+        List timeline events for a service.
+        """
+        endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/timeline"
+        return await TimelineEvent._list(endpoint, search, limit, page, sort_by)

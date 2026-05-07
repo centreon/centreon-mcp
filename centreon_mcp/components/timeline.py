@@ -26,17 +26,12 @@ class TimelineFilter(BaseFilter):
             "acknowledgement, comment)."
         ),
     )
-    content_contains: str | None = Field(
-        None,
-        serialization_alias="content $lk",
-        description="Substring match on the event content (case-insensitive).",
-    )
-    date_from: datetime | None = Field(
+    start_date: datetime | None = Field(
         None,
         serialization_alias="date $ge",
         description="Only return events whose date is greater than or equal to this ISO8601 datetime.",
     )
-    date_to: datetime | None = Field(
+    end_date: datetime | None = Field(
         None,
         serialization_alias="date $le",
         description="Only return events whose date is less than or equal to this ISO8601 datetime.",

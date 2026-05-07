@@ -62,19 +62,21 @@ async def request(
     params = {name: value for name, value in params.items() if value is not None}
 
     # Make request and handle response
+    logger.debug(
+        f"Centreon API Request: {method} {url}\n"
+        f"Headers: {json.dumps(hide(headers), indent=2)}\n"
+        f"Params: {json.dumps(params, indent=2)}\n"
+        f"Payload: {json.dumps(payload, indent=2)}"
+    )
     try:
-        logger.debug(
-            f"Centreon API Request: {method} {url}\n"
-            f"Headers: {json.dumps(hide(headers), indent=2)}\n"
-            f"Params: {json.dumps(params, indent=2)}\n"
-            f"Payload: {json.dumps(payload, indent=2)}"
-        )
         async with AsyncClient() as client:
             response = await client.request(
                 method, url, headers=headers, json=payload, params=params
             )
             try:
-                content = response.json() if (response.status_code != 204 and response.content) else {}
+                content = (
+                    response.json() if (response.status_code != 204 and response.content) else {}
+                )
             except json.JSONDecodeError:
                 content = {"raw": response.text}
 

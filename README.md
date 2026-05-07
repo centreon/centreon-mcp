@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 13 tools organized across five functional areas.
+The MCP server currently exposes 18 tools organized across six functional areas.
 
 ### Resource Monitoring
 
@@ -54,6 +54,12 @@ Full downtime lifecycle management through conversation:
 - **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
 - **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
 - **cancel_downtimes** — Cancel one or more downtimes by their IDs
+
+### Commands
+
+Manage check, notification, discovery, and miscellaneous commands from within the conversation:
+- **list_commands** — List commands, filterable by ID, name, type (CHECK, NOTIFICATION, MISCELLANEOUS, DISCOVERY), or locked status. Results are paginated and sortable by name.
+- **add_command** — Create a new command by specifying its name, type, and command line. Supports optional shell mode, argument descriptions, macro descriptions, a connector, and a graph template.
 
 ### Comments
 

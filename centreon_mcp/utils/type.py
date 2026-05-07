@@ -256,6 +256,26 @@ class Acknowledgement(CentreonBaseModel):
         await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)
 
 
+class CheckResource(BaseResource):
+    pass
+
+
+class Check(BaseModel):
+    @staticmethod
+    async def request(is_forced: bool, resources: list[CheckResource]) -> None:
+        """
+        Request a check on multiple resources (hosts and services).
+        When `is_forced` is True, the check is executed immediately regardless of
+        the configured check interval. Otherwise, the check is scheduled for the
+        next available execution slot.
+        """
+        payload = {
+            "check": {"is_forced": is_forced},
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", "monitoring/resources/check", payload=payload)
+
+
 class DowntimeParams(BaseModel):
     start_time: datetime
     end_time: datetime

@@ -12,9 +12,7 @@ resource = FastMCP()
 
 
 class ResourceOrder(BaseOrder):
-    field: Literal["host.name", "host.alias", "host.address", "host.state"] = (
-        "host.name"
-    )
+    field: Literal["host.name", "host.alias", "host.address", "host.state"] = "host.name"
 
 
 class ResourceFilter(BaseFilter):

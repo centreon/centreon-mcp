@@ -3,11 +3,8 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.types.check import Check, CheckResource
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.type import (
-    Check,
-    CheckResource,
-)
 
 check = FastMCP()
 

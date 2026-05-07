@@ -5,7 +5,7 @@ from centreon_mcp.components.servicegroup import (
     ServiceGroupOrder,
     list_servicegroups,
 )
-from centreon_mcp.utils.type import ServiceGroup
+from centreon_mcp.types.servicegroup import ServiceGroup
 
 MODULE = "centreon_mcp.components.servicegroup"
 
@@ -31,9 +31,7 @@ async def test_list_servicegroups(logger: MagicMock, _list: AsyncMock):
     results = await list_servicegroups(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(
-        ServiceGroup, ServiceGroupOrder, filters, limit, page, order
-    )
+    _list.assert_awaited_once_with(ServiceGroup, ServiceGroupOrder, filters, limit, page, order)
 
     # Assert result
     assert results[0] == servicegroup

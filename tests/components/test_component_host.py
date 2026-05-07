@@ -5,7 +5,7 @@ from centreon_mcp.components.host import (
     HostFilter,
     count_hosts_by_status,
 )
-from centreon_mcp.utils.type import HostStatusCount
+from centreon_mcp.types.host import HostStatusCount
 
 MODULE = "centreon_mcp.components.host"
 

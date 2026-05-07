@@ -5,7 +5,7 @@ from centreon_mcp.components.monitoring_server import (
     MonitoringServerOrder,
     list_monitoring_servers,
 )
-from centreon_mcp.utils.type import MonitoringServer
+from centreon_mcp.types.monitoring_server import MonitoringServer
 
 MODULE = "centreon_mcp.components.monitoring_server"
 

@@ -470,7 +470,7 @@ class TimelineEvent(BaseModel):
     @staticmethod
     async def list_for_service(
         host_id: int,
-        service_id,
+        service_id: int,
         search: str | None = None,
         limit: int | None = None,
         page: int | None = None,

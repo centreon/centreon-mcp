@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 13 tools organized across five functional areas.
+The MCP server currently exposes 18 tools organized across six functional areas.
 
 ### Resource Monitoring
 
@@ -25,8 +25,12 @@ Two dedicated counting tools provide a fast status summary without retrieving in
 
 Both tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
 
+A dedicated tool lets the assistant inspect what happened on a single resource:
+- **get_host_timeline / get_service_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
+
 A dedicated tool lets the assistant refresh state on demand:
 - **request_check** — Trigger a check on one or more resources (hosts and services) without waiting for the next polling cycle. Useful right after a remediation action to confirm recovery in conversation. The `is_forced` flag (default `true`) controls whether the configured check interval is bypassed.
+
 
 ### Infrastructure Inventory
 
@@ -50,6 +54,12 @@ Full downtime lifecycle management through conversation:
 - **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
 - **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
 - **cancel_downtimes** — Cancel one or more downtimes by their IDs
+
+### Commands
+
+Manage check, notification, discovery, and miscellaneous commands from within the conversation:
+- **list_commands** — List commands, filterable by ID, name, type (CHECK, NOTIFICATION, MISCELLANEOUS, DISCOVERY), or locked status. Results are paginated and sortable by name.
+- **add_command** — Create a new command by specifying its name, type, and command line. Supports optional shell mode, argument descriptions, macro descriptions, a connector, and a graph template.
 
 ### Comments
 

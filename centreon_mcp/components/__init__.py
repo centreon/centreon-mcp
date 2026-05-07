@@ -9,6 +9,7 @@ from centreon_mcp.components.monitoring_server import monitoring_server
 from centreon_mcp.components.resource import resource
 from centreon_mcp.components.service import service
 from centreon_mcp.components.servicegroup import servicegroup
+from centreon_mcp.components.timeline import timeline
 
 components = [
     resource,
@@ -22,4 +23,5 @@ components = [
     service,
     command,
     check,
+    timeline,
 ]

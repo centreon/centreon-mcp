@@ -6,7 +6,12 @@ from centreon_mcp.components.resource import (
     ResourceOrder,
     list_resources,
 )
-from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
+from centreon_mcp.utils.type import (
+    Resource,
+    ResourceStatus,
+    ResourceType,
+    StatusType,
+)
 
 MODULE = "centreon_mcp.components.resource"
 

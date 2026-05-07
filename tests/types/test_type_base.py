@@ -1,4 +1,4 @@
-from centreon_mcp.types.base import StatusCount
+from centreon_mcp.types.base import BaseResource, StatusCount
 
 MODULE = "centreon_mcp.types.base"
 
@@ -27,3 +27,18 @@ async def test_status_count_flatten():
         "pending": 10,
         "total": 50,
     }
+
+
+async def test_base_resource_dump():
+
+    # Setup args
+    resource_type = "service"
+    resource_id = 20
+    host_id = 10
+    resource = BaseResource(type=resource_type, resource_id=resource_id, host_id=host_id)
+
+    # Call test method
+    result = resource.dump()
+
+    # Assert result
+    assert result == {"parent": {"id": host_id}, "id": resource_id, "type": resource_type}

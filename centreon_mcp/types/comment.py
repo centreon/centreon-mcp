@@ -1,8 +1,8 @@
 from datetime import UTC, datetime
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseResource, CentreonBaseModel
+from centreon_mcp.types.base import BaseResource
 from centreon_mcp.utils.request import request
 
 
@@ -11,7 +11,7 @@ class CommentResource(BaseResource):
     date: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 
 
-class Comment(CentreonBaseModel):
+class Comment(BaseModel):
     @staticmethod
     async def add(resources: list[CommentResource]) -> None:
         """

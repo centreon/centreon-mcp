@@ -78,6 +78,9 @@ async def request(
                     response.json() if (response.status_code != 204 and response.content) else {}
                 )
             except json.JSONDecodeError:
+                logger.warning(
+                    f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
+                )
                 content = {"raw": response.text}
 
             logger.debug(

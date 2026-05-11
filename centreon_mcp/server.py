@@ -4,8 +4,8 @@ from fastmcp import FastMCP
 
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.components import components
+from centreon_mcp.types.platform import Platform
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.request import CentreonAPIError, request
 
 
 @asynccontextmanager
@@ -19,18 +19,13 @@ async def lifespan(app: FastMCP):
             msg = f"{credential} is missing. Don't starting MCP server."
             raise RuntimeError(msg)
 
-    # Test Centreon API connectivity
-    try:
-        result = await request("GET", "platform/versions")
-    except CentreonAPIError as e:
-        raise e
-    else:
-        version = result["web"]["version"]
-        logger.info(f"Connected to Centreon API version {version}")
+    # Test Centreon API connectivity and get web version
+    version = await Platform.get_web_version()
+    logger.info(f"Connected to Centreon API version {version.version}")
 
     # Import components
     for server in components:
-        await app.import_server(server)
+        app.mount(server)
 
     yield
 

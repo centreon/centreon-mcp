@@ -3,9 +3,9 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.types.command import Command, CommandParams, CommandType
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
-from centreon_mcp.utils.type import Command, CommandParams, CommandType
 
 command = FastMCP()
 

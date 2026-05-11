@@ -6,7 +6,7 @@ from centreon_mcp.components.command import (
     add_command,
     list_commands,
 )
-from centreon_mcp.utils.type import Command, CommandParams
+from centreon_mcp.types.command import Command, CommandParams
 
 MODULE = "centreon_mcp.components.command"
 

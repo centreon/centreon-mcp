@@ -5,7 +5,7 @@ from centreon_mcp.components.hostgroup import (
     HostGroupOrder,
     list_hostgroups,
 )
-from centreon_mcp.utils.type import HostGroup
+from centreon_mcp.types.hostgroup import HostGroup
 
 MODULE = "centreon_mcp.components.hostgroup"
 
@@ -31,9 +31,7 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
     results = await list_hostgroups(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(
-        HostGroup, HostGroupOrder, filters, limit, page, order
-    )
+    _list.assert_awaited_once_with(HostGroup, HostGroupOrder, filters, limit, page, order)
 
     # Assert result
     assert results[0] == hostgroup

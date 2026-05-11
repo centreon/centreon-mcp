@@ -175,7 +175,7 @@ claude mcp add -t http centreon http://localhost:8000/mcp -H "centreon-api-token
 List configured MCP servers and confirm `centreon` is present:
 
 ```shell
-claude mcp list
+/mcp list
 ```
 
 </details>

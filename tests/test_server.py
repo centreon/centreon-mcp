@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
@@ -31,7 +31,7 @@ async def test_lifespan(platform_get_web_version: AsyncMock):
     platform_get_web_version.assert_awaited_once()
 
     # Assert import_server called multiple times
-    assert app.mount.call_count == len(servers)
+    app.mount.assert_has_calls([call(s) for s in servers])
 
 
 @patch(f"{MODULE}.CREDENTIALS", {"CENTREON_BASE_URL": ""})

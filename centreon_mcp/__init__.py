@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 CREDENTIALS = {
     name: (os.environ.get(name) or default)
     for name, default in [

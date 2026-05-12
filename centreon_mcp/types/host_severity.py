@@ -9,7 +9,7 @@ from centreon_mcp.utils.request import request
 class HostSeverityParams(BaseModel):
     name: str = Field(description="Name of the host severity")
     alias: str | None = Field(default=None, description="Alias of the host severity")
-    level: int = Field(description="Level for the host severity")
+    level: int = Field(ge=1, le=127, description="Level for the host severity")
     icon_id: int = Field(description="ID of the icon for the host severity")
 
 
@@ -19,7 +19,7 @@ class HostSeverity(CentreonBaseModel):
     id: int
     name: str
     alias: str
-    level: int
+    level: int = Field(ge=1, le=127)
     comment: str | None
     is_activated: bool
 

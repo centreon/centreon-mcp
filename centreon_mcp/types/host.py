@@ -140,10 +140,14 @@ class HostConfigurationParams(BaseModel):
         default=None, description="Indicates whether the flap detection is enabled or not"
     )
     low_flap_threshold: int | None = Field(
+        ge=0,
+        le=100,
         default=None,
         description="Specify the low state change threshold used in flap detection for this host",
     )
     high_flap_threshold: int | None = Field(
+        ge=0,
+        le=100,
         default=None,
         description="Specify the high state change threshold used in flap detection for this host",
     )

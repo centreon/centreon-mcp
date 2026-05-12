@@ -6,6 +6,7 @@ from centreon_mcp.components.host_severity import (
     create_host_severity,
     delete_host_severities,
     list_host_severities,
+    update_host_severity,
 )
 from centreon_mcp.types.host_severity import HostSeverity, HostSeverityParams
 
@@ -57,6 +58,30 @@ async def test_create_host_severity(logger: MagicMock, host_severity_create: Asy
 
     # Assert HostSeverity.create called with right args
     host_severity_create.assert_awaited_once_with(params)
+
+    # Assert result
+    assert result
+
+
+@patch(f"{MODULE}.HostSeverity.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_update_host_severity(logger: MagicMock, host_severity_update: AsyncMock):
+
+    # Setup args
+    host_severity_id = 10
+    params = HostSeverityParams.model_construct()
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock HostSeverity.update
+    host_severity_update.return_value = None
+
+    # Call test fonction
+    result = await update_host_severity(host_severity_id, params)
+
+    # Assert HostSeverity.update called with right args
+    host_severity_update.assert_awaited_once_with(host_severity_id, params)
 
     # Assert result
     assert result

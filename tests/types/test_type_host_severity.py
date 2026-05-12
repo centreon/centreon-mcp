@@ -23,6 +23,26 @@ async def test_create_host_severity(request: AsyncMock):
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_update_host_severity(request: AsyncMock):
+
+    # Setup args
+    host_severity_id = 10
+    params = HostSeverityParams.model_construct()
+
+    # Mock request
+    request.return_value = None
+
+    # Call test function
+    await HostSeverity.update(host_severity_id, params)
+
+    # Assert request called with right args
+    payload = params.model_dump(mode="json")
+    request.assert_awaited_once_with(
+        "PATCH", f"configuration/hosts/severities/{host_severity_id}", payload
+    )
+
+
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_delete_host_severity(request: AsyncMock):
 
     # Setup args

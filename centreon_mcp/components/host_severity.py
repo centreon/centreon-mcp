@@ -66,6 +66,23 @@ async def create_host_severity(params: HostSeverityParams) -> bool:
 
 @host_severity.tool(
     annotations={
+        "title": "Update a host severity",
+        "readOnlyHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def update_host_severity(host_severity_id: int, params: HostSeverityParams) -> bool:
+    """
+    Update a host severity from params.
+    """
+    logger.info("Executing tool update_host_severity")
+    await HostSeverity.update(host_severity_id, params)
+    return True
+
+
+@host_severity.tool(
+    annotations={
         "title": "Delete host severities",
         "readOnlyHint": False,
         "idempotentHint": False,

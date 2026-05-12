@@ -32,6 +32,14 @@ class HostSeverity(CentreonBaseModel):
         await request("POST", cls.endpoint, payload)
 
     @classmethod
+    async def update(cls, host_severity_id: int, params: HostSeverityParams) -> None:
+        """
+        Partially update a host severity
+        """
+        payload = params.model_dump(mode="json")
+        await request("PATCH", f"{cls.endpoint}/{host_severity_id}", payload)
+
+    @classmethod
     async def delete(cls, host_severity_id: int) -> None:
         """
         Delete a host severity.

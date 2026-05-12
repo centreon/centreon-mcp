@@ -78,7 +78,7 @@ async def test_delete_host_severity(logger: MagicMock, host_severity_delete: Asy
     # Call test fonction
     result = await delete_host_severities([host_severity_id])
 
-    # Assert HostSeverity.create called with right args
+    # Assert HostSeverity.delete called with right args
     host_severity_delete.assert_awaited_once_with(host_severity_id)
 
     # Assert result

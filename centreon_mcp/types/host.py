@@ -58,7 +58,7 @@ class HostConfigurationParams(BaseModel):
     monitoring_server_id: int = Field(description="ID of the host's monitoring server")
     name: str = Field(description="Host name")
     address: str = Field(description="IP or domain of the host")
-    alias: str | None = Field(default=None, description="Host name")
+    alias: str | None = Field(default=None, description="Host alias")
     snmp_community: str | None = Field(default=None, description="Community of the SNMP agent")
     snmp_version: Literal["1", "2c", "3"] | None = Field(
         default=None, description="Version of the SNMP agent."
@@ -103,14 +103,14 @@ class HostConfigurationParams(BaseModel):
         default=None,
         description=(
             "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-            "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
+            "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
         ),
     )
     add_inherited_contact: bool | None = Field(
         default=None,
         description=(
             "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-            "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
+            "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
         ),
     )
     first_notification_delay: int | None = Field(
@@ -153,7 +153,7 @@ class HostConfigurationParams(BaseModel):
     event_handler_command_args: list[str] = Field(
         default_factory=list, description="Event handler command arguments"
     )
-    comment: str | None = Field(default=None, description="Host template comments")
+    comment: str | None = Field(default=None, description="Comment for this host")
     is_activated: bool | None = Field(
         default=None, description="Indicates whether the host template is activated or not"
     )
@@ -182,7 +182,7 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostConfigurationParams):
+    async def create(cls, params: HostConfigurationParams) -> None:
         """
         Create a host configuration.
         """
@@ -190,7 +190,7 @@ class HostConfiguration(CentreonBaseModel):
         await request("POST", cls.endpoint, payload)
 
     @classmethod
-    async def update(cls, host_id: int, params: HostConfigurationParams):
+    async def update(cls, host_id: int, params: HostConfigurationParams) -> None:
         """
         Partially update a host configuration.
         """

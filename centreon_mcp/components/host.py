@@ -90,7 +90,7 @@ async def list_host_configurations(
 
 @host.tool(
     annotations={
-        "title": "Create an host configurations",
+        "title": "Create a host configurations",
         "readOnlyHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
@@ -98,7 +98,7 @@ async def list_host_configurations(
 )
 async def create_host_configuration(params: HostConfigurationParams) -> bool:
     """
-    Create an host configuration from params.
+    Create a host configuration from params.
     """
     logger.info("Executing tool create_host_configuration")
     await HostConfiguration.create(params)

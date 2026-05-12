@@ -3,16 +3,10 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel, StatusCount
+from centreon_mcp.types.base import CentreonBaseModel, EnablementStatus, StatusCount
 from centreon_mcp.utils.request import request
 
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
-
-
-class Status(IntEnum):
-    STATUS_DISABLED = 0
-    STATUS_ENABLED = 1
-    STATUS_DEFAULT = 2
 
 
 class MonitoringServer(BaseModel):
@@ -90,13 +84,13 @@ class HostConfigurationParams(BaseModel):
             "Once the host has been retried max_check_attempts times without a change in its status, it will revert to being scheduled at its 'normal' check interval rate."
         ),
     )
-    active_check_enabled: Status | None = Field(
+    active_check_enabled: EnablementStatus | None = Field(
         default=None, description="Indicates whether active checks are enabled or not"
     )
-    passive_check_enabled: Status | None = Field(
+    passive_check_enabled: EnablementStatus | None = Field(
         default=None, description="Indicates whether passive checks are enabled or not"
     )
-    notification_enabled: Status | None = Field(
+    notification_enabled: EnablementStatus | None = Field(
         default=None, description="Specify whether notifications for this host are enabled or not"
     )
     add_inherited_contact_group: bool | None = Field(
@@ -130,13 +124,13 @@ class HostConfigurationParams(BaseModel):
     acknowledgement_timeout: int | None = Field(
         default=None, description="Specify a duration of acknowledgement for this host."
     )
-    freshness_checked: Status | None = Field(
+    freshness_checked: EnablementStatus | None = Field(
         default=None, description="Indicates whether freshness is checked or not"
     )
     freshness_threshold: int | None = Field(
         default=None, description="Specify the freshness threshold (in seconds) for this host."
     )
-    flap_detection_enabled: Status | None = Field(
+    flap_detection_enabled: EnablementStatus | None = Field(
         default=None, description="Indicates whether the flap detection is enabled or not"
     )
     low_flap_threshold: int | None = Field(

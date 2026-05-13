@@ -36,7 +36,7 @@ class HostSeverity(CentreonBaseModel):
         """
         Partially update a host severity
         """
-        payload = params.model_dump(mode="json")
+        payload = params.model_dump(mode="json", exclude_none=True)
         await request("PATCH", f"{cls.endpoint}/{host_severity_id}", payload)
 
     @classmethod

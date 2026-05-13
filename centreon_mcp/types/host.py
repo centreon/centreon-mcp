@@ -192,7 +192,7 @@ class HostConfiguration(CentreonBaseModel):
         """
         Partially update a host configuration.
         """
-        payload = params.model_dump(mode="json")
+        payload = params.model_dump(mode="json", exclude_none=True)
         await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
 
     @classmethod

@@ -68,7 +68,7 @@ async def test_host_configuration_update(request: AsyncMock):
     await HostConfiguration.update(host_id, params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json")
+    payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with("PATCH", f"configuration/hosts/{host_id}", payload)
 
 

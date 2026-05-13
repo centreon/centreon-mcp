@@ -20,6 +20,8 @@ class HostSeverityParams(BaseModel):
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
     level: int = Field(ge=1, le=127, description=DESCRIPTION["level"])
     icon_id: int = Field(description=DESCRIPTION["icon_id"])
+    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
+    is_activated: bool = Field(default=True, description=DESCRIPTION["is_activated"])
 
 
 class HostSeverityCreateParams(HostSeverityParams):
@@ -27,8 +29,7 @@ class HostSeverityCreateParams(HostSeverityParams):
 
 
 class HostSeverityUpdateParams(HostSeverityParams):
-    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
-    is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])
+    pass
 
 
 class HostSeverity(CentreonBaseModel):

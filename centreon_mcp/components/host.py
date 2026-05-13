@@ -8,7 +8,8 @@ from pydantic import Field
 from centreon_mcp.types.host import (
     Host,
     HostConfiguration,
-    HostConfigurationParams,
+    HostConfigurationCreateParams,
+    HostConfigurationUpdateParams,
     HostStatusCount,
 )
 from centreon_mcp.utils import logger
@@ -96,7 +97,7 @@ async def list_host_configurations(
         "openWorldHint": True,
     }
 )
-async def create_host_configuration(params: HostConfigurationParams) -> bool:
+async def create_host_configuration(params: HostConfigurationCreateParams) -> bool:
     """
     Create a host configuration from params.
     """
@@ -112,7 +113,7 @@ async def create_host_configuration(params: HostConfigurationParams) -> bool:
         "openWorldHint": True,
     }
 )
-async def update_host_configuration(host_id: int, params: HostConfigurationParams) -> bool:
+async def update_host_configuration(host_id: int, params: HostConfigurationUpdateParams) -> bool:
     """
     Update a host configuration from params.
     """

@@ -6,6 +6,60 @@ from pydantic import BaseModel, Field
 from centreon_mcp.types.base import CentreonBaseModel, EnablementStatus, StatusCount
 from centreon_mcp.utils.request import request
 
+DESCRIPTION = {
+    "monitoring_server_id": "ID of the host's monitoring server",
+    "name": "Host name",
+    "address": "IP or domain of the host",
+    "alias": "Host alias",
+    "snmp_community": "Community of the SNMP agent",
+    "snmp_version": "Version of the SNMP agent.",
+    "geo_coords": "Geographic coordinates of the host",
+    "severity_id": "Host severity ID of the host",
+    "check_command_id": "Check command ID. Must be of type 'Check'.",
+    "check_command_args": "Check command arguments",
+    "max_check_attempts": "Define the number of times that the monitoring engine will retry the host check command if it returns any non-OK state",
+    "normal_check_interval": (
+        "Define the number of 'time units' between regularly scheduled checks of the host."
+        "With the default time unit of 60s, this number will mean multiples of 1 minute."
+    ),
+    "retry_check_interval": (
+        "Define the number of 'time units' to wait before scheduling a re-check for this host after a non-UP state was detected."
+        "With the default time unit of 60s, this number will mean multiples of 1 minute."
+        "Once the host has been retried max_check_attempts times without a change in its status, it will revert to being scheduled at its 'normal' check interval rate."
+    ),
+    "active_check_enabled": "Indicates whether active checks are enabled or not",
+    "passive_check_enabled": "Indicates whether passive checks are enabled or not",
+    "notification_enabled": "Specify whether notifications for this host are enabled or not",
+    "add_inherited_contact_group": (
+        "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
+        "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
+    ),
+    "add_inherited_contact": (
+        "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
+        "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
+    ),
+    "first_notification_delay": (
+        "Define the number of 'time units' to wait before sending out the first alert notification when this host enters a non-UP state."
+        "With the default time unit of 60s, this number will mean multiples of 1 minute."
+    ),
+    "recovery_notification_delay": (
+        "Define the number of 'time units' to wait before sending out the recovery notification when this host enters an UP state."
+        "With the default time unit of 60s, this number will mean multiples of 1 minute."
+    ),
+    "acknowledgement_timeout": "Specify a duration of acknowledgement for this host.",
+    "freshness_checked": "Indicates whether freshness is checked or not",
+    "freshness_threshold": "Specify the freshness threshold (in seconds) for this host.",
+    "flap_detection_enabled": "Indicates whether the flap detection is enabled or not",
+    "low_flap_threshold": "Specify the low state change threshold used in flap detection for this host",
+    "high_flap_threshold": "Specify the high state change threshold used in flap detection for this host",
+    "event_handler_command_id": "Event handler command ID",
+    "event_handler_command_args": "Event handler command arguments",
+    "comment": "Comment for this host",
+    "is_activated": "Indicates whether the host template is activated or not",
+    "categories": "Define the host category IDs that should be associated with this host",
+    "groups": "Define the host groups IDs that should be associated with this host",
+}
+
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
 
 
@@ -49,119 +103,94 @@ class Host(BaseModel):
 
 
 class HostConfigurationParams(BaseModel):
-    monitoring_server_id: int = Field(description="ID of the host's monitoring server")
-    name: str = Field(description="Host name")
-    address: str = Field(description="IP or domain of the host")
-    alias: str | None = Field(default=None, description="Host alias")
-    snmp_community: str | None = Field(default=None, description="Community of the SNMP agent")
+    alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
+    snmp_community: str | None = Field(default=None, description=DESCRIPTION["snmp_community"])
     snmp_version: Literal["1", "2c", "3"] | None = Field(
-        default=None, description="Version of the SNMP agent."
+        default=None, description=DESCRIPTION["snmp_version"]
     )
-    geo_coords: str | None = Field(default=None, description="Geographic coordinates of the host")
-    severity_id: int | None = Field(default=None, description="Host severity ID of the host")
-    check_command_id: int | None = Field(
-        default=None, description="Check command ID. Must be of type 'Check'."
-    )
-    check_command_args: list[str] = Field(
-        default_factory=list, description="Check command arguments"
-    )
+    geo_coords: str | None = Field(default=None, description=DESCRIPTION["geo_coords"])
+    severity_id: int | None = Field(default=None, description=DESCRIPTION["severity_id"])
+    check_command_id: int | None = Field(default=None, description=DESCRIPTION["check_command_id"])
     max_check_attempts: int | None = Field(
-        default=None,
-        description="Define the number of times that the monitoring engine will retry the host check command if it returns any non-OK state",
+        default=None, description=DESCRIPTION["max_check_attempts"]
     )
     normal_check_interval: int | None = Field(
-        default=None,
-        description=(
-            "Define the number of 'time units' between regularly scheduled checks of the host."
-            "With the default time unit of 60s, this number will mean multiples of 1 minute."
-        ),
+        default=None, description=DESCRIPTION["normal_check_interval"]
     )
     retry_check_interval: int | None = Field(
-        default=None,
-        description=(
-            "Define the number of 'time units' to wait before scheduling a re-check for this host after a non-UP state was detected."
-            "With the default time unit of 60s, this number will mean multiples of 1 minute."
-            "Once the host has been retried max_check_attempts times without a change in its status, it will revert to being scheduled at its 'normal' check interval rate."
-        ),
+        default=None, description=DESCRIPTION["retry_check_interval"]
     )
     active_check_enabled: EnablementStatus | None = Field(
-        default=None, description="Indicates whether active checks are enabled or not"
+        default=None, description=DESCRIPTION["active_check_enabled"]
     )
     passive_check_enabled: EnablementStatus | None = Field(
-        default=None, description="Indicates whether passive checks are enabled or not"
+        default=None, description=DESCRIPTION["passive_check_enabled"]
     )
     notification_enabled: EnablementStatus | None = Field(
-        default=None, description="Specify whether notifications for this host are enabled or not"
+        default=None, description=DESCRIPTION["notification_enabled"]
     )
     add_inherited_contact_group: bool | None = Field(
-        default=None,
-        description=(
-            "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-            "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
-        ),
+        default=None, description=DESCRIPTION["add_inherited_contact_group"]
     )
     add_inherited_contact: bool | None = Field(
-        default=None,
-        description=(
-            "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-            "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
-        ),
+        default=None, description=DESCRIPTION["add_inherited_contact"]
     )
     first_notification_delay: int | None = Field(
-        default=None,
-        description=(
-            "Define the number of 'time units' to wait before sending out the first alert notification when this host enters a non-UP state."
-            "With the default time unit of 60s, this number will mean multiples of 1 minute."
-        ),
+        default=None, description=DESCRIPTION["first_notification_delay"]
     )
     recovery_notification_delay: int | None = Field(
-        default=None,
-        description=(
-            "Define the number of 'time units' to wait before sending out the recovery notification when this host enters an UP state."
-            "With the default time unit of 60s, this number will mean multiples of 1 minute."
-        ),
+        default=None, description=DESCRIPTION["recovery_notification_delay"]
     )
     acknowledgement_timeout: int | None = Field(
-        default=None, description="Specify a duration of acknowledgement for this host."
+        default=None, description=DESCRIPTION["acknowledgement_timeout"]
     )
     freshness_checked: EnablementStatus | None = Field(
-        default=None, description="Indicates whether freshness is checked or not"
+        default=None, description=DESCRIPTION["freshness_checked"]
     )
     freshness_threshold: int | None = Field(
-        default=None, description="Specify the freshness threshold (in seconds) for this host."
+        default=None, description=DESCRIPTION["freshness_threshold"]
     )
     flap_detection_enabled: EnablementStatus | None = Field(
-        default=None, description="Indicates whether the flap detection is enabled or not"
+        default=None, description=DESCRIPTION["flap_detection_enabled"]
     )
     low_flap_threshold: int | None = Field(
-        ge=0,
-        le=100,
-        default=None,
-        description="Specify the low state change threshold used in flap detection for this host",
+        ge=0, le=100, default=None, description=DESCRIPTION["low_flap_threshold"]
     )
     high_flap_threshold: int | None = Field(
-        ge=0,
-        le=100,
-        default=None,
-        description="Specify the high state change threshold used in flap detection for this host",
+        ge=0, le=100, default=None, description=DESCRIPTION["high_flap_threshold"]
     )
     event_handler_command_id: int | None = Field(
-        default=None, description="Event handler command ID"
+        default=None, description=DESCRIPTION["event_handler_command_id"]
+    )
+    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
+    is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])
+    categories: list[int] | None = Field(default=None, description=DESCRIPTION["categories"])
+    groups: list[int] | None = Field(default=None, description=DESCRIPTION["groups"])
+
+
+class HostConfigurationCreateParams(HostConfigurationParams):
+    monitoring_server_id: int = Field(description=DESCRIPTION["monitoring_server_id"])
+    name: str = Field(description=DESCRIPTION["name"])
+    address: str = Field(description=DESCRIPTION["address"])
+    check_command_args: list[str] = Field(
+        default_factory=list, description=DESCRIPTION["check_command_args"]
     )
     event_handler_command_args: list[str] = Field(
-        default_factory=list, description="Event handler command arguments"
+        default_factory=list, description=DESCRIPTION["event_handler_command_args"]
     )
-    comment: str | None = Field(default=None, description="Comment for this host")
-    is_activated: bool | None = Field(
-        default=None, description="Indicates whether the host template is activated or not"
+
+
+class HostConfigurationUpdateParams(HostConfigurationParams):
+    monitoring_server_id: int | None = Field(
+        default=None, description=DESCRIPTION["monitoring_server_id"]
     )
-    categories: list[int] | None = Field(
-        default=None,
-        description="Define the host category IDs that should be associated with this host",
+    name: str | None = Field(default=None, description=DESCRIPTION["name"])
+    address: str | None = Field(default=None, description=DESCRIPTION["address"])
+    check_command_args: list[str] | None = Field(
+        default=None, description=DESCRIPTION["check_command_args"]
     )
-    groups: list[int] | None = Field(
-        default=None,
-        description="Define the host groups IDs that should be associated with this host",
+    event_handler_command_args: list[str] | None = Field(
+        default=None, description=DESCRIPTION["event_handler_command_args"]
     )
 
 
@@ -180,7 +209,7 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostConfigurationParams) -> bool:
+    async def create(cls, params: HostConfigurationCreateParams) -> bool:
         """
         Create a host configuration.
         Return True if successful; otherwise, raise an exception.
@@ -190,7 +219,7 @@ class HostConfiguration(CentreonBaseModel):
         return True
 
     @classmethod
-    async def update(cls, host_id: int, params: HostConfigurationParams) -> bool:
+    async def update(cls, host_id: int, params: HostConfigurationUpdateParams) -> bool:
         """
         Partially update a host configuration.
         Return True if successful; otherwise, raise an exception.

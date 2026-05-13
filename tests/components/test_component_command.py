@@ -49,7 +49,7 @@ async def test_add_command(logger: MagicMock, command_add: AsyncMock):
     logger.info.return_value = None
 
     # Mock Command.add
-    command_add.return_value = None
+    command_add.return_value = True
 
     # Call test fonction
     result = await add_command(params)

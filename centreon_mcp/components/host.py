@@ -101,8 +101,7 @@ async def create_host_configuration(params: HostConfigurationParams) -> bool:
     Create a host configuration from params.
     """
     logger.info("Executing tool create_host_configuration")
-    await HostConfiguration.create(params)
-    return True
+    return await HostConfiguration.create(params)
 
 
 @host.tool(
@@ -118,8 +117,7 @@ async def update_host_configuration(host_id: int, params: HostConfigurationParam
     Update a host configuration from params.
     """
     logger.info("Executing tool update_host_configuration")
-    await HostConfiguration.update(host_id, params)
-    return True
+    return await HostConfiguration.update(host_id, params)
 
 
 @host.tool(
@@ -130,11 +128,11 @@ async def update_host_configuration(host_id: int, params: HostConfigurationParam
         "openWorldHint": True,
     }
 )
-async def delete_host_configurations(host_ids: list[int]) -> bool:
+async def delete_host_configurations(host_ids: list[int]) -> dict[int, bool | BaseException]:
     """
     Delete multiple host configurations.
     """
     logger.info("Executing tool delete_host_configurations")
     tasks = [asyncio.create_task(HostConfiguration.delete(host_id)) for host_id in host_ids]
-    await asyncio.gather(*tasks)
-    return True
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    return dict(zip(host_ids, results, strict=True))

@@ -51,7 +51,7 @@ async def test_create_host_severity(logger: MagicMock, host_severity_create: Asy
     logger.info.return_value = None
 
     # Mock HostSeverity.create
-    host_severity_create.return_value = None
+    host_severity_create.return_value = True
 
     # Call test fonction
     result = await create_host_severity(params)
@@ -75,7 +75,7 @@ async def test_update_host_severity(logger: MagicMock, host_severity_update: Asy
     logger.info.return_value = None
 
     # Mock HostSeverity.update
-    host_severity_update.return_value = None
+    host_severity_update.return_value = True
 
     # Call test fonction
     result = await update_host_severity(host_severity_id, params)
@@ -89,7 +89,7 @@ async def test_update_host_severity(logger: MagicMock, host_severity_update: Asy
 
 @patch(f"{MODULE}.HostSeverity.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_host_severity(logger: MagicMock, host_severity_delete: AsyncMock):
+async def test_delete_host_severities(logger: MagicMock, host_severity_delete: AsyncMock):
 
     # Setup args
     host_severity_id = 10
@@ -98,7 +98,7 @@ async def test_delete_host_severity(logger: MagicMock, host_severity_delete: Asy
     logger.info.return_value = None
 
     # Mock HostSeverity.delete
-    host_severity_delete.return_value = None
+    host_severity_delete.return_value = True
 
     # Call test fonction
     result = await delete_host_severities([host_severity_id])
@@ -107,4 +107,4 @@ async def test_delete_host_severity(logger: MagicMock, host_severity_delete: Asy
     host_severity_delete.assert_awaited_once_with(host_severity_id)
 
     # Assert result
-    assert result
+    assert result == {host_severity_id: True}

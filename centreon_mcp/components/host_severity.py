@@ -60,8 +60,7 @@ async def create_host_severity(params: HostSeverityParams) -> bool:
     Create a host severity from params.
     """
     logger.info("Executing tool create_host_severity")
-    await HostSeverity.create(params)
-    return True
+    return await HostSeverity.create(params)
 
 
 @host_severity.tool(
@@ -77,8 +76,7 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityParams
     Update a host severity from params.
     """
     logger.info("Executing tool update_host_severity")
-    await HostSeverity.update(host_severity_id, params)
-    return True
+    return await HostSeverity.update(host_severity_id, params)
 
 
 @host_severity.tool(
@@ -89,7 +87,7 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityParams
         "openWorldHint": True,
     }
 )
-async def delete_host_severities(host_severity_ids: list[int]) -> bool:
+async def delete_host_severities(host_severity_ids: list[int]) -> dict[int, bool | BaseException]:
     """
     Delete multiple host severities.
     Use tools `list_host_severities` first to get host severities IDs.
@@ -99,5 +97,5 @@ async def delete_host_severities(host_severity_ids: list[int]) -> bool:
         asyncio.create_task(HostSeverity.delete(host_severity_id))
         for host_severity_id in host_severity_ids
     ]
-    await asyncio.gather(*tasks)
-    return True
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    return dict(zip(host_severity_ids, results, strict=True))

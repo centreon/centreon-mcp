@@ -57,7 +57,7 @@ async def test_add_acknowledgements(logger: MagicMock, add: AsyncMock):
     logger.info.return_value = None
 
     # Mock Acknowledgement.add
-    add.return_value = None
+    add.return_value = True
 
     # Call test fonction
     result = await add_acknowledgements(params, resources)
@@ -81,7 +81,7 @@ async def test_cancel_acknowledgements(logger: MagicMock, cancel: AsyncMock):
     logger.info.return_value = None
 
     # Mock Acknowledgement.add
-    cancel.return_value = None
+    cancel.return_value = True
 
     # Call test fonction
     result = await cancel_acknowledgements(with_services, resources)

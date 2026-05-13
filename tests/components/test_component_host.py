@@ -87,7 +87,7 @@ async def test_create_host_configuration(logger: MagicMock, host_configuration_c
     logger.info.return_value = None
 
     # Mock HostConfiguration.create
-    host_configuration_create.return_value = None
+    host_configuration_create.return_value = True
 
     # Call test fonction
     result = await create_host_configuration(params)
@@ -111,7 +111,7 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_u
     logger.info.return_value = None
 
     # Mock HostConfiguration.update
-    host_configuration_update.return_value = None
+    host_configuration_update.return_value = True
 
     # Call test fonction
     result = await update_host_configuration(host_id, params)
@@ -125,7 +125,7 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_u
 
 @patch(f"{MODULE}.HostConfiguration.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_host_configuration(logger: MagicMock, host_configuration_delete: AsyncMock):
+async def test_delete_host_configurations(logger: MagicMock, host_configuration_delete: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -134,7 +134,7 @@ async def test_delete_host_configuration(logger: MagicMock, host_configuration_d
     logger.info.return_value = None
 
     # Mock HostConfiguration.delete
-    host_configuration_delete.return_value = None
+    host_configuration_delete.return_value = True
 
     # Call test fonction
     result = await delete_host_configurations([host_id])
@@ -143,4 +143,4 @@ async def test_delete_host_configuration(logger: MagicMock, host_configuration_d
     host_configuration_delete.assert_awaited_once_with(host_id)
 
     # Assert result
-    assert result
+    assert result == {host_id: True}

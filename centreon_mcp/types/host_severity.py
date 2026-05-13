@@ -5,12 +5,30 @@ from pydantic import BaseModel, Field
 from centreon_mcp.types.base import CentreonBaseModel
 from centreon_mcp.utils.request import request
 
+DESCRIPTION = {
+    "name": "Name of the host severity",
+    "alias": "Alias of the host severity",
+    "level": "Level for the host severity",
+    "icon_id": "ID of the icon for the host severity",
+    "comment": "Host severity comment",
+    "is_activated": "Indicates whether this host severity is enabled or not",
+}
+
 
 class HostSeverityParams(BaseModel):
-    name: str = Field(description="Name of the host severity")
-    alias: str | None = Field(default=None, description="Alias of the host severity")
-    level: int = Field(ge=1, le=127, description="Level for the host severity")
-    icon_id: int = Field(description="ID of the icon for the host severity")
+    name: str = Field(description=DESCRIPTION["name"])
+    alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
+    level: int = Field(ge=1, le=127, description=DESCRIPTION["level"])
+    icon_id: int = Field(description=DESCRIPTION["icon_id"])
+
+
+class HostSeverityCreateParams(HostSeverityParams):
+    pass
+
+
+class HostSeverityUpdateParams(HostSeverityParams):
+    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
+    is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])
 
 
 class HostSeverity(CentreonBaseModel):
@@ -20,11 +38,12 @@ class HostSeverity(CentreonBaseModel):
     name: str
     alias: str
     level: int = Field(ge=1, le=127)
+    icon_id: int
     comment: str | None
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostSeverityParams) -> bool:
+    async def create(cls, params: HostSeverityCreateParams) -> bool:
         """
         Create a host severity.
         Return True if successful; otherwise, raise an exception.
@@ -34,13 +53,13 @@ class HostSeverity(CentreonBaseModel):
         return True
 
     @classmethod
-    async def update(cls, host_severity_id: int, params: HostSeverityParams) -> bool:
+    async def update(cls, host_severity_id: int, params: HostSeverityUpdateParams) -> bool:
         """
         Partially update a host severity.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PATCH", f"{cls.endpoint}/{host_severity_id}", payload)
+        await request("PUT", f"{cls.endpoint}/{host_severity_id}", payload)
         return True
 
     @classmethod

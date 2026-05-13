@@ -1,6 +1,10 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.host_severity import HostSeverity, HostSeverityParams
+from centreon_mcp.types.host_severity import (
+    HostSeverity,
+    HostSeverityCreateParams,
+    HostSeverityUpdateParams,
+)
 
 MODULE = "centreon_mcp.types.host_severity"
 
@@ -9,7 +13,7 @@ MODULE = "centreon_mcp.types.host_severity"
 async def test_create_host_severity(request: AsyncMock):
 
     # Setup args
-    params = HostSeverityParams.model_construct()
+    params = HostSeverityCreateParams.model_construct()
 
     # Mock request
     request.return_value = None
@@ -27,7 +31,7 @@ async def test_update_host_severity(request: AsyncMock):
 
     # Setup args
     host_severity_id = 10
-    params = HostSeverityParams.model_construct()
+    params = HostSeverityUpdateParams.model_construct()
 
     # Mock request
     request.return_value = None
@@ -38,7 +42,7 @@ async def test_update_host_severity(request: AsyncMock):
     # Assert request called with right args
     payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with(
-        "PATCH", f"configuration/hosts/severities/{host_severity_id}", payload
+        "PUT", f"configuration/hosts/severities/{host_severity_id}", payload
     )
 
 

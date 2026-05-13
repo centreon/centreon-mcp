@@ -4,7 +4,11 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types.host_severity import HostSeverity, HostSeverityParams
+from centreon_mcp.types.host_severity import (
+    HostSeverity,
+    HostSeverityCreateParams,
+    HostSeverityUpdateParams,
+)
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 
@@ -55,7 +59,7 @@ async def list_host_severities(
         "openWorldHint": True,
     }
 )
-async def create_host_severity(params: HostSeverityParams) -> bool:
+async def create_host_severity(params: HostSeverityCreateParams) -> bool:
     """
     Create a host severity from params.
     """
@@ -71,7 +75,7 @@ async def create_host_severity(params: HostSeverityParams) -> bool:
         "openWorldHint": True,
     }
 )
-async def update_host_severity(host_severity_id: int, params: HostSeverityParams) -> bool:
+async def update_host_severity(host_severity_id: int, params: HostSeverityUpdateParams) -> bool:
     """
     Update a host severity from params.
     """

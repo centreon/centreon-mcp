@@ -10,15 +10,17 @@ class CheckResource(BaseResource):
 
 class Check(BaseModel):
     @staticmethod
-    async def request(is_forced: bool, resources: list[CheckResource]) -> None:
+    async def request(is_forced: bool, resources: list[CheckResource]) -> bool:
         """
         Request a check on multiple resources (hosts and services).
         When `is_forced` is True, the check is executed immediately regardless of
         the configured check interval. Otherwise, the check is scheduled for the
         next available execution slot.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = {
             "check": {"is_forced": is_forced},
             "resources": [resource.dump() for resource in resources],
         }
         await request("POST", "monitoring/resources/check", payload=payload)
+        return True

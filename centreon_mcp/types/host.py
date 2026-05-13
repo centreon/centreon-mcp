@@ -180,24 +180,30 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostConfigurationParams) -> None:
+    async def create(cls, params: HostConfigurationParams) -> bool:
         """
         Create a host configuration.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json")
         await request("POST", cls.endpoint, payload)
+        return True
 
     @classmethod
-    async def update(cls, host_id: int, params: HostConfigurationParams) -> None:
+    async def update(cls, host_id: int, params: HostConfigurationParams) -> bool:
         """
         Partially update a host configuration.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
+        return True
 
     @classmethod
-    async def delete(cls, host_id: int) -> None:
+    async def delete(cls, host_id: int) -> bool:
         """
         Delete a host configuration.
+        Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"{cls.endpoint}/{host_id}")
+        return True

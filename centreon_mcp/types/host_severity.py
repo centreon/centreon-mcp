@@ -24,24 +24,30 @@ class HostSeverity(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostSeverityParams) -> None:
+    async def create(cls, params: HostSeverityParams) -> bool:
         """
-        Create a host severity
+        Create a host severity.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json")
         await request("POST", cls.endpoint, payload)
+        return True
 
     @classmethod
-    async def update(cls, host_severity_id: int, params: HostSeverityParams) -> None:
+    async def update(cls, host_severity_id: int, params: HostSeverityParams) -> bool:
         """
-        Partially update a host severity
+        Partially update a host severity.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PATCH", f"{cls.endpoint}/{host_severity_id}", payload)
+        return True
 
     @classmethod
-    async def delete(cls, host_severity_id: int) -> None:
+    async def delete(cls, host_severity_id: int) -> bool:
         """
         Delete a host severity.
+        Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"{cls.endpoint}/{host_severity_id}")
+        return True

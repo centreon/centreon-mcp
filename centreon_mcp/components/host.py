@@ -90,7 +90,7 @@ async def list_host_configurations(
 
 @host.tool(
     annotations={
-        "title": "Create a host configurations",
+        "title": "Create a host configuration",
         "readOnlyHint": False,
         "idempotentHint": False,
         "openWorldHint": True,

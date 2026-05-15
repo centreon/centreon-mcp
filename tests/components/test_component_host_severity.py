@@ -68,8 +68,11 @@ async def test_create_host_severity(logger: MagicMock, host_severity_create: Asy
 
 
 @patch(f"{MODULE}.HostSeverity.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.HostSeverity.get", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_severity(logger: MagicMock, host_severity_update: AsyncMock):
+async def test_update_host_severity(
+    logger: MagicMock, host_severity_get: AsyncMock, host_severity_update: AsyncMock
+):
 
     # Setup args
     host_severity_id = 10
@@ -78,13 +81,22 @@ async def test_update_host_severity(logger: MagicMock, host_severity_update: Asy
     # Mock logger
     logger.info.return_value = None
 
+    # Mock HostSeverity.get
+    host_severity = HostSeverity.model_construct()
+    host_severity_get.return_value = host_severity
+
     # Mock HostSeverity.update
     host_severity_update.return_value = True
 
     # Call test fonction
     result = await update_host_severity(host_severity_id, params)
 
+    # Assert HostSeverity.get called with right args
+    host_severity_get.assert_awaited_once_with(host_severity_id)
+
     # Assert HostSeverity.update called with right args
+    data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
+    params = HostSeverityUpdateParams(**data)
     host_severity_update.assert_awaited_once_with(host_severity_id, params)
 
     # Assert result

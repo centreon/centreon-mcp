@@ -80,6 +80,9 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityUpdate
     Update a host severity from params.
     """
     logger.info("Executing tool update_host_severity")
+    host_severity = await HostSeverity.get(host_severity_id)
+    data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
+    params = HostSeverityUpdateParams(**data)
     return await HostSeverity.update(host_severity_id, params)
 
 

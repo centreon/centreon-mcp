@@ -16,20 +16,23 @@ DESCRIPTION = {
 
 
 class HostSeverityParams(BaseModel):
-    name: str = Field(description=DESCRIPTION["name"])
-    alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
-    level: int = Field(ge=1, le=127, description=DESCRIPTION["level"])
-    icon_id: int = Field(description=DESCRIPTION["icon_id"])
     comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
-    is_activated: bool = Field(default=True, description=DESCRIPTION["is_activated"])
 
 
 class HostSeverityCreateParams(HostSeverityParams):
-    pass
+    name: str = Field(description=DESCRIPTION["name"])
+    alias: str = Field(description=DESCRIPTION["alias"])
+    level: int = Field(ge=1, le=127, description=DESCRIPTION["level"])
+    icon_id: int = Field(description=DESCRIPTION["icon_id"])
+    is_activated: bool = Field(True, description=DESCRIPTION["is_activated"])
 
 
 class HostSeverityUpdateParams(HostSeverityParams):
-    pass
+    name: str | None = Field(None, description=DESCRIPTION["name"])
+    alias: str | None = Field(None, description=DESCRIPTION["alias"])
+    level: int | None = Field(None, ge=1, le=127, description=DESCRIPTION["level"])
+    icon_id: int | None = Field(None, description=DESCRIPTION["icon_id"])
+    is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
 
 
 class HostSeverity(CentreonBaseModel):
@@ -40,8 +43,17 @@ class HostSeverity(CentreonBaseModel):
     alias: str
     level: int = Field(ge=1, le=127)
     icon_id: int
-    comment: str | None
+    comment: str | None = None
     is_activated: bool
+
+    @classmethod
+    async def get(cls, host_severity_id: int) -> "HostSeverity":
+        """
+        Get a host severity.
+        Return True if successful; otherwise, raise an exception.
+        """
+        content = await request("GET", f"{cls.endpoint}/{host_severity_id}")
+        return cls(**content)
 
     @classmethod
     async def create(cls, params: HostSeverityCreateParams) -> bool:
@@ -56,7 +68,6 @@ class HostSeverity(CentreonBaseModel):
     @classmethod
     async def update(cls, host_severity_id: int, params: HostSeverityUpdateParams) -> bool:
         """
-        Partially update a host severity.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)

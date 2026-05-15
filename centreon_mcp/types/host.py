@@ -102,96 +102,82 @@ class Host(BaseModel):
         return HostStatusCount(**content)
 
 
-class HostConfigurationParams(BaseModel):
-    alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
-    snmp_community: str | None = Field(default=None, description=DESCRIPTION["snmp_community"])
+class HostConfigurationBaseParams(BaseModel):
+    alias: str | None = Field(None, description=DESCRIPTION["alias"])
+    snmp_community: str | None = Field(None, description=DESCRIPTION["snmp_community"])
     snmp_version: Literal["1", "2c", "3"] | None = Field(
-        default=None, description=DESCRIPTION["snmp_version"]
+        None, description=DESCRIPTION["snmp_version"]
     )
-    geo_coords: str | None = Field(default=None, description=DESCRIPTION["geo_coords"])
-    severity_id: int | None = Field(default=None, description=DESCRIPTION["severity_id"])
-    check_command_id: int | None = Field(default=None, description=DESCRIPTION["check_command_id"])
-    max_check_attempts: int | None = Field(
-        default=None, description=DESCRIPTION["max_check_attempts"]
+    geo_coords: str | None = Field(None, description=DESCRIPTION["geo_coords"])
+    severity_id: int | None = Field(None, description=DESCRIPTION["severity_id"])
+    check_command_id: int | None = Field(None, description=DESCRIPTION["check_command_id"])
+    check_command_args: list[str] | None = Field(
+        None, description=DESCRIPTION["check_command_args"]
     )
+    max_check_attempts: int | None = Field(None, description=DESCRIPTION["max_check_attempts"])
     normal_check_interval: int | None = Field(
-        default=None, description=DESCRIPTION["normal_check_interval"]
+        None, description=DESCRIPTION["normal_check_interval"]
     )
-    retry_check_interval: int | None = Field(
-        default=None, description=DESCRIPTION["retry_check_interval"]
-    )
+    retry_check_interval: int | None = Field(None, description=DESCRIPTION["retry_check_interval"])
     active_check_enabled: EnablementStatus | None = Field(
-        default=None, description=DESCRIPTION["active_check_enabled"]
+        None, description=DESCRIPTION["active_check_enabled"]
     )
     passive_check_enabled: EnablementStatus | None = Field(
-        default=None, description=DESCRIPTION["passive_check_enabled"]
+        None, description=DESCRIPTION["passive_check_enabled"]
     )
     notification_enabled: EnablementStatus | None = Field(
-        default=None, description=DESCRIPTION["notification_enabled"]
+        None, description=DESCRIPTION["notification_enabled"]
     )
     add_inherited_contact_group: bool | None = Field(
-        default=None, description=DESCRIPTION["add_inherited_contact_group"]
+        None, description=DESCRIPTION["add_inherited_contact_group"]
     )
     add_inherited_contact: bool | None = Field(
-        default=None, description=DESCRIPTION["add_inherited_contact"]
+        None, description=DESCRIPTION["add_inherited_contact"]
     )
     first_notification_delay: int | None = Field(
-        default=None, description=DESCRIPTION["first_notification_delay"]
+        None, description=DESCRIPTION["first_notification_delay"]
     )
     recovery_notification_delay: int | None = Field(
-        default=None, description=DESCRIPTION["recovery_notification_delay"]
+        None, description=DESCRIPTION["recovery_notification_delay"]
     )
     acknowledgement_timeout: int | None = Field(
-        default=None, description=DESCRIPTION["acknowledgement_timeout"]
+        None, description=DESCRIPTION["acknowledgement_timeout"]
     )
     freshness_checked: EnablementStatus | None = Field(
-        default=None, description=DESCRIPTION["freshness_checked"]
+        None, description=DESCRIPTION["freshness_checked"]
     )
-    freshness_threshold: int | None = Field(
-        default=None, description=DESCRIPTION["freshness_threshold"]
-    )
+    freshness_threshold: int | None = Field(None, description=DESCRIPTION["freshness_threshold"])
     flap_detection_enabled: EnablementStatus | None = Field(
-        default=None, description=DESCRIPTION["flap_detection_enabled"]
+        None, description=DESCRIPTION["flap_detection_enabled"]
     )
     low_flap_threshold: int | None = Field(
-        ge=0, le=100, default=None, description=DESCRIPTION["low_flap_threshold"]
+        None, ge=0, le=100, description=DESCRIPTION["low_flap_threshold"]
     )
     high_flap_threshold: int | None = Field(
-        ge=0, le=100, default=None, description=DESCRIPTION["high_flap_threshold"]
+        None, ge=0, le=100, description=DESCRIPTION["high_flap_threshold"]
     )
     event_handler_command_id: int | None = Field(
-        default=None, description=DESCRIPTION["event_handler_command_id"]
+        None, description=DESCRIPTION["event_handler_command_id"]
     )
-    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
-    is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])
-    categories: list[int] | None = Field(default=None, description=DESCRIPTION["categories"])
-    groups: list[int] | None = Field(default=None, description=DESCRIPTION["groups"])
+    event_handler_command_args: list[str] | None = Field(
+        None, description=DESCRIPTION["event_handler_command_args"]
+    )
+    comment: str | None = Field(None, description=DESCRIPTION["comment"])
+    is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
+    categories: list[int] | None = Field(None, description=DESCRIPTION["categories"])
+    groups: list[int] | None = Field(None, description=DESCRIPTION["groups"])
 
 
-class HostConfigurationCreateParams(HostConfigurationParams):
+class HostConfigurationCreateParams(HostConfigurationBaseParams):
     monitoring_server_id: int = Field(description=DESCRIPTION["monitoring_server_id"])
     name: str = Field(description=DESCRIPTION["name"])
     address: str = Field(description=DESCRIPTION["address"])
-    check_command_args: list[str] = Field(
-        default_factory=list, description=DESCRIPTION["check_command_args"]
-    )
-    event_handler_command_args: list[str] = Field(
-        default_factory=list, description=DESCRIPTION["event_handler_command_args"]
-    )
 
 
-class HostConfigurationUpdateParams(HostConfigurationParams):
-    monitoring_server_id: int | None = Field(
-        default=None, description=DESCRIPTION["monitoring_server_id"]
-    )
-    name: str | None = Field(default=None, description=DESCRIPTION["name"])
-    address: str | None = Field(default=None, description=DESCRIPTION["address"])
-    check_command_args: list[str] | None = Field(
-        default=None, description=DESCRIPTION["check_command_args"]
-    )
-    event_handler_command_args: list[str] | None = Field(
-        default=None, description=DESCRIPTION["event_handler_command_args"]
-    )
+class HostConfigurationUpdateParams(HostConfigurationBaseParams):
+    monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
+    name: str | None = Field(None, description=DESCRIPTION["name"])
+    address: str | None = Field(None, description=DESCRIPTION["address"])
 
 
 class HostConfiguration(CentreonBaseModel):
@@ -214,7 +200,7 @@ class HostConfiguration(CentreonBaseModel):
         Create a host configuration.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json")
+        payload = params.model_dump(mode="json", exclude_none=True)
         await request("POST", cls.endpoint, payload)
         return True
 

@@ -51,7 +51,7 @@ async def test_host_configuration_create(request: AsyncMock):
     await HostConfiguration.create(params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json")
+    payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with("POST", "configuration/hosts", payload)
 
 

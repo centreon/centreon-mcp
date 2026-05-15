@@ -44,7 +44,7 @@ async def test_create_host_severity(request: AsyncMock):
     await HostSeverity.create(params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json")
+    payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with("POST", "configuration/hosts/severities", payload)
 
 

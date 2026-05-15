@@ -15,11 +15,11 @@ DESCRIPTION = {
 }
 
 
-class HostSeverityParams(BaseModel):
-    comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
+class HostSeverityBaseParams(BaseModel):
+    comment: str | None = Field(None, description=DESCRIPTION["comment"])
 
 
-class HostSeverityCreateParams(HostSeverityParams):
+class HostSeverityCreateParams(HostSeverityBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
     level: int = Field(ge=1, le=127, description=DESCRIPTION["level"])
@@ -27,7 +27,7 @@ class HostSeverityCreateParams(HostSeverityParams):
     is_activated: bool = Field(True, description=DESCRIPTION["is_activated"])
 
 
-class HostSeverityUpdateParams(HostSeverityParams):
+class HostSeverityUpdateParams(HostSeverityBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
     level: int | None = Field(None, ge=1, le=127, description=DESCRIPTION["level"])
@@ -60,7 +60,7 @@ class HostSeverity(CentreonBaseModel):
         Create a host severity.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json")
+        payload = params.model_dump(mode="json", exclude_none=True)
         await request("POST", cls.endpoint, payload)
         return True
 

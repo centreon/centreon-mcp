@@ -13,8 +13,8 @@ from centreon_mcp.components.host import (
 )
 from centreon_mcp.types.host import (
     HostConfiguration,
-    HostConfigurationCreateParams,
-    HostConfigurationUpdateParams,
+    HostConfigurationFullParams,
+    HostConfigurationPartialParams,
     HostStatusCount,
 )
 
@@ -86,7 +86,7 @@ async def test_list_host_configurations(logger: MagicMock, _list: AsyncMock):
 async def test_create_host_configuration(logger: MagicMock, host_configuration_create: AsyncMock):
 
     # Setup args
-    params = HostConfigurationCreateParams.model_construct()
+    params = HostConfigurationFullParams.model_construct()
 
     # Mock logger
     logger.info.return_value = None
@@ -110,7 +110,7 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_u
 
     # Setup args
     host_id = 10
-    params = HostConfigurationUpdateParams.model_construct()
+    params = HostConfigurationPartialParams.model_construct()
 
     # Mock logger
     logger.info.return_value = None

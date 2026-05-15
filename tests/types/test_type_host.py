@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, patch
 from centreon_mcp.types.host import (
     Host,
     HostConfiguration,
-    HostConfigurationCreateParams,
-    HostConfigurationUpdateParams,
+    HostConfigurationFullParams,
+    HostConfigurationPartialParams,
     HostStatusCount,
 )
 
@@ -42,7 +42,7 @@ async def test_host_count_by_status(request: AsyncMock):
 async def test_host_configuration_create(request: AsyncMock):
 
     # Setup args
-    params = HostConfigurationCreateParams.model_construct()
+    params = HostConfigurationFullParams.model_construct()
 
     # Mock request
     request.return_value = None
@@ -60,7 +60,7 @@ async def test_host_configuration_update(request: AsyncMock):
 
     # Setup args
     host_id = 10
-    params = HostConfigurationUpdateParams.model_construct()
+    params = HostConfigurationPartialParams.model_construct()
 
     # Mock request
     request.return_value = None

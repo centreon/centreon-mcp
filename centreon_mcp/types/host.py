@@ -168,13 +168,13 @@ class HostConfigurationBaseParams(BaseModel):
     groups: list[int] | None = Field(None, description=DESCRIPTION["groups"])
 
 
-class HostConfigurationCreateParams(HostConfigurationBaseParams):
+class HostConfigurationFullParams(HostConfigurationBaseParams):
     monitoring_server_id: int = Field(description=DESCRIPTION["monitoring_server_id"])
     name: str = Field(description=DESCRIPTION["name"])
     address: str = Field(description=DESCRIPTION["address"])
 
 
-class HostConfigurationUpdateParams(HostConfigurationBaseParams):
+class HostConfigurationPartialParams(HostConfigurationBaseParams):
     monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
     name: str | None = Field(None, description=DESCRIPTION["name"])
     address: str | None = Field(None, description=DESCRIPTION["address"])
@@ -195,7 +195,7 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostConfigurationCreateParams) -> bool:
+    async def create(cls, params: HostConfigurationFullParams) -> bool:
         """
         Create a host configuration.
         Return True if successful; otherwise, raise an exception.
@@ -205,7 +205,7 @@ class HostConfiguration(CentreonBaseModel):
         return True
 
     @classmethod
-    async def update(cls, host_id: int, params: HostConfigurationUpdateParams) -> bool:
+    async def update(cls, host_id: int, params: HostConfigurationPartialParams) -> bool:
         """
         Partially update a host configuration.
         Return True if successful; otherwise, raise an exception.

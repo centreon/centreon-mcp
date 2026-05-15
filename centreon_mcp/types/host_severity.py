@@ -50,7 +50,6 @@ class HostSeverity(CentreonBaseModel):
     async def get(cls, host_severity_id: int) -> "HostSeverity":
         """
         Get a host severity.
-        Return True if successful; otherwise, raise an exception.
         """
         content = await request("GET", f"{cls.endpoint}/{host_severity_id}")
         return cls(**content)

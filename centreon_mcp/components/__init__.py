@@ -4,6 +4,7 @@ from centreon_mcp.components.command import command
 from centreon_mcp.components.comment import comment
 from centreon_mcp.components.downtime import downtime
 from centreon_mcp.components.host import host
+from centreon_mcp.components.host_severity import host_severity
 from centreon_mcp.components.hostgroup import hostgroup
 from centreon_mcp.components.monitoring_server import monitoring_server
 from centreon_mcp.components.resource import resource
@@ -24,4 +25,5 @@ components = [
     command,
     check,
     timeline,
+    host_severity,
 ]

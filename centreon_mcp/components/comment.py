@@ -20,5 +20,4 @@ async def add_comments(resources: list[CommentResource]) -> bool:
     Use `list_resources` tools first to get the resource IDs.
     """
     logger.info("Executing tool add_comments")
-    await Comment.add(resources)
-    return True
+    return await Comment.add(resources)

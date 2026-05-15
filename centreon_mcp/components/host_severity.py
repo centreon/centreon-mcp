@@ -6,8 +6,8 @@ from pydantic import Field
 
 from centreon_mcp.types.host_severity import (
     HostSeverity,
-    HostSeverityCreateParams,
-    HostSeverityUpdateParams,
+    HostSeverityFullParams,
+    HostSeverityPartialParams,
 )
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
@@ -59,7 +59,7 @@ async def list_host_severities(
         "openWorldHint": True,
     }
 )
-async def create_host_severity(params: HostSeverityCreateParams) -> bool:
+async def create_host_severity(params: HostSeverityFullParams) -> bool:
     """
     Create a host severity from params.
     """
@@ -75,15 +75,14 @@ async def create_host_severity(params: HostSeverityCreateParams) -> bool:
         "openWorldHint": True,
     }
 )
-async def update_host_severity(host_severity_id: int, params: HostSeverityUpdateParams) -> bool:
+async def update_host_severity(host_severity_id: int, params: HostSeverityPartialParams) -> bool:
     """
     Update a host severity from params.
     """
     logger.info("Executing tool update_host_severity")
     host_severity = await HostSeverity.get(host_severity_id)
     data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
-    params = HostSeverityUpdateParams(**data)
-    return await HostSeverity.update(host_severity_id, params)
+    return await HostSeverity.update(host_severity_id, HostSeverityFullParams(**data))
 
 
 @host_severity.tool(

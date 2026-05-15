@@ -2,8 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 from centreon_mcp.types.host_severity import (
     HostSeverity,
-    HostSeverityCreateParams,
-    HostSeverityUpdateParams,
+    HostSeverityFullParams,
 )
 
 MODULE = "centreon_mcp.types.host_severity"
@@ -35,7 +34,7 @@ async def test_get_host_severity(request: AsyncMock):
 async def test_create_host_severity(request: AsyncMock):
 
     # Setup args
-    params = HostSeverityCreateParams.model_construct()
+    params = HostSeverityFullParams.model_construct()
 
     # Mock request
     request.return_value = None
@@ -53,7 +52,7 @@ async def test_update_host_severity(request: AsyncMock):
 
     # Setup args
     host_severity_id = 10
-    params = HostSeverityUpdateParams.model_construct()
+    params = HostSeverityFullParams.model_construct()
 
     # Mock request
     request.return_value = None

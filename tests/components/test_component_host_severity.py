@@ -10,8 +10,8 @@ from centreon_mcp.components.host_severity import (
 )
 from centreon_mcp.types.host_severity import (
     HostSeverity,
-    HostSeverityCreateParams,
-    HostSeverityUpdateParams,
+    HostSeverityFullParams,
+    HostSeverityPartialParams,
 )
 
 MODULE = "centreon_mcp.components.host_severity"
@@ -49,7 +49,7 @@ async def test_list_host_severities(logger: MagicMock, _list: AsyncMock):
 async def test_create_host_severity(logger: MagicMock, host_severity_create: AsyncMock):
 
     # Setup args
-    params = HostSeverityCreateParams.model_construct()
+    params = HostSeverityFullParams.model_construct()
 
     # Mock logger
     logger.info.return_value = None
@@ -76,13 +76,13 @@ async def test_update_host_severity(
 
     # Setup args
     host_severity_id = 10
-    params = HostSeverityUpdateParams.model_construct()
+    params = HostSeverityPartialParams.model_construct()
 
     # Mock logger
     logger.info.return_value = None
 
     # Mock HostSeverity.get
-    host_severity = HostSeverity.model_construct()
+    host_severity = HostSeverity.model_construct(name="Nmae", alias="Alias", level=1, icon_id=1)
     host_severity_get.return_value = host_severity
 
     # Mock HostSeverity.update
@@ -96,8 +96,7 @@ async def test_update_host_severity(
 
     # Assert HostSeverity.update called with right args
     data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
-    params = HostSeverityUpdateParams(**data)
-    host_severity_update.assert_awaited_once_with(host_severity_id, params)
+    host_severity_update.assert_awaited_once_with(host_severity_id, HostSeverityFullParams(**data))
 
     # Assert result
     assert result

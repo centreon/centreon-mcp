@@ -42,19 +42,23 @@ class Downtime(CentreonBaseModel):
     is_cancelled: bool
 
     @classmethod
-    async def set(cls, params: DowntimeParams, resources: list[DowntimeResource]) -> None:
+    async def set(cls, params: DowntimeParams, resources: list[DowntimeResource]) -> bool:
         """
         Set a downtime on multiple resources.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = {
             "downtime": params.model_dump(mode="json"),
             "resources": [resource.dump() for resource in resources],
         }
         await request("POST", "monitoring/resources/downtime", payload=payload)
+        return True
 
     @staticmethod
-    async def cancel(downtime_id: int) -> None:
+    async def cancel(downtime_id: int) -> bool:
         """
         Cancel a downtime.
+        Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"monitoring/downtimes/{downtime_id}")
+        return True

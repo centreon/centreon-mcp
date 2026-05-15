@@ -57,5 +57,4 @@ async def add_command(params: CommandParams) -> bool:
     Add a command.
     """
     logger.info("Executing tool add_command")
-    await Command.add(params)
-    return True
+    return await Command.add(params)

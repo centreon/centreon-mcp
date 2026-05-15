@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import Any, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, Field, model_validator
@@ -9,6 +10,12 @@ T = TypeVar("T", bound="CentreonBaseModel")
 ResourceType = Literal["host", "service"]
 
 StatusType = Literal["soft", "hard"]
+
+
+class EnablementStatus(IntEnum):
+    STATUS_DISABLED = 0
+    STATUS_ENABLED = 1
+    STATUS_DEFAULT = 2
 
 
 class StatusCount(BaseModel):

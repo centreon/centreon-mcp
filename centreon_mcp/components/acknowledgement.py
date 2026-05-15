@@ -72,8 +72,7 @@ async def add_acknowledgements(
     Use tool `list_resources` first to get resources IDs.
     """
     logger.info("Executing tool add_acknowledgements")
-    await Acknowledgement.add(params, resources)
-    return True
+    return await Acknowledgement.add(params, resources)
 
 
 @acknowledgement.tool(
@@ -95,5 +94,4 @@ async def cancel_acknowledgements(
     Use tool `list_acknowledgements` first to get acknowledged resources IDs.
     """
     logger.info("Executing tool cancel_acknowledgements")
-    await Acknowledgement.cancel(with_services, resources)
-    return True
+    return await Acknowledgement.cancel(with_services, resources)

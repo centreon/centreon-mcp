@@ -19,7 +19,7 @@ async def test_add_comments(logger: MagicMock, add: AsyncMock):
     logger.info.return_value = None
 
     # Mock Comment.add
-    add.return_value = None
+    add.return_value = True
 
     # Call test fonction
     result = await add_comments(resources)

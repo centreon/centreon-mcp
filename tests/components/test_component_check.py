@@ -18,7 +18,7 @@ async def test_force_check_default(logger: MagicMock, submit: AsyncMock):
     logger.info.return_value = None
 
     # Mock Check.request
-    submit.return_value = None
+    submit.return_value = True
 
     # Call test function
     result = await request_check(resources, is_forced)

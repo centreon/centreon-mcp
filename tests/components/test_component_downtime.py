@@ -51,7 +51,7 @@ async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
     logger.info.return_value = None
 
     # Mock Downtime.set
-    downtime_set.return_value = None
+    downtime_set.return_value = True
 
     # Call test fonction
     result = await set_downtimes(params, resources)
@@ -68,19 +68,19 @@ async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
 async def test_cancel_downtimes(logger: MagicMock, cancel: AsyncMock):
 
     # Setup args
-    downtime_ids = [10]
+    downtime_id = 10
 
     # Mock logger
     logger.info.return_value = None
 
     # Mock Downtime.cancel
-    cancel.return_value = None
+    cancel.return_value = True
 
     # Call test fonction
-    result = await cancel_downtimes(downtime_ids)
+    results = await cancel_downtimes([downtime_id])
 
     # Assert Downtime.cancel called with right args
-    cancel.assert_awaited_once_with(downtime_ids[0])
+    cancel.assert_awaited_once_with(downtime_id)
 
     # Assert result
-    assert result
+    assert results == {downtime_id: True}

@@ -37,5 +37,4 @@ async def request_check(
     Use tool `list_resources` first to get the resource IDs.
     """
     logger.info("Executing tool request_check")
-    await Check.request(is_forced, resources)
-    return True
+    return await Check.request(is_forced, resources)

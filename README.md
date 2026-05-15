@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 18 tools organized across six functional areas.
+The MCP server currently exposes 25 tools organized across eight functional areas.
 
 ### Resource Monitoring
 
@@ -40,6 +40,21 @@ Three read-only tools allow AI assistants to explore your monitoring topology:
 - **list_monitoring_servers** — List pollers, with the ability to filter by name, ID, or running status
 
 These tools serve as natural building blocks: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
+
+### Host Configuration
+
+Full host configuration lifecycle management through conversation:
+- **list_host_configurations** — List host configurations, filterable by ID, name, address, poller, host group, host category, and activation status. Results are paginated and sortable by name, alias, or address.
+- **create_host_configuration** — Create a new host configuration by specifying the monitoring server, name, and IP address. Supports a wide range of optional parameters: SNMP community and version, geographic coordinates, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and host group/category associations.
+- **update_host_configuration** — Partially update an existing host configuration by ID, using the same parameter set as creation.
+- **delete_host_configurations** — Delete one or more host configurations by their IDs.
+
+### Host Severities
+
+Manage host severity levels used to prioritize hosts in your monitoring:
+- **list_host_severities** — List host severities, filterable by ID, name, alias, level range, and activation status. Results are paginated and sortable by name, alias, or level.
+- **create_host_severity** — Create a new host severity by specifying a name, level, and icon ID. An alias is optional.
+- **delete_host_severities** — Delete one or more host severities by their IDs.
 
 ### Acknowledgements
 

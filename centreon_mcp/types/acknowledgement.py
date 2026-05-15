@@ -37,23 +37,27 @@ class Acknowledgement(CentreonBaseModel):
     type: int
 
     @staticmethod
-    async def add(params: AcknowledgementParams, resources: list[AcknowledgementResource]) -> None:
+    async def add(params: AcknowledgementParams, resources: list[AcknowledgementResource]) -> bool:
         """
         Add an acknowledgement on multiple resources.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = {
             "acknowledgement": params.model_dump(mode="json"),
             "resources": [resource.dump() for resource in resources],
         }
         await request("POST", "monitoring/resources/acknowledge", payload=payload)
+        return True
 
     @staticmethod
-    async def cancel(with_services: bool, resources: list[AcknowledgementResource]) -> None:
+    async def cancel(with_services: bool, resources: list[AcknowledgementResource]) -> bool:
         """
         Cancel acknowledgements on multiple resources.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = {
             "disacknowledgement": {"with_services": with_services},
             "resources": [resource.dump() for resource in resources],
         }
         await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)
+        return True

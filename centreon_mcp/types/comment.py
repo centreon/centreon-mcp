@@ -13,9 +13,11 @@ class CommentResource(BaseResource):
 
 class Comment(BaseModel):
     @staticmethod
-    async def add(resources: list[CommentResource]) -> None:
+    async def add(resources: list[CommentResource]) -> bool:
         """
         Add comments on multiple resources.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = {"resources": [resource.dump() for resource in resources]}
         await request("POST", "monitoring/resources/comments", payload=payload)
+        return True

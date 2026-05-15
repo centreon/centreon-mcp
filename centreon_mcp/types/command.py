@@ -74,9 +74,11 @@ class Command(CentreonBaseModel):
     is_locked: bool
 
     @staticmethod
-    async def add(params: CommandParams) -> None:
+    async def add(params: CommandParams) -> bool:
         """
         Add a command.
+        Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json")
         await request("POST", "configuration/commands", payload=payload)
+        return True

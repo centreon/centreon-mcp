@@ -1,9 +1,6 @@
-from typing import Annotated
-
 from fastmcp import FastMCP
-from pydantic import Field
 
-from centreon_mcp.types.check import Check, CheckResource
+from centreon_mcp.types.check import Check, CheckParams, CheckResource
 from centreon_mcp.utils import logger
 
 check = FastMCP()
@@ -18,19 +15,7 @@ check = FastMCP()
         "openWorldHint": True,
     }
 )
-async def request_check(
-    resources: list[CheckResource],
-    is_forced: Annotated[
-        bool,
-        Field(
-            description=(
-                "If true, the check is executed immediately, bypassing the configured "
-                "check interval. If false, the check is scheduled at the next available "
-                "execution slot. Defaults to true."
-            ),
-        ),
-    ] = True,
-) -> bool:
+async def request_check(resources: list[CheckResource], params: CheckParams) -> bool:
     """
     Trigger a check on multiple resources (hosts and services) in real-time monitoring.
     Useful to refresh state on demand without waiting for the next polling cycle —
@@ -38,4 +23,4 @@ async def request_check(
     Use tool `list_resources` first to get the resource IDs.
     """
     logger.info("Executing tool request_check")
-    return await Check.request(is_forced, resources)
+    return await Check.request(params, resources)

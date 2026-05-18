@@ -30,6 +30,7 @@ class HostGroupFilter(BaseFilter):
     annotations={
         "title": "List host groups in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

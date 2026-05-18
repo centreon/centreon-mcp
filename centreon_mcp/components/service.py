@@ -26,6 +26,7 @@ class ServiceFilter(BaseFilter):
     annotations={
         "title": "Count services by status in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

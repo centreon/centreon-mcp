@@ -70,6 +70,7 @@ class HostConfigurationFilter(BaseFilter):
     annotations={
         "title": "List host configurations",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -93,6 +94,7 @@ async def list_host_configurations(
     annotations={
         "title": "Create a host configuration",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -109,6 +111,7 @@ async def create_host_configuration(params: HostConfigurationFullParams) -> bool
     annotations={
         "title": "Update a host configuration",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -125,6 +128,7 @@ async def update_host_configuration(host_id: int, params: HostConfigurationParti
     annotations={
         "title": "Delete host configurations",
         "readOnlyHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
     }

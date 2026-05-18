@@ -49,6 +49,7 @@ class ResourceFilter(BaseFilter):
     annotations={
         "title": "List resources (hosts and services) in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

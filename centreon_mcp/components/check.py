@@ -13,6 +13,7 @@ check = FastMCP()
     annotations={
         "title": "Request a check on resources (hosts and services) in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

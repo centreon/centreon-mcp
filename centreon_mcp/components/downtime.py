@@ -42,6 +42,7 @@ class DowntimeFilter(BaseFilter):
     annotations={
         "title": "List hosts downtimes in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -65,6 +66,7 @@ async def list_downtimes(
     annotations={
         "title": "Set a downtime on multiple resources (host and services) in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -82,6 +84,7 @@ async def set_downtimes(params: DowntimeParams, resources: list[DowntimeResource
     annotations={
         "title": "Cancel downtimes in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
     }

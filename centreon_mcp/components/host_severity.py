@@ -32,6 +32,7 @@ class HostSeverityFilter(BaseFilter):
     annotations={
         "title": "List host severities",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -55,6 +56,7 @@ async def list_host_severities(
     annotations={
         "title": "Create a host severity",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -71,6 +73,7 @@ async def create_host_severity(params: HostSeverityFullParams) -> bool:
     annotations={
         "title": "Update a host severity",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -89,6 +92,7 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityPartia
     annotations={
         "title": "Delete host severities",
         "readOnlyHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
     }

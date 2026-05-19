@@ -1,11 +1,22 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.hostgroup import (
+    HostGroupConfigurationFilter,
+    HostGroupConfigurationOrder,
     HostGroupFilter,
     HostGroupOrder,
+    add_hostgroup_configuration,
+    delete_hostgroup_configurations,
+    list_hostgroup_configurations,
     list_hostgroups,
+    update_hostgroup_configuration,
 )
-from centreon_mcp.types.hostgroup import HostGroup
+from centreon_mcp.types.hostgroup import (
+    HostGroup,
+    HostGroupConfiguration,
+    HostGroupConfigurationFullParams,
+    HostGroupConfigurationPartialParams,
+)
 
 MODULE = "centreon_mcp.components.hostgroup"
 
@@ -35,3 +46,121 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
 
     # Assert result
     assert results[0] == hostgroup
+
+
+@patch(f"{MODULE}._list", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_list_hostgroup_configurations(logger: MagicMock, _list: AsyncMock):
+
+    # Setup args
+    filters = [HostGroupConfigurationFilter.model_construct()]
+    limit = 50
+    page = 1
+    order = HostGroupConfigurationOrder()
+
+    # Mock logger
+    logger.debug.return_value = None
+
+    # Mock _list
+    hostgroup_configuration = HostGroupConfiguration.model_construct()
+    _list.return_value = [hostgroup_configuration]
+
+    # Call test fonction
+    results = await list_hostgroup_configurations(filters, limit, page, order)
+
+    # Assert _list called with right args
+    _list.assert_awaited_once_with(
+        HostGroupConfiguration, HostGroupConfigurationOrder, filters, limit, page, order
+    )
+
+    # Assert result
+    assert results[0] == hostgroup_configuration
+
+
+@patch(f"{MODULE}.HostGroupConfiguration.add", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_add_hostgroup_configuration(
+    logger: MagicMock, hostgroup_configuration_add: AsyncMock
+):
+
+    # Setup args
+    params = HostGroupConfigurationFullParams.model_construct()
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock HostGroupConfiguration.add
+    hostgroup_configuration_add.return_value = True
+
+    # Call test fonction
+    result = await add_hostgroup_configuration(params)
+
+    # Assert HostqgqroupConfiguration.add called with right args
+    hostgroup_configuration_add.assert_awaited_once_with(params)
+
+    # Assert result
+    assert result
+
+
+@patch(f"{MODULE}.HostGroupConfiguration.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.HostGroupConfiguration.get", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_update_host_configuration(
+    logger: MagicMock,
+    hostgroup_configuration_get: AsyncMock,
+    hostgroup_configuration_update: AsyncMock,
+):
+
+    # Setup args
+    hostgroup_id = 10
+    params = HostGroupConfigurationPartialParams.model_construct()
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock HostGroupConfiguration.get
+    hostgroup = HostGroupConfiguration.model_construct(id=1, name="HostGroup")
+    hostgroup_configuration_get.return_value = hostgroup
+
+    # Mock HostGroupConfiguration.update
+    hostgroup_configuration_update.return_value = True
+
+    # Call test fonction
+    result = await update_hostgroup_configuration(hostgroup_id, params)
+
+    # Assert HostGrougConfiguration.get called with right args
+    hostgroup_configuration_get.assert_awaited_once_with(hostgroup_id)
+
+    # Assert HostSeverity.update called with right args
+    data = hostgroup.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
+    hostgroup_configuration_update.assert_awaited_once_with(
+        hostgroup_id, HostGroupConfigurationFullParams(**data)
+    )
+
+    # Assert result
+    assert result
+
+
+@patch(f"{MODULE}.HostGroupConfiguration.delete", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_delete_hostgroup_configurations(
+    logger: MagicMock, hostgroup_configuration_delete: AsyncMock
+):
+
+    # Setup args
+    hostgroup_id = 10
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock HostGroupConfiguration.delete
+    hostgroup_configuration_delete.return_value = True
+
+    # Call test fonction
+    result = await delete_hostgroup_configurations([hostgroup_id])
+
+    # Assert HostConfigurationGroup.delete called with right args
+    hostgroup_configuration_delete.assert_awaited_once_with(hostgroup_id)
+
+    # Assert result
+    assert result == {hostgroup_id: True}

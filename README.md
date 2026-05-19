@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 25 tools organized across eight functional areas.
+The MCP server currently exposes 29 tools organized across nine functional areas.
 
 ### Resource Monitoring
 
@@ -55,6 +55,14 @@ Manage host severity levels used to prioritize hosts in your monitoring:
 - **list_host_severities** — List host severities, filterable by ID, name, alias, level range, and activation status. Results are paginated and sortable by name, alias, or level.
 - **create_host_severity** — Create a new host severity by specifying a name, level, and icon ID. An alias is optional.
 - **delete_host_severities** — Delete one or more host severities by their IDs.
+
+### Host Group Configuration
+
+Full host group configuration lifecycle management through conversation:
+- **list_hostgroup_configurations** — List host group configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
+- **add_hostgroup_configuration** — Create a new host group configuration by specifying its name.
+- **update_hostgroup_configuration** — Partially update an existing host group configuration by ID.
+- **delete_hostgroup_configurations** — Delete one or more host group configurations by their IDs.
 
 ### Acknowledgements
 

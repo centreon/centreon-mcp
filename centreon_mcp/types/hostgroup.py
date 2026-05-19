@@ -30,11 +30,11 @@ class HostGroupConfigurationBaseParams(BaseModel):
     hosts: list[int] | None = Field(None, description=DESCRIPTION["hosts"])
 
 
-class HostGroupConfigurationPartialParams(BaseModel):
+class HostGroupConfigurationPartialParams(HostGroupConfigurationBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
 
 
-class HostGroupConfigurationFullParams(BaseModel):
+class HostGroupConfigurationFullParams(HostGroupConfigurationBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
 
 

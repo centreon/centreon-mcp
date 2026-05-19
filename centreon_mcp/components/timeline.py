@@ -42,6 +42,7 @@ class TimelineFilter(BaseFilter):
     annotations={
         "title": "Get the event timeline of a host in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -76,6 +77,7 @@ async def get_host_timeline(
     annotations={
         "title": "Get the event timeline of a service in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

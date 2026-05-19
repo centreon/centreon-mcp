@@ -25,6 +25,7 @@ class CommandFilter(BaseFilter):
     annotations={
         "title": "List commands",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -48,6 +49,7 @@ async def list_commands(
     annotations={
         "title": "Add a command",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

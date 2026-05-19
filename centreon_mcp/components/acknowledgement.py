@@ -38,6 +38,7 @@ class AcknowledgementFilter(BaseFilter):
     annotations={
         "title": "List all acknowledgements in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -59,6 +60,7 @@ async def list_acknowledgements(
     annotations={
         "title": "Add acknowledgement on multiple resources in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -79,6 +81,7 @@ async def add_acknowledgements(
     annotations={
         "title": "Cancel acknowledgements on multiple resources in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
     }

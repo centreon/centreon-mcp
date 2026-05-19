@@ -42,6 +42,7 @@ class ServiceGroupFilter(BaseFilter):
     annotations={
         "title": "List service groups in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

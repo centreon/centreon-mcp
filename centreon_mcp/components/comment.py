@@ -10,6 +10,7 @@ comment = FastMCP()
     annotations={
         "title": "Add comments on resources (hosts and services) in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

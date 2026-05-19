@@ -24,6 +24,7 @@ class MonitoringServerFilter(BaseFilter):
     annotations={
         "title": "List monitoring servers in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

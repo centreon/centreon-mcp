@@ -1,17 +1,17 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.hostgroup import (
+from centreon_mcp.components.host_group import (
     HostGroupConfigurationFilter,
     HostGroupConfigurationOrder,
     HostGroupFilter,
     HostGroupOrder,
-    add_hostgroup_configuration,
-    delete_hostgroup_configurations,
-    list_hostgroup_configurations,
-    list_hostgroups,
-    update_hostgroup_configuration,
+    add_host_group_configuration,
+    delete_host_group_configurations,
+    list_host_group_configurations,
+    list_host_groups,
+    update_host_group_configuration,
 )
-from centreon_mcp.types.hostgroup import (
+from centreon_mcp.types.host_group import (
     Host,
     HostGroup,
     HostGroupConfiguration,
@@ -20,7 +20,7 @@ from centreon_mcp.types.hostgroup import (
     Icon,
 )
 
-MODULE = "centreon_mcp.components.hostgroup"
+MODULE = "centreon_mcp.components.host_group"
 
 
 @patch(f"{MODULE}._list", new_callable=AsyncMock)
@@ -41,7 +41,7 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
     _list.return_value = [hostgroup]
 
     # Call test fonction
-    results = await list_hostgroups(filters, limit, page, order)
+    results = await list_host_groups(filters, limit, page, order)
 
     # Assert _list called with right args
     _list.assert_awaited_once_with(HostGroup, HostGroupOrder, filters, limit, page, order)
@@ -52,7 +52,7 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
 
 @patch(f"{MODULE}._list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_hostgroup_configurations(logger: MagicMock, _list: AsyncMock):
+async def test_list_host_group_configurations(logger: MagicMock, _list: AsyncMock):
 
     # Setup args
     filters = [HostGroupConfigurationFilter.model_construct()]
@@ -68,7 +68,7 @@ async def test_list_hostgroup_configurations(logger: MagicMock, _list: AsyncMock
     _list.return_value = [hostgroup_configuration]
 
     # Call test fonction
-    results = await list_hostgroup_configurations(filters, limit, page, order)
+    results = await list_host_group_configurations(filters, limit, page, order)
 
     # Assert _list called with right args
     _list.assert_awaited_once_with(
@@ -81,7 +81,7 @@ async def test_list_hostgroup_configurations(logger: MagicMock, _list: AsyncMock
 
 @patch(f"{MODULE}.HostGroupConfiguration.add", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_add_hostgroup_configuration(
+async def test_add_host_group_configuration(
     logger: MagicMock, hostgroup_configuration_add: AsyncMock
 ):
 
@@ -95,7 +95,7 @@ async def test_add_hostgroup_configuration(
     hostgroup_configuration_add.return_value = True
 
     # Call test fonction
-    result = await add_hostgroup_configuration(params)
+    result = await add_host_group_configuration(params)
 
     # Assert HostqgqroupConfiguration.add called with right args
     hostgroup_configuration_add.assert_awaited_once_with(params)
@@ -107,7 +107,7 @@ async def test_add_hostgroup_configuration(
 @patch(f"{MODULE}.HostGroupConfiguration.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.HostGroupConfiguration.get", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_hostgroup_configuration(
+async def test_update_host_group_configuration(
     logger: MagicMock,
     hostgroup_configuration_get: AsyncMock,
     hostgroup_configuration_update: AsyncMock,
@@ -133,7 +133,7 @@ async def test_update_hostgroup_configuration(
     hostgroup_configuration_update.return_value = True
 
     # Call test fonction
-    result = await update_hostgroup_configuration(hostgroup_id, params)
+    result = await update_host_group_configuration(hostgroup_id, params)
 
     # Assert HostGrougConfiguration.get called with right args
     hostgroup_configuration_get.assert_awaited_once_with(hostgroup_id)
@@ -154,7 +154,7 @@ async def test_update_hostgroup_configuration(
 
 @patch(f"{MODULE}.HostGroupConfiguration.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_hostgroup_configurations(
+async def test_delete_host_group_configurations(
     logger: MagicMock, hostgroup_configuration_delete: AsyncMock
 ):
 
@@ -168,7 +168,7 @@ async def test_delete_hostgroup_configurations(
     hostgroup_configuration_delete.return_value = True
 
     # Call test fonction
-    result = await delete_hostgroup_configurations([hostgroup_id])
+    result = await delete_host_group_configurations([hostgroup_id])
 
     # Assert HostConfigurationGroup.delete called with right args
     hostgroup_configuration_delete.assert_awaited_once_with(hostgroup_id)

@@ -70,7 +70,7 @@ class HostGroupConfiguration(CentreonBaseModel):
     @classmethod
     async def get(cls, host_group_id: int) -> "HostGroupConfiguration":
         """
-        Get a hostgroup.
+        Get a host group.
         """
         content = await request("GET", f"{cls.endpoint}/{host_group_id}")
         return cls(**content)
@@ -78,7 +78,7 @@ class HostGroupConfiguration(CentreonBaseModel):
     @classmethod
     async def add(cls, params: HostGroupConfigurationFullParams) -> bool:
         """
-        Add a hostgroup.
+        Add a host group.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
@@ -88,7 +88,7 @@ class HostGroupConfiguration(CentreonBaseModel):
     @classmethod
     async def update(cls, hostgroup_id: int, params: HostGroupConfigurationFullParams) -> bool:
         """
-        Update a hostgroup.
+        Update a host group.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
@@ -98,7 +98,7 @@ class HostGroupConfiguration(CentreonBaseModel):
     @classmethod
     async def delete(cls, hostgroup_id: int) -> bool:
         """
-        Delete a hostgroup.
+        Delete a host group.
         Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"{cls.endpoint}/{hostgroup_id}")

@@ -1,11 +1,11 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.hostgroup import (
+from centreon_mcp.types.host_group import (
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
 )
 
-MODULE = "centreon_mcp.types.hostgroup"
+MODULE = "centreon_mcp.types.host_group"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

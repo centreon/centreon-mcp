@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.types.host import HostState
-from centreon_mcp.types.hostgroup import (
+from centreon_mcp.types.host_group import (
     HostGroup,
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
@@ -14,7 +14,7 @@ from centreon_mcp.types.hostgroup import (
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
 
-hostgroup = FastMCP()
+host_group = FastMCP()
 
 
 class HostGroupOrder(BaseOrder):
@@ -32,7 +32,7 @@ class HostGroupFilter(BaseFilter):
     host_group_name: str | None = Field(None, serialization_alias="name $eq")
 
 
-@hostgroup.tool(
+@host_group.tool(
     annotations={
         "title": "List host groups in real-time monitoring",
         "readOnlyHint": True,
@@ -41,7 +41,7 @@ class HostGroupFilter(BaseFilter):
         "openWorldHint": True,
     }
 )
-async def list_hostgroups(
+async def list_host_groups(
     filters: list[HostGroupFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
@@ -52,7 +52,7 @@ async def list_hostgroups(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all host groups except if explicitly intended.
     """
-    logger.info("Executing tool list_hostgroups")
+    logger.info("Executing tool list_host_groups")
     return await _list(HostGroup, HostGroupOrder, filters, limit, page, order)
 
 
@@ -67,7 +67,7 @@ class HostGroupConfigurationFilter(BaseFilter):
     host_group_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
-@hostgroup.tool(
+@host_group.tool(
     annotations={
         "title": "List host groups configurations",
         "readOnlyHint": True,
@@ -76,7 +76,7 @@ class HostGroupConfigurationFilter(BaseFilter):
         "openWorldHint": True,
     }
 )
-async def list_hostgroup_configurations(
+async def list_host_group_configurations(
     filters: list[HostGroupConfigurationFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
@@ -93,16 +93,16 @@ async def list_hostgroup_configurations(
     )
 
 
-@hostgroup.tool(
+@host_group.tool(
     annotations={
-        "title": "Add a hostgroup",
+        "title": "Add a host group configuration",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
 )
-async def add_hostgroup_configuration(params: HostGroupConfigurationFullParams) -> bool:
+async def add_host_group_configuration(params: HostGroupConfigurationFullParams) -> bool:
     """
     Add a hostgroup.
     """
@@ -110,22 +110,22 @@ async def add_hostgroup_configuration(params: HostGroupConfigurationFullParams) 
     return await HostGroupConfiguration.add(params)
 
 
-@hostgroup.tool(
+@host_group.tool(
     annotations={
-        "title": "Update a hostgroup",
+        "title": "Update a host group configuration",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
 )
-async def update_hostgroup_configuration(
+async def update_host_group_configuration(
     host_group_id: int, params: HostGroupConfigurationPartialParams
 ) -> bool:
     """
     Update a host group from params.
     """
-    logger.info("Executing tool update_hostgroup_configuration")
+    logger.info("Executing tool update_host_group_configuration")
     hostgroup = await HostGroupConfiguration.get(host_group_id)
     data = hostgroup.model_dump(exclude={"id", "is_activated", "icon", "hosts"}, exclude_none=True)
     data["icon_id"] = hostgroup.icon.id if hostgroup.icon else None
@@ -137,7 +137,7 @@ async def update_hostgroup_configuration(
     )
 
 
-@hostgroup.tool(
+@host_group.tool(
     annotations={
         "title": "Delete host group configurations",
         "readOnlyHint": False,
@@ -146,13 +146,13 @@ async def update_hostgroup_configuration(
         "openWorldHint": True,
     }
 )
-async def delete_hostgroup_configurations(
+async def delete_host_group_configurations(
     hostgroup_ids: list[int],
 ) -> dict[int, bool | BaseException]:
     """
     Delete multiple host group configurations.
     """
-    logger.info("Executing tool delete_hostgroup_configurations")
+    logger.info("Executing tool delete_host_group_configurations")
     tasks = [
         asyncio.create_task(HostGroupConfiguration.delete(hostgroup_id))
         for hostgroup_id in hostgroup_ids

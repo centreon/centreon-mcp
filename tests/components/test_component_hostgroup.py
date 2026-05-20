@@ -12,10 +12,12 @@ from centreon_mcp.components.hostgroup import (
     update_hostgroup_configuration,
 )
 from centreon_mcp.types.hostgroup import (
+    Host,
     HostGroup,
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
     HostGroupConfigurationPartialParams,
+    Icon,
 )
 
 MODULE = "centreon_mcp.components.hostgroup"
@@ -105,7 +107,7 @@ async def test_add_hostgroup_configuration(
 @patch(f"{MODULE}.HostGroupConfiguration.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.HostGroupConfiguration.get", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_configuration(
+async def test_update_hostgroup_configuration(
     logger: MagicMock,
     hostgroup_configuration_get: AsyncMock,
     hostgroup_configuration_update: AsyncMock,
@@ -119,7 +121,12 @@ async def test_update_host_configuration(
     logger.info.return_value = None
 
     # Mock HostGroupConfiguration.get
-    hostgroup = HostGroupConfiguration.model_construct(id=1, name="HostGroup")
+    hostgroup = HostGroupConfiguration.model_construct(
+        id=1,
+        name="HostGroup",
+        icon=Icon.model_construct(id=1),
+        hosts=[Host(id=10, name="host_name_10")],
+    )
     hostgroup_configuration_get.return_value = hostgroup
 
     # Mock HostGroupConfiguration.update
@@ -132,7 +139,11 @@ async def test_update_host_configuration(
     hostgroup_configuration_get.assert_awaited_once_with(hostgroup_id)
 
     # Assert HostSeverity.update called with right args
-    data = hostgroup.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
+    data = hostgroup.model_dump(exclude={"id", "is_activated", "icon", "hosts"})
+    data["icon_id"] = hostgroup.icon.id if hostgroup.icon else None
+    data["hosts"] = [host.id for host in hostgroup.hosts if host.id not in params.hosts_removed]
+    data["hosts"] += [host_id for host_id in params.hosts_added if host_id not in data["hosts"]]
+    data |= params.model_dump(exclude_none=True)
     hostgroup_configuration_update.assert_awaited_once_with(
         hostgroup_id, HostGroupConfigurationFullParams(**data)
     )

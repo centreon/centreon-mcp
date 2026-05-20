@@ -127,7 +127,11 @@ async def update_hostgroup_configuration(
     """
     logger.info("Executing tool update_hostgroup_configuration")
     hostgroup = await HostGroupConfiguration.get(host_group_id)
-    data = hostgroup.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
+    data = hostgroup.model_dump(exclude={"id", "is_activated", "icon", "hosts"}, exclude_none=True)
+    data["icon_id"] = hostgroup.icon.id if hostgroup.icon else None
+    data["hosts"] = [host.id for host in hostgroup.hosts if host.id not in params.hosts_removed]
+    data["hosts"] += [host_id for host_id in params.hosts_added if host_id not in data["hosts"]]
+    data |= params.model_dump(exclude_none=True)
     return await HostGroupConfiguration.update(
         host_group_id, HostGroupConfigurationFullParams(**data)
     )

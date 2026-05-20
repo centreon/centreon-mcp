@@ -61,8 +61,8 @@ class HostGroupConfigurationOrder(BaseOrder):
 
 
 class HostGroupConfigurationFilter(BaseFilter):
-    host_group__id: int | None = Field(None, serialization_alias="id $eq")
-    host_group_ame: str | None = Field(None, serialization_alias="name $eq")
+    host_group_id: int | None = Field(None, serialization_alias="id $eq")
+    host_group_name: str | None = Field(None, serialization_alias="name $eq")
     host_group_alias: str | None = Field(None, serialization_alias="alias $eq")
     host_group_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
@@ -87,7 +87,7 @@ async def list_hostgroup_configurations(
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all host groups except if explicitly intended.
     """
-    logger.info("Executing tool list_hostgroups_configurations")
+    logger.info("Executing tool list_hostgroup_configurations")
     return await _list(
         HostGroupConfiguration, HostGroupConfigurationOrder, filters, limit, page, order
     )
@@ -106,7 +106,7 @@ async def add_hostgroup_configuration(params: HostGroupConfigurationFullParams) 
     """
     Add a hostgroup.
     """
-    logger.info("Executing tool add_hostgroup")
+    logger.info("Executing tool add_hostgroup_configuration")
     return await HostGroupConfiguration.add(params)
 
 
@@ -123,9 +123,9 @@ async def update_hostgroup_configuration(
     host_group_id: int, params: HostGroupConfigurationPartialParams
 ) -> bool:
     """
-    Update a hosgroup from params.
+    Update a host group from params.
     """
-    logger.info("Executing tool update_hostgroup")
+    logger.info("Executing tool update_hostgroup_configuration")
     hostgroup = await HostGroupConfiguration.get(host_group_id)
     data = hostgroup.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
     return await HostGroupConfiguration.update(
@@ -135,7 +135,7 @@ async def update_hostgroup_configuration(
 
 @hostgroup.tool(
     annotations={
-        "title": "Delete hostgroup configurations",
+        "title": "Delete host group configurations",
         "readOnlyHint": False,
         "destructiveHint": True,
         "idempotentHint": False,
@@ -146,7 +146,7 @@ async def delete_hostgroup_configurations(
     hostgroup_ids: list[int],
 ) -> dict[int, bool | BaseException]:
     """
-    Delete multiple hostgroup configurations.
+    Delete multiple host group configurations.
     """
     logger.info("Executing tool delete_hostgroup_configurations")
     tasks = [

@@ -67,6 +67,7 @@ class HostSeverity(CentreonBaseModel):
     @classmethod
     async def update(cls, host_severity_id: int, params: HostSeverityFullParams) -> bool:
         """
+        Update a host severity.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)

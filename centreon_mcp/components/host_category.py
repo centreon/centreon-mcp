@@ -28,7 +28,7 @@ class HostCategoryConfigurationFilter(BaseFilter):
 
 @host_category.tool(
     annotations={
-        "title": "List host groups configurations",
+        "title": "List host category configurations",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": False,

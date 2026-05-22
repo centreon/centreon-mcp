@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 29 tools organized across nine functional areas.
+The MCP server currently exposes 33 tools organized across ten functional areas.
 
 ### Resource Monitoring
 
@@ -63,6 +63,14 @@ Full host group configuration lifecycle management through conversation:
 - **add_host_group_configuration** — Create a new host group configuration by specifying its name.
 - **update_host_group_configuration** — Partially update an existing host group configuration by ID.
 - **delete_host_group_configurations** — Delete one or more host group configurations by their IDs.
+
+### Host Category Configuration
+
+Full host category configuration lifecycle management through conversation:
+- **list_host_category_configurations** — List host category configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
+- **create_host_category_configuration** — Create a new host category configuration by specifying its name and alias. Supports an optional comment and activation status.
+- **update_host_category_configuration** — Partially update an existing host category configuration by ID.
+- **delete_host_category_configurations** — Delete one or more host category configurations by their IDs.
 
 ### Acknowledgements
 

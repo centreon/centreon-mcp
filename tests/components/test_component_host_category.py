@@ -48,7 +48,7 @@ async def test_list_host_category_configurations(logger: MagicMock, _list: Async
 
 @patch(f"{MODULE}.HostCategoryConfiguration.create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_add_host_group_configuration(
+async def test_create_host_category_configuration(
     logger: MagicMock, host_category_configuration_create: AsyncMock
 ):
 
@@ -61,10 +61,10 @@ async def test_add_host_group_configuration(
     # Mock HostCategoryConfiguration.create
     host_category_configuration_create.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await create_host_category_configuration(params)
 
-    # Assert HostqgqroupConfiguration.add called with right args
+    # Assert HostCategoryConfiguration.create called with right args
     host_category_configuration_create.assert_awaited_once_with(params)
 
     # Assert result

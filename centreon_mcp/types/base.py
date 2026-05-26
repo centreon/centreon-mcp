@@ -65,6 +65,14 @@ class CentreonBaseModel(BaseModel):
         return [cls(**item) for item in content["result"]]
 
     @classmethod
+    async def get(cls: type[T], model_id: int) -> T:
+        """
+        Get a centreon model.
+        """
+        content = await request("GET", f"{cls.endpoint}/{model_id}")
+        return cls(**content)
+
+    @classmethod
     async def create(cls, params: BaseModel) -> bool:
         """
         Create a centreon model.

@@ -3,7 +3,6 @@ from typing import ClassVar
 from pydantic import BaseModel, Field
 
 from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
     "name": "Name for this host category",
@@ -36,11 +35,3 @@ class HostCategoryConfiguration(CentreonBaseModel):
     alias: str
     is_activated: bool
     comment: str | None = None
-
-    @classmethod
-    async def get(cls, host_category_id: int) -> "HostCategoryConfiguration":
-        """
-        Get a host category.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_category_id}")
-        return cls(**content)

@@ -118,3 +118,63 @@ async def test_centreon_base_model_update(
     # Assert request called with right args
     payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with("PUT", f"{endpoint}/{model_id}", payload)
+
+
+@pytest.mark.parametrize(
+    "endpoint,model,payload",
+    [
+        (
+            "configuration/hosts/categories",
+            HostCategoryConfiguration,
+            {
+                "id": 10,
+                "name": "host_category_name",
+                "alias": "host_category_alias",
+                "is_activated": True,
+            },
+        ),
+        (
+            "configuration/hosts/groups",
+            HostGroupConfiguration,
+            {
+                "id": 10,
+                "name": "host_group_name",
+                "is_activated": True,
+                "enabled_hosts_count": 10,
+                "disabled_hosts_count": 10,
+            },
+        ),
+        (
+            "configuration/hosts/severities",
+            HostSeverity,
+            {
+                "id": 10,
+                "name": "host_severity_name",
+                "alias": "host_severity_alias",
+                "level": 10,
+                "icon_id": 1,
+                "is_activated": True,
+            },
+        ),
+    ],
+)
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_centreon_base_model_get(
+    request: AsyncMock, endpoint: str, model: CentreonBaseModel, payload: dict
+):
+
+    # Setup args
+    model_id = 10
+
+    # Mock request
+    instance = model.model_construct(**payload)
+    request.return_value = instance.model_dump(mode="json")
+
+    # Call test function
+    result = await model.get(model_id)
+
+    # Assert request called with right args
+    request.assert_awaited_once_with("GET", f"{endpoint}/{model_id}")
+
+    # Assert result
+    assert result == instance

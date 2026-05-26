@@ -3,7 +3,6 @@ from typing import ClassVar
 from pydantic import BaseModel, Field
 
 from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
     "name": "Host group name",
@@ -66,11 +65,3 @@ class HostGroupConfiguration(CentreonBaseModel):
     enabled_hosts_count: int | None = None
     disabled_hosts_count: int | None = None
     hosts: list[Host] = Field(default_factory=list)
-
-    @classmethod
-    async def get(cls, host_group_id: int) -> "HostGroupConfiguration":
-        """
-        Get a host group.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_group_id}")
-        return cls(**content)

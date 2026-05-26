@@ -3,7 +3,6 @@ from typing import ClassVar
 from pydantic import BaseModel, Field
 
 from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
     "name": "Name of the host severity",
@@ -45,11 +44,3 @@ class HostSeverity(CentreonBaseModel):
     icon_id: int
     comment: str | None = None
     is_activated: bool
-
-    @classmethod
-    async def get(cls, host_severity_id: int) -> "HostSeverity":
-        """
-        Get a host severity.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_severity_id}")
-        return cls(**content)

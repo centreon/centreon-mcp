@@ -84,12 +84,3 @@ class HostGroupConfiguration(CentreonBaseModel):
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PUT", f"{cls.endpoint}/{hostgroup_id}", payload)
         return True
-
-    @classmethod
-    async def delete(cls, hostgroup_id: int) -> bool:
-        """
-        Delete a host group.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{hostgroup_id}")
-        return True

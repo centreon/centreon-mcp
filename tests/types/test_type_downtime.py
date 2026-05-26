@@ -24,19 +24,3 @@ async def test_set_downtime(request: AsyncMock):
         "resources": [resource.dump() for resource in resources],
     }
     request.assert_awaited_once_with("POST", "monitoring/resources/downtime", payload=payload)
-
-
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_cancel_downtime(request: AsyncMock):
-
-    # Setup args
-    downtime_id = 10
-
-    # Mock request
-    request.return_value = None
-
-    # Call test function
-    await Downtime.cancel(downtime_id)
-
-    # Assert request called with right args
-    request.assert_awaited_once_with("DELETE", f"monitoring/downtimes/{downtime_id}")

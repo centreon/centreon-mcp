@@ -53,12 +53,3 @@ class Downtime(CentreonBaseModel):
         }
         await request("POST", "monitoring/resources/downtime", payload=payload)
         return True
-
-    @staticmethod
-    async def cancel(downtime_id: int) -> bool:
-        """
-        Cancel a downtime.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"monitoring/downtimes/{downtime_id}")
-        return True

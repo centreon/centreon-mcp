@@ -63,12 +63,3 @@ class HostSeverity(CentreonBaseModel):
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PUT", f"{cls.endpoint}/{host_severity_id}", payload)
         return True
-
-    @classmethod
-    async def delete(cls, host_severity_id: int) -> bool:
-        """
-        Delete a host severity.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{host_severity_id}")
-        return True

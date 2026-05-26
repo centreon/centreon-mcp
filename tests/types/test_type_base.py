@@ -1,4 +1,13 @@
-from centreon_mcp.types.base import BaseResource, StatusCount
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+from centreon_mcp.types.base import BaseResource, CentreonBaseModel, StatusCount
+from centreon_mcp.types.downtime import Downtime
+from centreon_mcp.types.host import HostConfiguration
+from centreon_mcp.types.host_category import HostCategoryConfiguration
+from centreon_mcp.types.host_group import HostGroupConfiguration
+from centreon_mcp.types.host_severity import HostSeverity
 
 MODULE = "centreon_mcp.types.base"
 
@@ -42,3 +51,31 @@ async def test_base_resource_dump():
 
     # Assert result
     assert result == {"parent": {"id": host_id}, "id": resource_id, "type": resource_type}
+
+
+@pytest.mark.parametrize(
+    "model,endpoint",
+    [
+        (HostConfiguration, "configuration/hosts"),
+        (HostGroupConfiguration, "configuration/hosts/groups"),
+        (HostCategoryConfiguration, "configuration/hosts/categories"),
+        (HostSeverity, "configuration/hosts/severities"),
+        (Downtime, "monitoring/downtimes"),
+    ],
+)
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_centreon_base_model_delete(
+    request: AsyncMock, model: CentreonBaseModel, endpoint: str
+):
+
+    # Setup args
+    model_id = 10
+
+    # Mock request
+    request.return_value = None
+
+    # Call test function
+    await model.delete(model_id)
+
+    # Assert request called with right args
+    request.assert_awaited_once_with("DELETE", f"{endpoint}/{model_id}")

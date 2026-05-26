@@ -47,19 +47,3 @@ async def test_host_category_configuration_update(request: AsyncMock):
     request.assert_awaited_once_with(
         "PUT", f"configuration/hosts/categories/{host_category_id}", payload
     )
-
-
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_host_category_configuration_delete(request: AsyncMock):
-
-    # Setup args
-    host_category_id = 10
-
-    # Mock request
-    request.return_value = None
-
-    # Call test function
-    await HostCategoryConfiguration.delete(host_category_id)
-
-    # Assert request called with right args
-    request.assert_awaited_once_with("DELETE", f"configuration/hosts/categories/{host_category_id}")

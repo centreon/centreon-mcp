@@ -203,12 +203,3 @@ class HostConfiguration(CentreonBaseModel):
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
         return True
-
-    @classmethod
-    async def delete(cls, host_id: int) -> bool:
-        """
-        Delete a host configuration.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{host_id}")
-        return True

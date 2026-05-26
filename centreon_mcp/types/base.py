@@ -67,9 +67,18 @@ class CentreonBaseModel(BaseModel):
     @classmethod
     async def create(cls, params: BaseModel) -> bool:
         """
-        Create a resource of type T.
+        Create a centreon model.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("POST", cls.endpoint, payload)
+        return True
+
+    @classmethod
+    async def delete(cls, model_id: int) -> bool:
+        """
+        Delete a centreon model.
+        Return True if successful; otherwise, raise an exception.
+        """
+        await request("DELETE", f"{cls.endpoint}/{model_id}")
         return True

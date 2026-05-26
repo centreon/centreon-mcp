@@ -56,12 +56,3 @@ class HostCategoryConfiguration(CentreonBaseModel):
         payload = params.model_dump(mode="json", exclude_none=True)
         await request("PUT", f"{cls.endpoint}/{host_category_id}", payload)
         return True
-
-    @classmethod
-    async def delete(cls, host_category_id: int) -> bool:
-        """
-        Delete a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{host_category_id}")
-        return True

@@ -48,19 +48,3 @@ async def test_update_host_severity(request: AsyncMock):
     request.assert_awaited_once_with(
         "PUT", f"configuration/hosts/severities/{host_severity_id}", payload
     )
-
-
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_delete_host_severity(request: AsyncMock):
-
-    # Setup args
-    host_severity_id = 10
-
-    # Mock request
-    request.return_value = None
-
-    # Call test function
-    await HostSeverity.delete(host_severity_id)
-
-    # Assert request called with right args
-    request.assert_awaited_once_with("DELETE", f"configuration/hosts/severities/{host_severity_id}")

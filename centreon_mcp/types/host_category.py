@@ -46,16 +46,6 @@ class HostCategoryConfiguration(CentreonBaseModel):
         return cls(**content)
 
     @classmethod
-    async def create(cls, params: HostCategoryConfigurationFullParams) -> bool:
-        """
-        Create a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
     async def update(
         cls, host_category_id: int, params: HostCategoryConfigurationFullParams
     ) -> bool:

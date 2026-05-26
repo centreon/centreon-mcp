@@ -76,16 +76,6 @@ class HostGroupConfiguration(CentreonBaseModel):
         return cls(**content)
 
     @classmethod
-    async def add(cls, params: HostGroupConfigurationFullParams) -> bool:
-        """
-        Add a host group.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
     async def update(cls, hostgroup_id: int, params: HostGroupConfigurationFullParams) -> bool:
         """
         Update a host group.

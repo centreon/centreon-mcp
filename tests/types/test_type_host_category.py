@@ -30,23 +30,6 @@ async def test_host_category_configuration_get(request: AsyncMock):
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_host_category_configuration_add(request: AsyncMock):
-
-    # Setup args
-    params = HostCategoryConfigurationFullParams.model_construct()
-
-    # Mock request
-    request.return_value = None
-
-    # Call test function
-    await HostCategoryConfiguration.create(params)
-
-    # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True)
-    request.assert_awaited_once_with("POST", "configuration/hosts/categories", payload)
-
-
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_host_category_configuration_update(request: AsyncMock):
 
     # Setup args

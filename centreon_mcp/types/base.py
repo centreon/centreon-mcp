@@ -63,3 +63,13 @@ class CentreonBaseModel(BaseModel):
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
+
+    @classmethod
+    async def create(cls, params: BaseModel) -> bool:
+        """
+        Create a resource of type T.
+        Return True if successful; otherwise, raise an exception.
+        """
+        payload = params.model_dump(mode="json", exclude_none=True)
+        await request("POST", cls.endpoint, payload)
+        return True

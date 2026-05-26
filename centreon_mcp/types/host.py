@@ -195,16 +195,6 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def create(cls, params: HostConfigurationFullParams) -> bool:
-        """
-        Create a host configuration.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
     async def update(cls, host_id: int, params: HostConfigurationPartialParams) -> bool:
         """
         Partially update a host configuration.

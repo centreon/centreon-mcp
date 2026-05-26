@@ -30,23 +30,6 @@ async def test_hostgroup_configuration_get(request: AsyncMock):
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_hostgroup_configuration_add(request: AsyncMock):
-
-    # Setup args
-    params = HostGroupConfigurationFullParams.model_construct()
-
-    # Mock request
-    request.return_value = None
-
-    # Call test function
-    await HostGroupConfiguration.add(params)
-
-    # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True)
-    request.assert_awaited_once_with("POST", "configuration/hosts/groups", payload)
-
-
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_hostgroup_configuration_update(request: AsyncMock):
 
     # Setup args

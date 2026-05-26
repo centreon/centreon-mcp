@@ -60,7 +60,7 @@ Manage host severity levels used to prioritize hosts in your monitoring:
 
 Full host group configuration lifecycle management through conversation:
 - **list_hostgroup_configurations** — List host group configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
-- **add_host_group_configuration** — Create a new host group configuration by specifying its name.
+- **create_host_group_configuration** — Create a new host group configuration by specifying its name.
 - **update_host_group_configuration** — Partially update an existing host group configuration by ID.
 - **delete_host_group_configurations** — Delete one or more host group configurations by their IDs.
 

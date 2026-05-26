@@ -53,13 +53,3 @@ class HostSeverity(CentreonBaseModel):
         """
         content = await request("GET", f"{cls.endpoint}/{host_severity_id}")
         return cls(**content)
-
-    @classmethod
-    async def update(cls, host_severity_id: int, params: HostSeverityFullParams) -> bool:
-        """
-        Update a host severity.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PUT", f"{cls.endpoint}/{host_severity_id}", payload)
-        return True

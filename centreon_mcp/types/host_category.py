@@ -44,15 +44,3 @@ class HostCategoryConfiguration(CentreonBaseModel):
         """
         content = await request("GET", f"{cls.endpoint}/{host_category_id}")
         return cls(**content)
-
-    @classmethod
-    async def update(
-        cls, host_category_id: int, params: HostCategoryConfigurationFullParams
-    ) -> bool:
-        """
-        Update a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PUT", f"{cls.endpoint}/{host_category_id}", payload)
-        return True

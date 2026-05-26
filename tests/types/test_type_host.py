@@ -38,7 +38,7 @@ async def test_host_count_by_status(request: AsyncMock):
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_host_configuration_update(request: AsyncMock):
+async def test_host_configuration_patch(request: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -48,7 +48,7 @@ async def test_host_configuration_update(request: AsyncMock):
     request.return_value = None
 
     # Call test function
-    await HostConfiguration.update(host_id, params)
+    await HostConfiguration.patch(host_id, params)
 
     # Assert request called with right args
     payload = params.model_dump(mode="json", exclude_none=True)

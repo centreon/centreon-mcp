@@ -195,7 +195,7 @@ class HostConfiguration(CentreonBaseModel):
     is_activated: bool
 
     @classmethod
-    async def update(cls, host_id: int, params: HostConfigurationPartialParams) -> bool:
+    async def patch(cls, host_id: int, params: HostConfigurationPartialParams) -> bool:
         """
         Partially update a host configuration.
         Return True if successful; otherwise, raise an exception.

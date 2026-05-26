@@ -1,13 +1,17 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from pydantic import BaseModel
 
 from centreon_mcp.types.base import BaseResource, CentreonBaseModel, StatusCount
 from centreon_mcp.types.downtime import Downtime
 from centreon_mcp.types.host import HostConfiguration
-from centreon_mcp.types.host_category import HostCategoryConfiguration
+from centreon_mcp.types.host_category import (
+    HostCategoryConfiguration,
+    HostCategoryConfigurationFullParams,
+)
 from centreon_mcp.types.host_group import HostGroupConfiguration
-from centreon_mcp.types.host_severity import HostSeverity
+from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
 
 MODULE = "centreon_mcp.types.base"
 
@@ -79,3 +83,38 @@ async def test_centreon_base_model_delete(
 
     # Assert request called with right args
     request.assert_awaited_once_with("DELETE", f"{endpoint}/{model_id}")
+
+
+@pytest.mark.parametrize(
+    "endpoint,model,params",
+    [
+        (
+            "configuration/hosts/categories",
+            HostCategoryConfiguration,
+            HostCategoryConfigurationFullParams.model_construct(),
+        ),
+        (
+            "configuration/hosts/groups",
+            HostGroupConfiguration,
+            HostCategoryConfigurationFullParams.model_construct(),
+        ),
+        ("configuration/hosts/severities", HostSeverity, HostSeverityFullParams.model_construct()),
+    ],
+)
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_centreon_base_model_update(
+    request: AsyncMock, endpoint: str, model: CentreonBaseModel, params: BaseModel
+):
+
+    # Setup args
+    model_id = 10
+
+    # Mock request
+    request.return_value = None
+
+    # Call test function
+    await model.update(model_id, params)
+
+    # Assert request called with right args
+    payload = params.model_dump(mode="json", exclude_none=True)
+    request.assert_awaited_once_with("PUT", f"{endpoint}/{model_id}", payload)

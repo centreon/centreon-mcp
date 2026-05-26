@@ -82,3 +82,13 @@ class CentreonBaseModel(BaseModel):
         """
         await request("DELETE", f"{cls.endpoint}/{model_id}")
         return True
+
+    @classmethod
+    async def update(cls, model_id: int, params: BaseModel) -> bool:
+        """
+        Update a centreon model.
+        Return True if successful; otherwise, raise an exception.
+        """
+        payload = params.model_dump(mode="json", exclude_none=True)
+        await request("PUT", f"{cls.endpoint}/{model_id}", payload)
+        return True

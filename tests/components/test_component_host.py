@@ -104,9 +104,9 @@ async def test_create_host_configuration(logger: MagicMock, host_configuration_c
     assert result
 
 
-@patch(f"{MODULE}.HostConfiguration.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.HostConfiguration.patch", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_configuration(logger: MagicMock, host_configuration_update: AsyncMock):
+async def test_update_host_configuration(logger: MagicMock, host_configuration_patch: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -115,14 +115,14 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_u
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostConfiguration.update
-    host_configuration_update.return_value = True
+    # Mock HostConfiguration.patch
+    host_configuration_patch.return_value = True
 
     # Call test fonction
     result = await update_host_configuration(host_id, params)
 
-    # Assert HostConfiguration.update called with right args
-    host_configuration_update.assert_awaited_once_with(host_id, params)
+    # Assert HostConfiguration.patch called with right args
+    host_configuration_patch.assert_awaited_once_with(host_id, params)
 
     # Assert result
     assert result

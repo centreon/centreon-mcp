@@ -10,7 +10,7 @@ from centreon_mcp.types.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
 )
-from centreon_mcp.types.host_group import HostGroupConfiguration
+from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
 from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
 
 MODULE = "centreon_mcp.types.base"
@@ -96,7 +96,7 @@ async def test_centreon_base_model_delete(
         (
             "configuration/hosts/groups",
             HostGroupConfiguration,
-            HostCategoryConfigurationFullParams.model_construct(),
+            HostGroupConfigurationFullParams.model_construct(),
         ),
         ("configuration/hosts/severities", HostSeverity, HostSeverityFullParams.model_construct()),
     ],

@@ -58,6 +58,37 @@ async def test_base_resource_dump():
 
 
 @pytest.mark.parametrize(
+    "endpoint,model,params",
+    [
+        (
+            "configuration/hosts/categories",
+            HostCategoryConfiguration,
+            HostCategoryConfigurationFullParams.model_construct(),
+        ),
+        (
+            "configuration/hosts/groups",
+            HostGroupConfiguration,
+            HostGroupConfigurationFullParams.model_construct(),
+        ),
+        ("configuration/hosts/severities", HostSeverity, HostSeverityFullParams.model_construct()),
+    ],
+)
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_centreon_base_model_create(
+    request: AsyncMock, endpoint: str, model: CentreonBaseModel, params: BaseModel
+):
+    # Mock request
+    request.return_value = None
+
+    # Call test function
+    await model.create(params)
+
+    # Assert request called with right args
+    payload = params.model_dump(mode="json", exclude_none=True)
+    request.assert_awaited_once_with("POST", endpoint, payload)
+
+
+@pytest.mark.parametrize(
     "model,endpoint",
     [
         (HostConfiguration, "configuration/hosts"),

@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import CentreonBaseModel
+from centreon_mcp.utils.mixins import ListMixin
 
 
 class BaseOrder(BaseModel):
@@ -34,14 +34,14 @@ class BaseFilter(BaseModel):
         ]
 
 
-async def _list[CentreonModelType: CentreonBaseModel, OrderType: BaseOrder, FilterType: BaseFilter](
-    model: type[CentreonModelType],
+async def _list[CentreonModel: ListMixin, OrderType: BaseOrder, FilterType: BaseFilter](
+    model: type[CentreonModel],
     order_cls: type[OrderType],
     filters: list[FilterType] | None = None,
     limit: int = 10,
     page: int = 1,
     order: OrderType | None = None,
-) -> list[CentreonModelType]:
+) -> list[CentreonModel]:
     """
     Generic function to list ressources in real-time monitoring based on provided filters, pagination and order
     """

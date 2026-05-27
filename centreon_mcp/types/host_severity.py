@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Name of the host severity",
@@ -34,7 +34,14 @@ class HostSeverityPartialParams(HostSeverityBaseParams):
     is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
 
 
-class HostSeverity(CentreonBaseModel):
+class HostSeverity(
+    BaseModel,
+    CreateMixin[HostSeverityFullParams],
+    UpdateMixin[HostSeverityFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
 
     id: int

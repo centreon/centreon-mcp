@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Name for this host category",
@@ -27,7 +27,14 @@ class HostCategoryConfigurationFullParams(HostCategoryConfigurationBaseParams):
     alias: str = Field(description=DESCRIPTION["alias"])
 
 
-class HostCategoryConfiguration(CentreonBaseModel):
+class HostCategoryConfiguration(
+    BaseModel,
+    CreateMixin[HostCategoryConfigurationFullParams],
+    UpdateMixin[HostCategoryConfigurationFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
 
     id: int

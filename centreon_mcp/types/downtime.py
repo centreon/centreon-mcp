@@ -3,7 +3,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import BaseResource, CentreonBaseModel
+from centreon_mcp.types.base import BaseResource
+from centreon_mcp.utils.mixins import DeleteMixin, ListMixin
 from centreon_mcp.utils.request import request
 
 
@@ -20,7 +21,7 @@ class DowntimeResource(BaseResource):
     pass
 
 
-class Downtime(CentreonBaseModel):
+class Downtime(BaseModel, ListMixin, DeleteMixin):
     endpoint: ClassVar[str] = "monitoring/downtimes"
 
     id: int

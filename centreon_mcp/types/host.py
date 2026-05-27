@@ -3,7 +3,8 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel, EnablementStatus, StatusCount
+from centreon_mcp.types.base import EnablementStatus, StatusCount
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
@@ -180,7 +181,14 @@ class HostConfigurationPartialParams(HostConfigurationBaseParams):
     address: str | None = Field(None, description=DESCRIPTION["address"])
 
 
-class HostConfiguration(CentreonBaseModel):
+class HostConfiguration(
+    BaseModel,
+    CreateMixin[HostConfigurationFullParams],
+    PatchMixin[HostConfigurationPartialParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts"
 
     id: int
@@ -193,13 +201,3 @@ class HostConfiguration(CentreonBaseModel):
     categories: list[HostCategory]
     groups: list[HostGroup]
     is_activated: bool
-
-    @classmethod
-    async def patch(cls, host_id: int, params: HostConfigurationPartialParams) -> bool:
-        """
-        Partially update a host configuration.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
-        return True

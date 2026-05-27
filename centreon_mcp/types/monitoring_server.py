@@ -1,9 +1,11 @@
 from typing import ClassVar
 
-from centreon_mcp.types.base import CentreonBaseModel
+from pydantic import BaseModel
+
+from centreon_mcp.utils.mixins import ListMixin
 
 
-class MonitoringServer(CentreonBaseModel):
+class MonitoringServer(ListMixin, BaseModel):
     endpoint: ClassVar[str] = "monitoring/servers"
 
     id: int

@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Host group name",
@@ -27,7 +27,7 @@ class Icon(BaseModel):
     url: str
 
 
-class HostGroup(CentreonBaseModel):
+class HostGroup(ListMixin, BaseModel):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
 
     id: int
@@ -52,7 +52,14 @@ class HostGroupConfigurationFullParams(HostGroupConfigurationBaseParams):
     hosts: list[int] | None = Field(None, description=DESCRIPTION["hosts"])
 
 
-class HostGroupConfiguration(CentreonBaseModel):
+class HostGroupConfiguration(
+    BaseModel,
+    CreateMixin[HostGroupConfigurationFullParams],
+    UpdateMixin[HostGroupConfigurationFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
 
     id: int

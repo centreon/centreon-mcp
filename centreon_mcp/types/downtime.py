@@ -3,7 +3,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import BaseResource, CentreonBaseModel
+from centreon_mcp.types.base import BaseResource
+from centreon_mcp.utils.mixins import DeleteMixin, ListMixin
 from centreon_mcp.utils.request import request
 
 
@@ -20,23 +21,23 @@ class DowntimeResource(BaseResource):
     pass
 
 
-class Downtime(CentreonBaseModel):
+class Downtime(BaseModel, ListMixin, DeleteMixin):
     endpoint: ClassVar[str] = "monitoring/downtimes"
 
     id: int
     author_id: int
     author_name: str
     host_id: int
-    service_id: int | None
+    service_id: int | None = None
     poller_id: int
     comment: str
-    duration: int | None
-    entry_time: datetime | None
-    start_time: datetime | None
-    end_time: datetime | None
-    deletion_time: datetime | None
-    actual_start_time: datetime | None
-    actual_end_time: datetime | None
+    duration: int | None = None
+    entry_time: datetime | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    deletion_time: datetime | None = None
+    actual_start_time: datetime | None = None
+    actual_end_time: datetime | None = None
     is_started: bool
     is_fixed: bool
     is_cancelled: bool
@@ -52,13 +53,4 @@ class Downtime(CentreonBaseModel):
             "resources": [resource.dump() for resource in resources],
         }
         await request("POST", "monitoring/resources/downtime", payload=payload)
-        return True
-
-    @staticmethod
-    async def cancel(downtime_id: int) -> bool:
-        """
-        Cancel a downtime.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"monitoring/downtimes/{downtime_id}")
         return True

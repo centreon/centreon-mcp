@@ -5,7 +5,7 @@ from centreon_mcp.components.host_group import (
     HostGroupConfigurationOrder,
     HostGroupFilter,
     HostGroupOrder,
-    add_host_group_configuration,
+    create_host_group_configuration,
     delete_host_group_configurations,
     list_host_group_configurations,
     list_host_groups,
@@ -79,10 +79,10 @@ async def test_list_host_group_configurations(logger: MagicMock, _list: AsyncMoc
     assert results[0] == hostgroup_configuration
 
 
-@patch(f"{MODULE}.HostGroupConfiguration.add", new_callable=AsyncMock)
+@patch(f"{MODULE}.HostGroupConfiguration.create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_add_host_group_configuration(
-    logger: MagicMock, hostgroup_configuration_add: AsyncMock
+async def test_create_host_group_configuration(
+    logger: MagicMock, hostgroup_configuration_create: AsyncMock
 ):
 
     # Setup args
@@ -92,13 +92,13 @@ async def test_add_host_group_configuration(
     logger.info.return_value = None
 
     # Mock HostGroupConfiguration.add
-    hostgroup_configuration_add.return_value = True
+    hostgroup_configuration_create.return_value = True
 
     # Call test fonction
-    result = await add_host_group_configuration(params)
+    result = await create_host_group_configuration(params)
 
     # Assert HostqgqroupConfiguration.add called with right args
-    hostgroup_configuration_add.assert_awaited_once_with(params)
+    hostgroup_configuration_create.assert_awaited_once_with(params)
 
     # Assert result
     assert result

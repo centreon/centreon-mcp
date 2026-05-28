@@ -2,8 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Host group name",
@@ -28,7 +27,7 @@ class Icon(BaseModel):
     url: str
 
 
-class HostGroup(CentreonBaseModel):
+class HostGroup(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
 
     id: int
@@ -53,7 +52,14 @@ class HostGroupConfigurationFullParams(HostGroupConfigurationBaseParams):
     hosts: list[int] | None = Field(None, description=DESCRIPTION["hosts"])
 
 
-class HostGroupConfiguration(CentreonBaseModel):
+class HostGroupConfiguration(
+    BaseModel,
+    CreateMixin[HostGroupConfigurationFullParams],
+    UpdateMixin[HostGroupConfigurationFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
 
     id: int
@@ -66,40 +72,3 @@ class HostGroupConfiguration(CentreonBaseModel):
     enabled_hosts_count: int | None = None
     disabled_hosts_count: int | None = None
     hosts: list[Host] = Field(default_factory=list)
-
-    @classmethod
-    async def get(cls, host_group_id: int) -> "HostGroupConfiguration":
-        """
-        Get a host group.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_group_id}")
-        return cls(**content)
-
-    @classmethod
-    async def add(cls, params: HostGroupConfigurationFullParams) -> bool:
-        """
-        Add a host group.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
-    async def update(cls, hostgroup_id: int, params: HostGroupConfigurationFullParams) -> bool:
-        """
-        Update a host group.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PUT", f"{cls.endpoint}/{hostgroup_id}", payload)
-        return True
-
-    @classmethod
-    async def delete(cls, hostgroup_id: int) -> bool:
-        """
-        Delete a host group.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{hostgroup_id}")
-        return True

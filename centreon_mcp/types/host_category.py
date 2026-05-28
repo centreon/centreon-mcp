@@ -2,8 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Name for this host category",
@@ -28,7 +27,14 @@ class HostCategoryConfigurationFullParams(HostCategoryConfigurationBaseParams):
     alias: str = Field(description=DESCRIPTION["alias"])
 
 
-class HostCategoryConfiguration(CentreonBaseModel):
+class HostCategoryConfiguration(
+    BaseModel,
+    CreateMixin[HostCategoryConfigurationFullParams],
+    UpdateMixin[HostCategoryConfigurationFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
 
     id: int
@@ -36,42 +42,3 @@ class HostCategoryConfiguration(CentreonBaseModel):
     alias: str
     is_activated: bool
     comment: str | None = None
-
-    @classmethod
-    async def get(cls, host_category_id: int) -> "HostCategoryConfiguration":
-        """
-        Get a host category.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_category_id}")
-        return cls(**content)
-
-    @classmethod
-    async def create(cls, params: HostCategoryConfigurationFullParams) -> bool:
-        """
-        Create a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
-    async def update(
-        cls, host_category_id: int, params: HostCategoryConfigurationFullParams
-    ) -> bool:
-        """
-        Update a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PUT", f"{cls.endpoint}/{host_category_id}", payload)
-        return True
-
-    @classmethod
-    async def delete(cls, host_category_id: int) -> bool:
-        """
-        Delete a host category.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{host_category_id}")
-        return True

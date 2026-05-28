@@ -102,12 +102,12 @@ async def list_host_group_configurations(
         "openWorldHint": True,
     }
 )
-async def add_host_group_configuration(params: HostGroupConfigurationFullParams) -> bool:
+async def create_host_group_configuration(params: HostGroupConfigurationFullParams) -> bool:
     """
-    Add a hostgroup.
+    Create a hostgroup.
     """
-    logger.info("Executing tool add_hostgroup_configuration")
-    return await HostGroupConfiguration.add(params)
+    logger.info("Executing tool create_hostgroup_configuration")
+    return await HostGroupConfiguration.create(params)
 
 
 @host_group.tool(

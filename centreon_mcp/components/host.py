@@ -121,7 +121,7 @@ async def update_host_configuration(host_id: int, params: HostConfigurationParti
     Update a host configuration from params.
     """
     logger.info("Executing tool update_host_configuration")
-    return await HostConfiguration.update(host_id, params)
+    return await HostConfiguration.patch(host_id, params)
 
 
 @host.tool(

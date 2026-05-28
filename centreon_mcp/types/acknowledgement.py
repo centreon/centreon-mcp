@@ -3,7 +3,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import BaseResource, CentreonBaseModel
+from centreon_mcp.types.base import BaseResource
+from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
 
@@ -20,7 +21,7 @@ class AcknowledgementResource(BaseResource):
     pass
 
 
-class Acknowledgement(CentreonBaseModel):
+class Acknowledgement(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/acknowledgements"
 
     id: int

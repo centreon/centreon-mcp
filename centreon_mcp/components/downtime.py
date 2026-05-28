@@ -95,6 +95,6 @@ async def cancel_downtimes(downtime_ids: list[int]) -> dict[int, bool | BaseExce
     Use tools `list_downtimes` first to get downtime IDs.
     """
     logger.info("Executing tool cancel_downtimes")
-    tasks = [asyncio.create_task(Downtime.cancel(downtime_id)) for downtime_id in downtime_ids]
+    tasks = [asyncio.create_task(Downtime.delete(downtime_id)) for downtime_id in downtime_ids]
     results = await asyncio.gather(*tasks, return_exceptions=True)
     return dict(zip(downtime_ids, results, strict=True))

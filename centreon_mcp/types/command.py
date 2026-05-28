@@ -3,7 +3,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
+from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
 
@@ -62,7 +62,7 @@ class CommandParams(BaseModel):
     )
 
 
-class Command(CentreonBaseModel):
+class Command(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "configuration/commands"
 
     id: int

@@ -2,8 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import CentreonBaseModel
-from centreon_mcp.utils.request import request
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
     "name": "Name of the host severity",
@@ -35,7 +34,14 @@ class HostSeverityPartialParams(HostSeverityBaseParams):
     is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
 
 
-class HostSeverity(CentreonBaseModel):
+class HostSeverity(
+    BaseModel,
+    CreateMixin[HostSeverityFullParams],
+    UpdateMixin[HostSeverityFullParams],
+    DeleteMixin,
+    ReadMixin,
+    ListMixin,
+):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
 
     id: int
@@ -45,40 +51,3 @@ class HostSeverity(CentreonBaseModel):
     icon_id: int
     comment: str | None = None
     is_activated: bool
-
-    @classmethod
-    async def get(cls, host_severity_id: int) -> "HostSeverity":
-        """
-        Get a host severity.
-        """
-        content = await request("GET", f"{cls.endpoint}/{host_severity_id}")
-        return cls(**content)
-
-    @classmethod
-    async def create(cls, params: HostSeverityFullParams) -> bool:
-        """
-        Create a host severity.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("POST", cls.endpoint, payload)
-        return True
-
-    @classmethod
-    async def update(cls, host_severity_id: int, params: HostSeverityFullParams) -> bool:
-        """
-        Update a host severity.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json", exclude_none=True)
-        await request("PUT", f"{cls.endpoint}/{host_severity_id}", payload)
-        return True
-
-    @classmethod
-    async def delete(cls, host_severity_id: int) -> bool:
-        """
-        Delete a host severity.
-        Return True if successful; otherwise, raise an exception.
-        """
-        await request("DELETE", f"{cls.endpoint}/{host_severity_id}")
-        return True

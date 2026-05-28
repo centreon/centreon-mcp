@@ -200,7 +200,7 @@ class HostConfiguration(
 
     id: int
     name: str
-    alias: str
+    alias: str | None = None
     address: str
     monitoring_server: MonitoringServer
     templates: list[HostTemplate]

@@ -60,7 +60,7 @@ async def test_create_mixin[CentreonModel: CreateMixin](
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_delete_mixin[CentreonModel: DeleteMixin](
-    request: AsyncMock, model: CentreonModel, endpoint: str
+    request: AsyncMock, model: type[CentreonModel], endpoint: str
 ):
 
     # Setup args
@@ -94,7 +94,7 @@ async def test_delete_mixin[CentreonModel: DeleteMixin](
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_update_mixin[CentreonModel: UpdateMixin](
-    request: AsyncMock, model: CentreonModel, params: BaseModel, endpoint: str
+    request: AsyncMock, model: type[CentreonModel], params: BaseModel, endpoint: str
 ):
 
     # Setup args
@@ -182,7 +182,7 @@ async def test_get_mixin[CentreonModel: ReadMixin](
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
 async def test_patch_mixin[CentreonModel: PatchMixin](
-    request: AsyncMock, model: CentreonModel, params: BaseModel, endpoint: str
+    request: AsyncMock, model: type[CentreonModel], params: BaseModel, endpoint: str
 ):
 
     # Setup args

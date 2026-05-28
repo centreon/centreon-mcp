@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from centreon_mcp.utils.mixins import ListMixin
 
 
-class ServiceGroup(ListMixin, BaseModel):
+class ServiceGroup(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/servicegroups"
 
     id: int

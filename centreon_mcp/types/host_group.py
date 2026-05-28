@@ -27,7 +27,7 @@ class Icon(BaseModel):
     url: str
 
 
-class HostGroup(ListMixin, BaseModel):
+class HostGroup(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
 
     id: int

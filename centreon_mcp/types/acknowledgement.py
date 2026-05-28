@@ -21,7 +21,7 @@ class AcknowledgementResource(BaseResource):
     pass
 
 
-class Acknowledgement(ListMixin, BaseModel):
+class Acknowledgement(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/acknowledgements"
 
     id: int

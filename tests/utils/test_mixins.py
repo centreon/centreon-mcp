@@ -3,6 +3,8 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
+from centreon_mcp.types.acknowledgement import Acknowledgement
+from centreon_mcp.types.command import Command
 from centreon_mcp.types.downtime import Downtime
 from centreon_mcp.types.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.host_category import (
@@ -11,7 +13,16 @@ from centreon_mcp.types.host_category import (
 )
 from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
 from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, PatchMixin, ReadMixin, UpdateMixin
+from centreon_mcp.types.monitoring_server import MonitoringServer
+from centreon_mcp.types.servicegroup import ServiceGroup
+from centreon_mcp.utils.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ListMixin,
+    PatchMixin,
+    ReadMixin,
+    UpdateMixin,
+)
 
 MODULE = "centreon_mcp.utils.mixins"
 
@@ -197,3 +208,125 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
     # Assert request called with right args
     payload = params.model_dump(mode="json", exclude_none=True)
     request.assert_awaited_once_with("PATCH", f"{endpoint}/{model_id}", payload)
+
+
+@pytest.mark.parametrize(
+    "model,endpoint,payload",
+    [
+        (
+            Acknowledgement,
+            "monitoring/acknowledgements",
+            {
+                "id": 10,
+                "host_id": 10,
+                "service_id": 10,
+                "author_id": 10,
+                "author_name": "author_name",
+                "comment": "comment",
+                "deletion_time": "2026-05-28T10:00:00",
+                "entry_time": "2026-05-28T10:00:00",
+                "is_notify_contacts": True,
+                "is_persistent_comment": True,
+                "is_sticky": True,
+                "type": 1,
+            },
+        ),
+        (
+            Downtime,
+            "monitoring/downtimes",
+            {
+                "id": 10,
+                "author_id": 10,
+                "author_name": "author_name",
+                "host_id": 10,
+                "poller_id": 10,
+                "comment": "comment",
+                "is_started": True,
+                "is_fixed": True,
+                "is_cancelled": False,
+            },
+        ),
+        (
+            Command,
+            "configuration/commands",
+            {
+                "id": 10,
+                "name": "command_name",
+                "type": 2,
+                "command_line": "command_line",
+                "is_activated": True,
+                "is_shell": True,
+                "is_locked": False,
+            },
+        ),
+        (
+            HostCategoryConfiguration,
+            "configuration/hosts/categories",
+            {
+                "id": 10,
+                "name": "host_category_name",
+                "alias": "host_category_alias",
+                "is_activated": True,
+            },
+        ),
+        (
+            HostGroupConfiguration,
+            "configuration/hosts/groups",
+            {
+                "id": 10,
+                "name": "host_group_name",
+                "is_activated": True,
+                "enabled_hosts_count": 10,
+                "disabled_hosts_count": 10,
+            },
+        ),
+        (
+            HostSeverity,
+            "configuration/hosts/severities",
+            {
+                "id": 10,
+                "name": "host_severity_name",
+                "alias": "host_severity_alias",
+                "level": 10,
+                "icon_id": 1,
+                "is_activated": True,
+            },
+        ),
+        (
+            ServiceGroup,
+            "monitoring/servicegroups",
+            {
+                "id": 10,
+                "name": "service_group_name",
+            },
+        ),
+        (
+            MonitoringServer,
+            "monitoring/servers",
+            {"id": 10, "name": "monitoring_server_name", "is_running": True},
+        ),
+    ],
+)
+@patch(f"{MODULE}.request", new_callable=AsyncMock)
+async def test_list_mixin[CentreonModel: ListMixin](
+    request: AsyncMock, model: type[CentreonModel], endpoint: str, payload: dict
+):
+
+    # Setup args
+    search = ""
+    limit = 50
+    page = 1
+    sort_by = ""
+
+    # Mock request
+    request.return_value = {"result": [payload]}
+
+    # Call test function
+    results = await model.list(search, limit, page, sort_by)
+
+    # Assert request called with right args
+    params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+    request.assert_awaited_once_with("GET", endpoint, params=params)
+
+    # Assert result
+    assert results == [model(**payload)]

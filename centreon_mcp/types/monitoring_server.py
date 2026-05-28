@@ -10,8 +10,8 @@ class MonitoringServer(ListMixin, BaseModel):
 
     id: int
     name: str
-    address: str | None
+    address: str | None = None
     description: str | None = None
     is_running: bool
-    last_alive: int | None
-    version: str | None
+    last_alive: int | None = None
+    version: str | None = None

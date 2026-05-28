@@ -28,16 +28,16 @@ class Downtime(BaseModel, ListMixin, DeleteMixin):
     author_id: int
     author_name: str
     host_id: int
-    service_id: int | None
+    service_id: int | None = None
     poller_id: int
     comment: str
-    duration: int | None
-    entry_time: datetime | None
-    start_time: datetime | None
-    end_time: datetime | None
-    deletion_time: datetime | None
-    actual_start_time: datetime | None
-    actual_end_time: datetime | None
+    duration: int | None = None
+    entry_time: datetime | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    deletion_time: datetime | None = None
+    actual_start_time: datetime | None = None
+    actual_end_time: datetime | None = None
     is_started: bool
     is_fixed: bool
     is_cancelled: bool

@@ -59,12 +59,18 @@ DESCRIPTION = {
     "is_activated": "Indicates whether the host template is activated or not",
     "categories": "Define the host category IDs that should be associated with this host",
     "groups": "Define the host groups IDs that should be associated with this host",
+    "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
 }
 
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
 
 
 class MonitoringServer(BaseModel):
+    id: int
+    name: str
+
+
+class HostTemplate(BaseModel):
     id: int
     name: str
 
@@ -167,6 +173,7 @@ class HostConfigurationBaseParams(BaseModel):
     is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
     categories: list[int] | None = Field(None, description=DESCRIPTION["categories"])
     groups: list[int] | None = Field(None, description=DESCRIPTION["groups"])
+    templates: list[int] | None = Field(None, description=DESCRIPTION["templates"])
 
 
 class HostConfigurationFullParams(HostConfigurationBaseParams):
@@ -196,6 +203,7 @@ class HostConfiguration(
     alias: str
     address: str
     monitoring_server: MonitoringServer
+    templates: list[HostTemplate]
     normal_check_interval: int | None
     retry_check_interval: int | None
     categories: list[HostCategory]

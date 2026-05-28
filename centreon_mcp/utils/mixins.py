@@ -15,7 +15,7 @@ class CreateMixin[Params: BaseModel]:
     @classmethod
     async def create(cls, params: Params) -> bool:
         """
-        Create a resource.
+        Create a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
@@ -33,7 +33,7 @@ class ReadMixin:
     @classmethod
     async def get(cls: type[Self], model_id: int) -> Self:
         """
-        Get a centreon model.
+        Get a centreon model using the model's endpoint.
         """
         content = await request("GET", f"{cls.endpoint}/{model_id}")
         return cls(**content)
@@ -49,7 +49,7 @@ class DeleteMixin:
     @classmethod
     async def delete(cls, model_id: int) -> bool:
         """
-        Delete a resource.
+        Delete a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"{cls.endpoint}/{model_id}")
@@ -66,7 +66,7 @@ class UpdateMixin[Params: BaseModel]:
     @classmethod
     async def update(cls, model_id: int, params: Params) -> bool:
         """
-        Update a reource.
+        Update a reource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
@@ -84,7 +84,7 @@ class PatchMixin[Params: BaseModel]:
     @classmethod
     async def patch(cls, host_id: int, params: Params) -> bool:
         """
-        Patch a resource.
+        Patch a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True)
@@ -108,7 +108,7 @@ class ListMixin:
         sort_by: str | None = None,
     ) -> list[Self]:
         """
-        List resource of type T in real-time monitoring matching the search string.
+        List resources matching the search string using the model's endpoint.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", cls.endpoint, params=params)

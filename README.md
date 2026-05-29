@@ -83,7 +83,7 @@ Full host category configuration lifecycle management through conversation:
 
 Full host template configuration lifecycle management through conversation:
 
-- **list_host_templates** — List host templates, filterable by ID, name, alias, and locked status. Results are paginated and sortable by name, alias, or address.
+- **list_host_templates** — List host templates, filterable by ID, name, alias, and locked status. Results are paginated and sortable by name, or alias.
 - **create_host_template** — Create a new host template by specifying a name and alias. Supports a wide range of optional parameters: SNMP community and version, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and category associations.
 - **update_host_template** — Partially update an existing host template by ID, using the same parameter set as creation.
 - **delete_host_templates** — Delete one or more host templates by their IDs.

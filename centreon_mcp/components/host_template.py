@@ -23,7 +23,7 @@ class HostTemplateFilter(BaseFilter):
     host_template_id: int | None = Field(None, serialization_alias="id $eq")
     host_template_name: str | None = Field(None, serialization_alias="name $eq")
     host_template_alias: str | None = Field(None, serialization_alias="alias $eq")
-    is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
+    host_template_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
 
 
 @host_template.tool(

@@ -16,7 +16,7 @@ host_template = FastMCP()
 
 
 class HostTemplateOrder(BaseOrder):
-    field: Literal["name", "alias", "address"] = "name"
+    field: Literal["name", "alias"] = "name"
 
 
 class HostTemplateFilter(BaseFilter):

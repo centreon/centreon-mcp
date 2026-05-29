@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import EnablementStatus, StatusCount
+from centreon_mcp.types.base import EnablementStatus, Link, StatusCount
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 from centreon_mcp.utils.request import request
 
@@ -63,26 +63,6 @@ DESCRIPTION = {
 }
 
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
-
-
-class MonitoringServer(BaseModel):
-    id: int
-    name: str
-
-
-class HostTemplate(BaseModel):
-    id: int
-    name: str
-
-
-class HostCategory(BaseModel):
-    id: int
-    name: str
-
-
-class HostGroup(BaseModel):
-    id: int
-    name: str
 
 
 class HostState(IntEnum):
@@ -202,10 +182,10 @@ class HostConfiguration(
     name: str
     alias: str | None = None
     address: str
-    monitoring_server: MonitoringServer
-    templates: list[HostTemplate]
+    monitoring_server: Link
+    templates: list[Link]
     normal_check_interval: int | None
     retry_check_interval: int | None
-    categories: list[HostCategory]
-    groups: list[HostGroup]
+    categories: list[Link]
+    groups: list[Link]
     is_activated: bool

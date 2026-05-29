@@ -40,3 +40,13 @@ class BaseResource(BaseModel):
             "parent": {"id": self.host_id},
             **self.model_dump(mode="json", by_alias=True, exclude={"host_id"}),
         }
+
+
+class Link(BaseModel):
+    """
+    Minimal representation of a related resource.
+    Used to represent linked entities embedded in API responses.
+    """
+
+    id: int
+    name: str

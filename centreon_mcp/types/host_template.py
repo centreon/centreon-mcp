@@ -60,7 +60,7 @@ DESCRIPTION = {
     "note": "Define an optional note.",
     "action_url": "Define an optional URL that can be used to provide more actions to be performed on the host.",
     "comment": "Comment for this host",
-    "categories": "Define the host groups IDs that should be associated with this host",
+    "categories": "Define the host categories IDs that should be associated with this host",
 }
 
 

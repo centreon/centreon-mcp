@@ -10,7 +10,6 @@ DESCRIPTION = {
     "alias": "Host alias",
     "snmp_community": "Community of the SNMP agent",
     "snmp_version": "Version of the SNMP agent.",
-    "geo_coords": "Geographic coordinates of the host",
     "severity_id": "Host severity ID of the host",
     "check_command_id": "Check command ID. Must be of type 'Check'.",
     "check_command_args": "Check command arguments",

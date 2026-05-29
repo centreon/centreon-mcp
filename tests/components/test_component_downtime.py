@@ -29,7 +29,7 @@ async def test_list_downtimes(logger: MagicMock, _list: AsyncMock):
     downtime = Downtime.model_construct()
     _list.return_value = [downtime]
 
-    # Call test fonction
+    # Call test function
     results = await list_downtimes(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -53,7 +53,7 @@ async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
     # Mock Downtime.set
     downtime_set.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await set_downtimes(params, resources)
 
     # Assert Downtime.set called with right args
@@ -76,7 +76,7 @@ async def test_cancel_downtimes(logger: MagicMock, downtime_delete: AsyncMock):
     # Mock Downtime.delete
     downtime_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     results = await cancel_downtimes([downtime_id])
 
     # Assert Downtime.delete called with right args

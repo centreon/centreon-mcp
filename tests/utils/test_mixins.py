@@ -13,6 +13,11 @@ from centreon_mcp.types.host_category import (
 )
 from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
 from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
+from centreon_mcp.types.host_template import (
+    HostTemplate,
+    HostTemplateFullParams,
+    HostTemplatePartialParams,
+)
 from centreon_mcp.types.monitoring_server import MonitoringServer
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import (
@@ -41,6 +46,7 @@ MODULE = "centreon_mcp.utils.mixins"
             "configuration/hosts/groups",
         ),
         (HostSeverity, HostSeverityFullParams.model_construct(), "configuration/hosts/severities"),
+        (HostTemplate, HostTemplateFullParams.model_construct(), "configuration/hosts/templates"),
     ],
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -67,6 +73,7 @@ async def test_create_mixin[CentreonModel: CreateMixin](
         (HostCategoryConfiguration, "configuration/hosts/categories"),
         (HostSeverity, "configuration/hosts/severities"),
         (Downtime, "monitoring/downtimes"),
+        (HostTemplate, "configuration/hosts/templates"),
     ],
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -188,7 +195,12 @@ async def test_get_mixin[CentreonModel: ReadMixin](
             HostConfiguration,
             HostConfigurationPartialParams.model_construct(),
             "configuration/hosts",
-        )
+        ),
+        (
+            HostTemplate,
+            HostTemplatePartialParams.model_construct(),
+            "configuration/hosts/templates",
+        ),
     ],
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -304,6 +316,16 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
             MonitoringServer,
             "monitoring/servers",
             {"id": 10, "name": "monitoring_server_name", "is_running": True},
+        ),
+        (
+            HostTemplate,
+            "configuration/hosts/templates",
+            {
+                "id": 10,
+                "name": "host_template_name",
+                "alias": "host_template_alias",
+                "is_locked": True,
+            },
         ),
     ],
 )

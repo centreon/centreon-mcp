@@ -2,6 +2,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, Field
 
+from centreon_mcp.types.base import Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
@@ -14,11 +15,6 @@ DESCRIPTION = {
     "hosts_added": "Ids of the hosts to add to the host group.",
     "hosts_removed": "Ids of the hosts to remove from the host group.",
 }
-
-
-class Host(BaseModel):
-    id: int
-    name: str
 
 
 class Icon(BaseModel):
@@ -71,4 +67,4 @@ class HostGroupConfiguration(
     is_activated: bool
     enabled_hosts_count: int | None = None
     disabled_hosts_count: int | None = None
-    hosts: list[Host] = Field(default_factory=list)
+    hosts: list[Link] = Field(default_factory=list)

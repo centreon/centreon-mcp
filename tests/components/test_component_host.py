@@ -42,7 +42,7 @@ async def test_count_hosts_by_status(
     count = HostStatusCount.model_construct()
     host_count_by_status.return_value = count
 
-    # Call test fonction
+    # Call test function
     result = await count_hosts_by_status(filters)
 
     # Assert request called with right args
@@ -69,7 +69,7 @@ async def test_list_host_configurations(logger: MagicMock, _list: AsyncMock):
     host_configuration = HostConfiguration.model_construct()
     _list.return_value = [host_configuration]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_configurations(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -94,7 +94,7 @@ async def test_create_host_configuration(logger: MagicMock, host_configuration_c
     # Mock HostConfiguration.create
     host_configuration_create.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await create_host_configuration(params)
 
     # Assert HostConfiguration.create called with right args
@@ -118,7 +118,7 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_p
     # Mock HostConfiguration.patch
     host_configuration_patch.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await update_host_configuration(host_id, params)
 
     # Assert HostConfiguration.patch called with right args
@@ -141,7 +141,7 @@ async def test_delete_host_configurations(logger: MagicMock, host_configuration_
     # Mock HostConfiguration.delete
     host_configuration_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await delete_host_configurations([host_id])
 
     # Assert HostConfiguration.delete called with right args

@@ -34,7 +34,7 @@ async def test_list_host_severities(logger: MagicMock, _list: AsyncMock):
     host_severity = HostSeverity.model_construct()
     _list.return_value = [host_severity]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_severities(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -57,7 +57,7 @@ async def test_create_host_severity(logger: MagicMock, host_severity_create: Asy
     # Mock HostSeverity.create
     host_severity_create.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await create_host_severity(params)
 
     # Assert HostSeverity.create called with right args
@@ -88,7 +88,7 @@ async def test_update_host_severity(
     # Mock HostSeverity.update
     host_severity_update.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await update_host_severity(host_severity_id, params)
 
     # Assert HostSeverity.get called with right args
@@ -115,7 +115,7 @@ async def test_delete_host_severities(logger: MagicMock, host_severity_delete: A
     # Mock HostSeverity.delete
     host_severity_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await delete_host_severities([host_severity_id])
 
     # Assert HostSeverity.delete called with right args

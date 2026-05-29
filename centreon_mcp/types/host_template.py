@@ -1,20 +1,15 @@
-from enum import IntEnum
 from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import EnablementStatus, Link, StatusCount
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
-from centreon_mcp.utils.request import request
+from centreon_mcp.types.base import EnablementStatus
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 DESCRIPTION = {
-    "monitoring_server_id": "ID of the host's monitoring server",
-    "name": "Host name",
-    "address": "IP or domain of the host",
-    "alias": "Host alias",
+    "name": "Host template name",
+    "alias": "Host template alias",
     "snmp_community": "Community of the SNMP agent",
     "snmp_version": "Version of the SNMP agent.",
-    "geo_coords": "Geographic coordinates of the host",
     "severity_id": "Host severity ID of the host",
     "check_command_id": "Check command ID. Must be of type 'Check'.",
     "check_command_args": "Check command arguments",
@@ -31,6 +26,11 @@ DESCRIPTION = {
     "active_check_enabled": "Indicates whether active checks are enabled or not",
     "passive_check_enabled": "Indicates whether passive checks are enabled or not",
     "notification_enabled": "Specify whether notifications for this host are enabled or not",
+    "notification_interval": (
+        "Define the number of 'time units' to wait before re-notifying a contact that this host is still down or unreachable."
+        "With the default time unit of 60s, this number will mean multiples of 1 minute."
+        "A value of 0 disables re-notifications of contacts about problems for this host - only one problem notification will be sent out."
+    ),
     "add_inherited_contact_group": (
         "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
         "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
@@ -53,49 +53,22 @@ DESCRIPTION = {
     "flap_detection_enabled": "Indicates whether the flap detection is enabled or not",
     "low_flap_threshold": "Specify the low state change threshold used in flap detection for this host",
     "high_flap_threshold": "Specify the high state change threshold used in flap detection for this host",
+    "event_handler_enabled": "Indicates whether the event handler is enabled or not",
     "event_handler_command_id": "Event handler command ID",
     "event_handler_command_args": "Event handler command arguments",
+    "note_url": "Define an optional URL that can be used to provide more information about the host.",
+    "note": "Define an optional note.",
+    "action_url": "Define an optional URL that can be used to provide more actions to be performed on the host.",
     "comment": "Comment for this host",
-    "is_activated": "Indicates whether the host template is activated or not",
-    "categories": "Define the host category IDs that should be associated with this host",
-    "groups": "Define the host groups IDs that should be associated with this host",
-    "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
+    "categories": "Define the host categories IDs that should be associated with this host",
 }
 
-HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
 
-
-class HostState(IntEnum):
-    UP = 0
-    DOWN = 1
-    UNREACHABLE = 2
-    PENDING = 4
-
-
-class HostStatusCount(StatusCount):
-    up: int
-    down: int
-    unreachable: int
-
-
-class Host(BaseModel):
-    @staticmethod
-    async def count_by_status(search: str | None) -> HostStatusCount:
-        """
-        Count hosts by status.
-        """
-        params = {"search": search}
-        content = await request("GET", "monitoring/hosts/status", params=params)
-        return HostStatusCount(**content)
-
-
-class HostConfigurationBaseParams(BaseModel):
-    alias: str | None = Field(None, description=DESCRIPTION["alias"])
+class HostTemplateBaseParams(BaseModel):
     snmp_community: str | None = Field(None, description=DESCRIPTION["snmp_community"])
     snmp_version: Literal["1", "2c", "3"] | None = Field(
         None, description=DESCRIPTION["snmp_version"]
     )
-    geo_coords: str | None = Field(None, description=DESCRIPTION["geo_coords"])
     severity_id: int | None = Field(None, description=DESCRIPTION["severity_id"])
     check_command_id: int | None = Field(None, description=DESCRIPTION["check_command_id"])
     check_command_args: list[str] | None = Field(
@@ -114,6 +87,9 @@ class HostConfigurationBaseParams(BaseModel):
     )
     notification_enabled: EnablementStatus | None = Field(
         None, description=DESCRIPTION["notification_enabled"]
+    )
+    notification_interval: int | None = Field(
+        None, description=DESCRIPTION["notification_interval"]
     )
     add_inherited_contact_group: bool | None = Field(
         None, description=DESCRIPTION["add_inherited_contact_group"]
@@ -143,49 +119,73 @@ class HostConfigurationBaseParams(BaseModel):
     high_flap_threshold: int | None = Field(
         None, ge=0, le=100, description=DESCRIPTION["high_flap_threshold"]
     )
+    event_handler_enabled: EnablementStatus | None = Field(
+        None, description=DESCRIPTION["event_handler_enabled"]
+    )
     event_handler_command_id: int | None = Field(
         None, description=DESCRIPTION["event_handler_command_id"]
     )
     event_handler_command_args: list[str] | None = Field(
         None, description=DESCRIPTION["event_handler_command_args"]
     )
+    note_url: str | None = Field(None, description=DESCRIPTION["note_url"])
+    note: str | None = Field(None, description=DESCRIPTION["note"])
+    action_url: str | None = Field(None, description=DESCRIPTION["action_url"])
     comment: str | None = Field(None, description=DESCRIPTION["comment"])
-    is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
     categories: list[int] | None = Field(None, description=DESCRIPTION["categories"])
-    groups: list[int] | None = Field(None, description=DESCRIPTION["groups"])
-    templates: list[int] | None = Field(None, description=DESCRIPTION["templates"])
 
 
-class HostConfigurationFullParams(HostConfigurationBaseParams):
-    monitoring_server_id: int = Field(description=DESCRIPTION["monitoring_server_id"])
+class HostTemplateFullParams(HostTemplateBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
-    address: str = Field(description=DESCRIPTION["address"])
+    alias: str = Field(description=DESCRIPTION["alias"])
 
 
-class HostConfigurationPartialParams(HostConfigurationBaseParams):
-    monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
+class HostTemplatePartialParams(HostTemplateBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
-    address: str | None = Field(None, description=DESCRIPTION["address"])
+    alias: str | None = Field(None, description=DESCRIPTION["alias"])
 
 
-class HostConfiguration(
+class HostTemplate(
     BaseModel,
-    CreateMixin[HostConfigurationFullParams],
-    PatchMixin[HostConfigurationPartialParams],
-    DeleteMixin,
-    ReadMixin,
     ListMixin,
+    CreateMixin[HostTemplateFullParams],
+    PatchMixin[HostTemplatePartialParams],
+    DeleteMixin,
 ):
-    endpoint: ClassVar[str] = "configuration/hosts"
+    endpoint: ClassVar[str] = "configuration/hosts/templates"
 
     id: int
     name: str
-    alias: str | None = None
-    address: str
-    monitoring_server: Link
-    templates: list[Link]
-    normal_check_interval: int | None
-    retry_check_interval: int | None
-    categories: list[Link]
-    groups: list[Link]
-    is_activated: bool
+    alias: str
+    snmp_version: Literal["1", "2c", "3"] | None = None
+    timezone_id: int | None = None
+    severity_id: int | None = None
+    check_command_id: int | None = None
+    check_command_args: list[str] | None = None
+    check_timeperiod_id: int | None = None
+    max_check_attempts: int | None = None
+    normal_check_interval: int | None = None
+    retry_check_interval: int | None = None
+    active_check_enabled: EnablementStatus | None = None
+    passive_check_enabled: EnablementStatus | None = None
+    notification_enabled: EnablementStatus | None = None
+    notification_interval: int | None = None
+    notification_timeperiod_id: int | None = None
+    add_inherited_contact_group: bool | None = None
+    add_inherited_contact: bool | None = None
+    first_notification_delay: int | None = None
+    recovery_notification_delay: int | None = None
+    acknowledgement_timeout: int | None = None
+    freshness_checked: EnablementStatus | None = None
+    freshness_threshold: int | None = None
+    flap_detection_enabled: EnablementStatus | None = None
+    low_flap_threshold: int | None = None
+    high_flap_threshold: int | None = None
+    event_handler_enabled: EnablementStatus | None = None
+    event_handler_command_id: int | None = None
+    event_handler_command_args: list[str] | None = None
+    note_url: str | None = None
+    note: str | None = None
+    action_url: str | None = None
+    comment: str | None = None
+    is_locked: bool

@@ -6,8 +6,8 @@ from centreon_mcp.types.base import EnablementStatus
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 DESCRIPTION = {
-    "name": "Host name",
-    "alias": "Host alias",
+    "name": "Host template name",
+    "alias": "Host template alias",
     "snmp_community": "Community of the SNMP agent",
     "snmp_version": "Version of the SNMP agent.",
     "severity_id": "Host severity ID of the host",

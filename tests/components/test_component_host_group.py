@@ -11,8 +11,8 @@ from centreon_mcp.components.host_group import (
     list_host_groups,
     update_host_group_configuration,
 )
+from centreon_mcp.types.base import Link
 from centreon_mcp.types.host_group import (
-    Host,
     HostGroup,
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
@@ -125,7 +125,7 @@ async def test_update_host_group_configuration(
         id=1,
         name="HostGroup",
         icon=Icon.model_construct(id=1),
-        hosts=[Host(id=10, name="host_name_10")],
+        hosts=[Link(id=10, name="host_name_10")],
     )
     hostgroup_configuration_get.return_value = hostgroup
 

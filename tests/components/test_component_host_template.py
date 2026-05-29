@@ -34,7 +34,7 @@ async def test_list_host_templates(logger: MagicMock, _list: AsyncMock):
     host_template = HostTemplate.model_construct()
     _list.return_value = [host_template]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_templates(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -57,7 +57,7 @@ async def test_create_host_template(logger: MagicMock, host_template_create: Asy
     # Mock HostTemplate.create
     host_template_create.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await create_host_template(params)
 
     # Assert HostTemplate.create called with right args
@@ -81,7 +81,7 @@ async def test_update_host_template(logger: MagicMock, host_template_patch: Asyn
     # Mock HostTemplate.patch
     host_template_patch.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await update_host_template(host_id, params)
 
     # Assert HostTemplate.patch called with right args
@@ -104,7 +104,7 @@ async def test_delete_host_templates(logger: MagicMock, host_template_delete: As
     # Mock HostTemplate.delete
     host_template_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await delete_host_templates([host_template_id])
 
     # Assert HostTemplate.delete called with right args

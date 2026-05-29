@@ -40,7 +40,7 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
     hostgroup = HostGroup.model_construct()
     _list.return_value = [hostgroup]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_groups(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -67,7 +67,7 @@ async def test_list_host_group_configurations(logger: MagicMock, _list: AsyncMoc
     hostgroup_configuration = HostGroupConfiguration.model_construct()
     _list.return_value = [hostgroup_configuration]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_group_configurations(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -94,7 +94,7 @@ async def test_create_host_group_configuration(
     # Mock HostGroupConfiguration.add
     hostgroup_configuration_create.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await create_host_group_configuration(params)
 
     # Assert HostqgqroupConfiguration.add called with right args
@@ -132,7 +132,7 @@ async def test_update_host_group_configuration(
     # Mock HostGroupConfiguration.update
     hostgroup_configuration_update.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await update_host_group_configuration(hostgroup_id, params)
 
     # Assert HostGrougConfiguration.get called with right args
@@ -167,7 +167,7 @@ async def test_delete_host_group_configurations(
     # Mock HostGroupConfiguration.delete
     hostgroup_configuration_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await delete_host_group_configurations([hostgroup_id])
 
     # Assert HostConfigurationGroup.delete called with right args

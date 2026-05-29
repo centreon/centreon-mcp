@@ -28,7 +28,7 @@ async def test_count_services_by_status(
     count = ServiceStatusCount.model_construct()
     service_count_by_status.return_value = count
 
-    # Call test fonction
+    # Call test function
     result = await count_services_by_status(filters)
 
     # Assert request called with right args

@@ -27,7 +27,7 @@ async def test_list_monitoring_servers(logger: MagicMock, _list: AsyncMock):
     monitoring_server = MonitoringServer.model_construct()
     _list.return_value = [monitoring_server]
 
-    # Call test fonction
+    # Call test function
     results = await list_monitoring_servers(filters, limit, page, order)
 
     # Assert _list called with right args

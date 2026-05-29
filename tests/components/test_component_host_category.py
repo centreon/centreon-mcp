@@ -34,7 +34,7 @@ async def test_list_host_category_configurations(logger: MagicMock, _list: Async
     host_category_configuration = HostCategoryConfiguration.model_construct()
     _list.return_value = [host_category_configuration]
 
-    # Call test fonction
+    # Call test function
     results = await list_host_category_configurations(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -96,7 +96,7 @@ async def test_update_host_category_configuration(
     # Mock HostCategoryConfiguration.update
     host_category_configuration_update.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await update_host_category_configuration(host_category_id, params)
 
     # Assert HostCategoryConfiguration.get called with right args
@@ -127,7 +127,7 @@ async def test_delete_host_category_configurations(
     # Mock HostCategoryConfiguration.delete
     host_category_configuration_delete.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await delete_host_category_configurations([host_category_id])
 
     # Assert HostConfigurationCategory.delete called with right args

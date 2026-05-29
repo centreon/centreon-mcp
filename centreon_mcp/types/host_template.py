@@ -53,6 +53,7 @@ DESCRIPTION = {
     "flap_detection_enabled": "Indicates whether the flap detection is enabled or not",
     "low_flap_threshold": "Specify the low state change threshold used in flap detection for this host",
     "high_flap_threshold": "Specify the high state change threshold used in flap detection for this host",
+    "event_handler_enabled": "Indicates whether the event handler is enabled or not",
     "event_handler_command_id": "Event handler command ID",
     "event_handler_command_args": "Event handler command arguments",
     "note_url": "Define an optional URL that can be used to provide more information about the host.",
@@ -84,7 +85,6 @@ class HostTemplateBaseParams(BaseModel):
     passive_check_enabled: EnablementStatus | None = Field(
         None, description=DESCRIPTION["passive_check_enabled"]
     )
-
     notification_enabled: EnablementStatus | None = Field(
         None, description=DESCRIPTION["notification_enabled"]
     )
@@ -118,6 +118,9 @@ class HostTemplateBaseParams(BaseModel):
     )
     high_flap_threshold: int | None = Field(
         None, ge=0, le=100, description=DESCRIPTION["high_flap_threshold"]
+    )
+    event_handler_enabled: EnablementStatus | None = Field(
+        None, description=DESCRIPTION["event_handler_enabled"]
     )
     event_handler_command_id: int | None = Field(
         None, description=DESCRIPTION["event_handler_command_id"]

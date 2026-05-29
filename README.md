@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 33 tools organized across ten functional areas.
+The MCP server currently exposes 37 tools organized across eleven functional areas.
 
 ### Resource Monitoring
 
@@ -20,21 +20,24 @@ The MCP server currently exposes 33 tools organized across ten functional areas.
 This combination of filters makes it possible to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'" and get precise, actionable results directly in the conversation.
 
 Two dedicated counting tools provide a fast status summary without retrieving individual resources:
+
 - **count_hosts_by_status** — returns the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped to one or more host groups or host categories
 - **count_services_by_status** — returns the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host name, host group, host category, service group, or service category
 
 Both tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
 
 A dedicated tool lets the assistant inspect what happened on a single resource:
+
 - **get_host_timeline / get_service_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
 
 A dedicated tool lets the assistant refresh state on demand:
-- **request_check** — Trigger a check on one or more resources (hosts and services) without waiting for the next polling cycle. Useful right after a remediation action to confirm recovery in conversation. The `is_forced` flag (default `true`) controls whether the configured check interval is bypassed.
 
+- **request_check** — Trigger a check on one or more resources (hosts and services) without waiting for the next polling cycle. Useful right after a remediation action to confirm recovery in conversation. The `is_forced` flag (default `true`) controls whether the configured check interval is bypassed.
 
 ### Infrastructure Inventory
 
 Three read-only tools allow AI assistants to explore your monitoring topology:
+
 - **list_hostgroups** — List host groups, filterable by host name, alias, address, state, poller, or group ID
 - **list_servicegroups** — List service groups, filterable by host, service, host group, or poller attributes
 - **list_monitoring_servers** — List pollers, with the ability to filter by name, ID, or running status
@@ -44,14 +47,16 @@ These tools serve as natural building blocks: an AI assistant can look up the re
 ### Host Configuration
 
 Full host configuration lifecycle management through conversation:
+
 - **list_host_configurations** — List host configurations, filterable by ID, name, address, poller, host group, host category, and activation status. Results are paginated and sortable by name, alias, or address.
-- **create_host_configuration** — Create a new host configuration by specifying the monitoring server, name, and IP address. Supports a wide range of optional parameters: SNMP community and version, geographic coordinates, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and host group/category associations.
+- **create_host_configuration** — Create a new host configuration by specifying the monitoring server, name, and IP address. Supports a wide range of optional parameters: SNMP community and version, geographic coordinates, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and host group/category/template associations.
 - **update_host_configuration** — Partially update an existing host configuration by ID, using the same parameter set as creation.
 - **delete_host_configurations** — Delete one or more host configurations by their IDs.
 
 ### Host Severities
 
 Manage host severity levels used to prioritize hosts in your monitoring:
+
 - **list_host_severities** — List host severities, filterable by ID, name, alias, level range, and activation status. Results are paginated and sortable by name, alias, or level.
 - **create_host_severity** — Create a new host severity by specifying a name, level, and icon ID. An alias is optional.
 - **delete_host_severities** — Delete one or more host severities by their IDs.
@@ -59,6 +64,7 @@ Manage host severity levels used to prioritize hosts in your monitoring:
 ### Host Group Configuration
 
 Full host group configuration lifecycle management through conversation:
+
 - **list_hostgroup_configurations** — List host group configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
 - **create_host_group_configuration** — Create a new host group configuration by specifying its name.
 - **update_host_group_configuration** — Partially update an existing host group configuration by ID.
@@ -67,14 +73,25 @@ Full host group configuration lifecycle management through conversation:
 ### Host Category Configuration
 
 Full host category configuration lifecycle management through conversation:
+
 - **list_host_category_configurations** — List host category configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
 - **create_host_category_configuration** — Create a new host category configuration by specifying its name and alias. Supports an optional comment and activation status.
 - **update_host_category_configuration** — Partially update an existing host category configuration by ID.
 - **delete_host_category_configurations** — Delete one or more host category configurations by their IDs.
 
+### Host Template Configuration
+
+Full host template configuration lifecycle management through conversation:
+
+- **list_host_templates** — List host templates, filterable by ID, name, alias, and locked status. Results are paginated and sortable by name, or alias.
+- **create_host_template** — Create a new host template by specifying a name and alias. Supports a wide range of optional parameters: SNMP community and version, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and category associations.
+- **update_host_template** — Partially update an existing host template by ID, using the same parameter set as creation.
+- **delete_host_templates** — Delete one or more host templates by their IDs.
+
 ### Acknowledgements
 
 Acknowledge alerts without ever leaving your conversation:
+
 - **list_acknowledgements** — List current acknowledgements, with pagination and sorting (by ID, host, start time, entry time, etc.)
 - **add_acknowledgements** — Acknowledge one or more resources at once, applying a message and configuring options such as sticky acknowledgement and notifications
 - **cancel_acknowledgements** — Remove acknowledgements from one or more resources, with the option to also cancel service acknowledgements when a host is unacknowledged
@@ -82,6 +99,7 @@ Acknowledge alerts without ever leaving your conversation:
 ### Downtimes
 
 Full downtime lifecycle management through conversation:
+
 - **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
 - **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
 - **cancel_downtimes** — Cancel one or more downtimes by their IDs
@@ -89,6 +107,7 @@ Full downtime lifecycle management through conversation:
 ### Commands
 
 Manage check, notification, discovery, and miscellaneous commands from within the conversation:
+
 - **list_commands** — List commands, filterable by ID, name, type (CHECK, NOTIFICATION, MISCELLANEOUS, DISCOVERY), or locked status. Results are paginated and sortable by name.
 - **add_command** — Create a new command by specifying its name, type, and command line. Supports optional shell mode, argument descriptions, macro descriptions, a connector, and a graph template.
 
@@ -113,7 +132,7 @@ cd centreon-mcp
 | `CENTREON_MCP_PORT`      | `8000`  | Port used to start the Centreon MCP service.          |
 | `CENTREON_MCP_LOG_LEVEL` | `INFO`  | Minimal severity level for Centreon MCP service logs. |
 
-### Using UV 
+### Using UV
 
 3. Install dependencies and synchronize
 
@@ -193,7 +212,6 @@ Once the connector is added, Le Chat will automatically discover and use the Cen
 
 <details>
 <summary>Claude Code</summary>
-
 
 Register your MCP server using the HTTP transport with the local address and Centreon API token in headers
 

@@ -33,7 +33,7 @@ async def test_list_acknowledgements(logger: MagicMock, _list: AsyncMock):
     acknowledgement = Acknowledgement.model_construct()
     _list.return_value = [acknowledgement]
 
-    # Call test fonction
+    # Call test function
     results = await list_acknowledgements(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -59,7 +59,7 @@ async def test_add_acknowledgements(logger: MagicMock, add: AsyncMock):
     # Mock Acknowledgement.add
     add.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await add_acknowledgements(params, resources)
 
     # Assert Acknowledgement.add called with right args
@@ -83,7 +83,7 @@ async def test_cancel_acknowledgements(logger: MagicMock, cancel: AsyncMock):
     # Mock Acknowledgement.add
     cancel.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await cancel_acknowledgements(with_services, resources)
 
     # Assert Acknowledgement.cancel called with right args

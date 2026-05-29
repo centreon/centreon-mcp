@@ -28,7 +28,7 @@ async def test_list_commands(logger: MagicMock, _list: AsyncMock):
     command = Command.model_construct()
     _list.return_value = [command]
 
-    # Call test fonction
+    # Call test function
     results = await list_commands(filters, limit, page, order)
 
     # Assert _list called with right args
@@ -51,7 +51,7 @@ async def test_add_command(logger: MagicMock, command_add: AsyncMock):
     # Mock Command.add
     command_add.return_value = True
 
-    # Call test fonction
+    # Call test function
     result = await add_command(params)
 
     # Assert Command.add called with right args

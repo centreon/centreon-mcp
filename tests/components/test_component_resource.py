@@ -38,7 +38,7 @@ async def test_list_resources(logger: MagicMock, join: MagicMock, resource_list:
     resource = Resource.model_construct()
     resource_list.return_value = [resource]
 
-    # Call test fonction
+    # Call test function
     results = await list_resources(
         filters,
         types,

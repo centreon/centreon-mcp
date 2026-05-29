@@ -27,7 +27,7 @@ async def test_list_servicegroups(logger: MagicMock, _list: AsyncMock):
     servicegroup = ServiceGroup.model_construct()
     _list.return_value = [servicegroup]
 
-    # Call test fonction
+    # Call test function
     results = await list_servicegroups(filters, limit, page, order)
 
     # Assert _list called with right args

@@ -38,15 +38,15 @@ async def test_list_host_severities(logger: MagicMock, _list: AsyncMock):
     results = await list_host_severities(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(HostSeverity, HostSeverityOrder, filters, limit, page, order)
+    _list.assert_awaited_once_with(HostSeverity, filters, limit, page, order)
 
     # Assert result
     assert results[0] == host_severity
 
 
-@patch(f"{MODULE}.HostSeverity.create", new_callable=AsyncMock)
+@patch(f"{MODULE}._create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_create_host_severity(logger: MagicMock, host_severity_create: AsyncMock):
+async def test_create_host_severity(logger: MagicMock, _create: AsyncMock):
 
     # Setup args
     params = HostSeverityFullParams.model_construct()
@@ -54,14 +54,14 @@ async def test_create_host_severity(logger: MagicMock, host_severity_create: Asy
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostSeverity.create
-    host_severity_create.return_value = True
+    # Mock _create
+    _create.return_value = True
 
     # Call test function
     result = await create_host_severity(params)
 
-    # Assert HostSeverity.create called with right args
-    host_severity_create.assert_awaited_once_with(params)
+    # Assert _create called with right args
+    _create.assert_awaited_once_with(HostSeverity, params)
 
     # Assert result
     assert result
@@ -102,9 +102,9 @@ async def test_update_host_severity(
     assert result
 
 
-@patch(f"{MODULE}.HostSeverity.delete", new_callable=AsyncMock)
+@patch(f"{MODULE}._delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_host_severities(logger: MagicMock, host_severity_delete: AsyncMock):
+async def test_delete_host_severities(logger: MagicMock, _delete: AsyncMock):
 
     # Setup args
     host_severity_id = 10
@@ -112,14 +112,14 @@ async def test_delete_host_severities(logger: MagicMock, host_severity_delete: A
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostSeverity.delete
-    host_severity_delete.return_value = True
+    # Mock _delete
+    _delete.return_value = {host_severity_id: True}
 
     # Call test function
     result = await delete_host_severities([host_severity_id])
 
-    # Assert HostSeverity.delete called with right args
-    host_severity_delete.assert_awaited_once_with(host_severity_id)
+    # Assert _delete called with right args
+    _delete.assert_awaited_once_with(HostSeverity, [host_severity_id])
 
     # Assert result
     assert result == {host_severity_id: True}

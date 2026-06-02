@@ -142,7 +142,7 @@ async def test_delete_host_configurations(logger: MagicMock, _delete: AsyncMock)
     # Call test function
     result = await delete_host_configurations([host_id])
 
-    # Assert _.delete called with right args
+    # Assert _delete called with right args
     _delete.assert_awaited_once_with(HostConfiguration, [host_id])
 
     # Assert result

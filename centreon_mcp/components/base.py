@@ -16,7 +16,7 @@ async def _list[CentreonModel: ListMixin](
     order: BaseOrder | None = None,
 ) -> list[CentreonModel]:
     """
-    Generic function to list ressources based on provided filters, pagination and order.
+    Generic function to list resources based on provided filters, pagination and order.
     """
     search = json.dumps(BaseFilter.join(filters))
     sort_by = order.model_dump_json() if order else None

@@ -31,9 +31,7 @@ async def test_list_monitoring_servers(logger: MagicMock, _list: AsyncMock):
     results = await list_monitoring_servers(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(
-        MonitoringServer, MonitoringServerOrder, filters, limit, page, order
-    )
+    _list.assert_awaited_once_with(MonitoringServer, filters, limit, page, order)
 
     # Assert result
     assert results[0] == monitoring_server

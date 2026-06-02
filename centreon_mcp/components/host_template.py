@@ -1,16 +1,16 @@
-import asyncio
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _create, _delete, _list, _patch
 from centreon_mcp.types.host_template import (
     HostTemplate,
     HostTemplateFullParams,
     HostTemplatePartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_template = FastMCP()
 
@@ -47,7 +47,7 @@ async def list_host_templates(
     to avoid retrieving all host templates except if explicitly intended.
     """
     logger.info("Executing tool list_host_templates")
-    return await _list(HostTemplate, HostTemplateOrder, filters, limit, page, order)
+    return await _list(HostTemplate, filters, limit, page, order)
 
 
 @host_template.tool(
@@ -64,7 +64,7 @@ async def create_host_template(params: HostTemplateFullParams) -> bool:
     Create a host template from params.
     """
     logger.info("Executing tool create_host_template")
-    return await HostTemplate.create(params)
+    return await _create(HostTemplate, params)
 
 
 @host_template.tool(
@@ -81,7 +81,7 @@ async def update_host_template(host_template_id: int, params: HostTemplatePartia
     Update a host template from params.
     """
     logger.info("Executing tool update_host_template")
-    return await HostTemplate.patch(host_template_id, params)
+    return await _patch(HostTemplate, host_template_id, params)
 
 
 @host_template.tool(
@@ -98,9 +98,4 @@ async def delete_host_templates(host_template_ids: list[int]) -> dict[int, bool 
     Delete multiple host templates.
     """
     logger.info("Executing tool delete_host_templates")
-    tasks = [
-        asyncio.create_task(HostTemplate.delete(host_template_id))
-        for host_template_id in host_template_ids
-    ]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(host_template_ids, results, strict=True))
+    return await _delete(HostTemplate, host_template_ids)

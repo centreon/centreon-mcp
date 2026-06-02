@@ -1,10 +1,10 @@
-import asyncio
 import json
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _create, _delete, _list, _patch
 from centreon_mcp.types.host import (
     Host,
     HostConfiguration,
@@ -13,7 +13,7 @@ from centreon_mcp.types.host import (
     HostStatusCount,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host = FastMCP()
 
@@ -87,7 +87,7 @@ async def list_host_configurations(
     to avoid retrieving all host configurations except if explicitly intended.
     """
     logger.info("Executing tool list_host_configurations")
-    return await _list(HostConfiguration, HostConfigurationOrder, filters, limit, page, order)
+    return await _list(HostConfiguration, filters, limit, page, order)
 
 
 @host.tool(
@@ -104,7 +104,7 @@ async def create_host_configuration(params: HostConfigurationFullParams) -> bool
     Create a host configuration from params.
     """
     logger.info("Executing tool create_host_configuration")
-    return await HostConfiguration.create(params)
+    return await _create(HostConfiguration, params)
 
 
 @host.tool(
@@ -121,7 +121,7 @@ async def update_host_configuration(host_id: int, params: HostConfigurationParti
     Update a host configuration from params.
     """
     logger.info("Executing tool update_host_configuration")
-    return await HostConfiguration.patch(host_id, params)
+    return await _patch(HostConfiguration, host_id, params)
 
 
 @host.tool(
@@ -138,6 +138,4 @@ async def delete_host_configurations(host_ids: list[int]) -> dict[int, bool | Ba
     Delete multiple host configurations.
     """
     logger.info("Executing tool delete_host_configurations")
-    tasks = [asyncio.create_task(HostConfiguration.delete(host_id)) for host_id in host_ids]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(host_ids, results, strict=True))
+    return await _delete(HostConfiguration, host_ids)

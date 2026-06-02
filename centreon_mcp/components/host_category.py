@@ -1,16 +1,16 @@
-import asyncio
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _create, _delete, _list
 from centreon_mcp.types.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
     HostCategoryConfigurationPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_category = FastMCP()
 
@@ -47,9 +47,7 @@ async def list_host_category_configurations(
     to avoid retrieving all host categories except if explicitly intended.
     """
     logger.info("Executing tool list_host_category_configurations")
-    return await _list(
-        HostCategoryConfiguration, HostCategoryConfigurationOrder, filters, limit, page, order
-    )
+    return await _list(HostCategoryConfiguration, filters, limit, page, order)
 
 
 @host_category.tool(
@@ -66,7 +64,7 @@ async def create_host_category_configuration(params: HostCategoryConfigurationFu
     Create a host category configuration.
     """
     logger.info("Executing tool create_host_category_configuration")
-    return await HostCategoryConfiguration.create(params)
+    return await _create(HostCategoryConfiguration, params)
 
 
 @host_category.tool(
@@ -109,9 +107,4 @@ async def delete_host_category_configurations(
     Delete multiple host category configurations.
     """
     logger.info("Executing tool delete_host_category_configurations")
-    tasks = [
-        asyncio.create_task(HostCategoryConfiguration.delete(host_category_id))
-        for host_category_id in host_category_ids
-    ]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(host_category_ids, results, strict=True))
+    return await _delete(HostCategoryConfiguration, host_category_ids)

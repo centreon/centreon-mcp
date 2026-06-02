@@ -73,17 +73,15 @@ async def test_list_host_configurations(logger: MagicMock, _list: AsyncMock):
     results = await list_host_configurations(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(
-        HostConfiguration, HostConfigurationOrder, filters, limit, page, order
-    )
+    _list.assert_awaited_once_with(HostConfiguration, filters, limit, page, order)
 
     # Assert result
     assert results[0] == host_configuration
 
 
-@patch(f"{MODULE}.HostConfiguration.create", new_callable=AsyncMock)
+@patch(f"{MODULE}._create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_create_host_configuration(logger: MagicMock, host_configuration_create: AsyncMock):
+async def test_create_host_configuration(logger: MagicMock, _create: AsyncMock):
 
     # Setup args
     params = HostConfigurationFullParams.model_construct()
@@ -91,22 +89,22 @@ async def test_create_host_configuration(logger: MagicMock, host_configuration_c
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostConfiguration.create
-    host_configuration_create.return_value = True
+    # Mock _create
+    _create.return_value = True
 
     # Call test function
     result = await create_host_configuration(params)
 
-    # Assert HostConfiguration.create called with right args
-    host_configuration_create.assert_awaited_once_with(params)
+    # Assert _create called with right args
+    _create.assert_awaited_once_with(HostConfiguration, params)
 
     # Assert result
     assert result
 
 
-@patch(f"{MODULE}.HostConfiguration.patch", new_callable=AsyncMock)
+@patch(f"{MODULE}._patch", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_configuration(logger: MagicMock, host_configuration_patch: AsyncMock):
+async def test_update_host_configuration(logger: MagicMock, _patch: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -115,22 +113,22 @@ async def test_update_host_configuration(logger: MagicMock, host_configuration_p
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostConfiguration.patch
-    host_configuration_patch.return_value = True
+    # Mock _patch
+    _patch.return_value = True
 
     # Call test function
     result = await update_host_configuration(host_id, params)
 
-    # Assert HostConfiguration.patch called with right args
-    host_configuration_patch.assert_awaited_once_with(host_id, params)
+    # Assert _patch called with right args
+    _patch.assert_awaited_once_with(HostConfiguration, host_id, params)
 
     # Assert result
     assert result
 
 
-@patch(f"{MODULE}.HostConfiguration.delete", new_callable=AsyncMock)
+@patch(f"{MODULE}._delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_host_configurations(logger: MagicMock, host_configuration_delete: AsyncMock):
+async def test_delete_host_configurations(logger: MagicMock, _delete: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -138,14 +136,14 @@ async def test_delete_host_configurations(logger: MagicMock, host_configuration_
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostConfiguration.delete
-    host_configuration_delete.return_value = True
+    # Mock _delete
+    _delete.return_value = {host_id: True}
 
     # Call test function
     result = await delete_host_configurations([host_id])
 
-    # Assert HostConfiguration.delete called with right args
-    host_configuration_delete.assert_awaited_once_with(host_id)
+    # Assert _.delete called with right args
+    _delete.assert_awaited_once_with(HostConfiguration, [host_id])
 
     # Assert result
     assert result == {host_id: True}

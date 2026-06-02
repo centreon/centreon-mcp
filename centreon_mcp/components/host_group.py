@@ -1,9 +1,9 @@
-import asyncio
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _create, _delete, _list
 from centreon_mcp.types.host import HostState
 from centreon_mcp.types.host_group import (
     HostGroup,
@@ -12,7 +12,7 @@ from centreon_mcp.types.host_group import (
     HostGroupConfigurationPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_group = FastMCP()
 
@@ -53,7 +53,7 @@ async def list_host_groups(
     to avoid retrieving all host groups except if explicitly intended.
     """
     logger.info("Executing tool list_host_groups")
-    return await _list(HostGroup, HostGroupOrder, filters, limit, page, order)
+    return await _list(HostGroup, filters, limit, page, order)
 
 
 class HostGroupConfigurationOrder(BaseOrder):
@@ -88,9 +88,7 @@ async def list_host_group_configurations(
     to avoid retrieving all host groups except if explicitly intended.
     """
     logger.info("Executing tool list_hostgroup_configurations")
-    return await _list(
-        HostGroupConfiguration, HostGroupConfigurationOrder, filters, limit, page, order
-    )
+    return await _list(HostGroupConfiguration, filters, limit, page, order)
 
 
 @host_group.tool(
@@ -107,7 +105,7 @@ async def create_host_group_configuration(params: HostGroupConfigurationFullPara
     Create a hostgroup.
     """
     logger.info("Executing tool create_hostgroup_configuration")
-    return await HostGroupConfiguration.create(params)
+    return await _create(HostGroupConfiguration, params)
 
 
 @host_group.tool(
@@ -153,9 +151,4 @@ async def delete_host_group_configurations(
     Delete multiple host group configurations.
     """
     logger.info("Executing tool delete_host_group_configurations")
-    tasks = [
-        asyncio.create_task(HostGroupConfiguration.delete(hostgroup_id))
-        for hostgroup_id in hostgroup_ids
-    ]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(hostgroup_ids, results, strict=True))
+    return await _delete(HostGroupConfiguration, hostgroup_ids)

@@ -3,13 +3,14 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
 from centreon_mcp.types.acknowledgement import (
     Acknowledgement,
     AcknowledgementParams,
     AcknowledgementResource,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 acknowledgement = FastMCP()
 
@@ -53,7 +54,7 @@ async def list_acknowledgements(
     List all acknowledgements in real-time monitoring.
     """
     logger.info("Executing tool list_acknowledgements")
-    return await _list(Acknowledgement, AcknowledgementOrder, filters, limit, page, order)
+    return await _list(Acknowledgement, filters, limit, page, order)
 
 
 @acknowledgement.tool(

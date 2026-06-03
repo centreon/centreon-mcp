@@ -21,6 +21,7 @@ from centreon_mcp.types.host_template import (
     HostTemplatePartialParams,
 )
 from centreon_mcp.types.monitoring_server import MonitoringServer
+from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
@@ -99,6 +100,7 @@ async def test_delete[CentreonModel: DeleteMixin](
         (HostTemplate, HostTemplate.model_construct()),
         (MonitoringServer, MonitoringServer.model_construct()),
         (ServiceGroup, ServiceGroup.model_construct()),
+        (Resource, Resource.model_construct()),
     ],
 )
 @patch(f"{MODULE}.ListMixin.list", new_callable=AsyncMock)
@@ -111,17 +113,18 @@ async def test_list[CentreonModel: ListMixin](
     limit = 10
     page = 1
     order = BaseOrder()
+    extras = None
 
     # Mock ListMixin.list
     list_mixin.return_value = [instance]
 
     # Call test function
-    results = await _list(model, filters, limit, page, order)
+    results = await _list(model, filters, limit, page, order, extras)
 
     # Assert ListMixin.list called with right args
     search = json.dumps(BaseFilter.join(filters))
     sort_by = order.model_dump_json()
-    list_mixin.assert_awaited_once_with(search, limit, page, sort_by)
+    list_mixin.assert_awaited_once_with(search, limit, page, sort_by, extras)
 
     # Assert result
     assert results == [instance]

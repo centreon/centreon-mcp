@@ -2,74 +2,47 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.resource import ResourceFilter, ResourceOrder, list_resources
-from centreon_mcp.types.base import ResourceType, StatusType
-from centreon_mcp.types.resource import Resource, ResourceStatus
+from centreon_mcp.types.resource import Resource
 
 MODULE = "centreon_mcp.components.resource"
 
 
-@patch(f"{MODULE}.Resource.list", new_callable=AsyncMock)
-@patch(f"{MODULE}.ResourceFilter.join", new_callable=MagicMock)
+@patch(f"{MODULE}._list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_resources(logger: MagicMock, join: MagicMock, resource_list: AsyncMock):
+async def test_list_resources(logger: MagicMock, _list: AsyncMock):
 
     # Setup args
     filters = [ResourceFilter.model_construct()]
-    types: list[ResourceType] = ["host", "service"]
-    statuses: list[ResourceStatus] = ["UP", "WARNING"]
-    hostgroup_names = ["hostgroup_name"]
-    servicegroup_names = ["servicegroup_name"]
-    host_category_names = ["host_category_name"]
-    service_category_names = ["service_category_name"]
-    monitoring_server_names = ["monitoring_server_name"]
-    status_types: list[StatusType] = ["hard"]
     limit = 50
     page = 1
     order = ResourceOrder()
+    hostgroup_names = ["hostgroup_name_10"]
+    monitoring_server_names = ["monitoring_server_name_10"]
 
     # Mock logger
-    logger.debug.return_value = None
+    logger.info.return_value = None
 
-    # Mock ResourceFilter.join
-    conditions: dict = {}
-    join.return_value = conditions
-
-    # Mock request
+    # Mock _list
     resource = Resource.model_construct()
-    resource_list.return_value = [resource]
+    _list.return_value = [resource]
 
     # Call test function
     results = await list_resources(
         filters,
-        types,
-        statuses,
-        hostgroup_names,
-        servicegroup_names,
-        host_category_names,
-        service_category_names,
-        monitoring_server_names,
-        status_types,
-        limit,
-        page,
-        order,
-    )
-
-    # Assert request called with right args
-    sort_by = order.model_dump_json()
-    resource_list.assert_awaited_once_with(
-        search=json.dumps(conditions),
-        types=json.dumps(types or []),
-        statuses=json.dumps(statuses or []),
-        hostgroup_names=json.dumps(hostgroup_names or []),
-        servicegroup_names=json.dumps(servicegroup_names or []),
-        host_category_names=json.dumps(host_category_names or []),
-        service_category_names=json.dumps(service_category_names or []),
-        monitoring_server_names=json.dumps(monitoring_server_names or []),
-        status_types=json.dumps(status_types or []),
         limit=limit,
         page=page,
-        sort_by=sort_by,
+        order=order,
+        hostgroup_names=hostgroup_names,
+        monitoring_server_names=monitoring_server_names,
     )
+
+    # Assert _list called with right args
+    fields = {
+        "hostgroup_names": hostgroup_names,
+        "monitoring_server_names": monitoring_server_names,
+    }
+    extras = {name: json.dumps(value) for name, value in fields.items() if value}
+    _list.assert_awaited_once_with(Resource, filters, limit, page, order, extras)
 
     # Assert result
     assert results[0] == resource

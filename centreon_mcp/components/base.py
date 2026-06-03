@@ -1,6 +1,7 @@
 import asyncio
 import json
 from collections.abc import Sequence
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -14,13 +15,14 @@ async def _list[CentreonModel: ListMixin](
     limit: int = 10,
     page: int = 1,
     order: BaseOrder | None = None,
+    extras: dict[str, Any] | None = None,
 ) -> list[CentreonModel]:
     """
     Generic function to list resources based on provided filters, pagination and order.
     """
     search = json.dumps(BaseFilter.join(filters))
     sort_by = order.model_dump_json() if order else None
-    return await model.list(search, limit, page, sort_by)
+    return await model.list(search, limit, page, sort_by, extras)
 
 
 async def _delete[CentreonModel: DeleteMixin](

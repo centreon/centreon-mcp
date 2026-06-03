@@ -4,21 +4,25 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
-from centreon_mcp.components.base import BaseFilter, BaseOrder, _create, _delete, _list
+from centreon_mcp.components.base import BaseFilter, BaseOrder, _create, _delete, _list, _patch
 from centreon_mcp.types.acknowledgement import Acknowledgement
 from centreon_mcp.types.command import Command
 from centreon_mcp.types.downtime import Downtime
-from centreon_mcp.types.host import HostConfiguration
+from centreon_mcp.types.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
 )
 from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
 from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
-from centreon_mcp.types.host_template import HostTemplate, HostTemplateFullParams
+from centreon_mcp.types.host_template import (
+    HostTemplate,
+    HostTemplateFullParams,
+    HostTemplatePartialParams,
+)
 from centreon_mcp.types.monitoring_server import MonitoringServer
 from centreon_mcp.types.servicegroup import ServiceGroup
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 MODULE = "centreon_mcp.components.base"
 
@@ -121,3 +125,30 @@ async def test_list[CentreonModel: ListMixin](
 
     # Assert result
     assert results == [instance]
+
+
+@pytest.mark.parametrize(
+    "model,params",
+    [
+        (HostConfiguration, HostConfigurationPartialParams.model_construct()),
+        (HostTemplate, HostTemplatePartialParams.model_construct()),
+    ],
+)
+@patch(f"{MODULE}.PatchMixin.patch", new_callable=AsyncMock)
+async def test_patch[CentreonModel: PatchMixin](
+    patch_mixin: AsyncMock, model: type[CentreonModel], params: BaseModel
+):
+    # Setup args
+    model_id = 10
+
+    # PatchMixin.patch
+    patch_mixin.return_value = True
+
+    # Call test function
+    result = await _patch(model, model_id, params)
+
+    # Assert PatchMixin.patch called with right args
+    patch_mixin.assert_awaited_once_with(model_id, params)
+
+    # Assert result
+    assert result

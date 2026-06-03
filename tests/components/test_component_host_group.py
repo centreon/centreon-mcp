@@ -11,13 +11,11 @@ from centreon_mcp.components.host_group import (
     list_host_groups,
     update_host_group_configuration,
 )
-from centreon_mcp.types.base import Link
 from centreon_mcp.types.host_group import (
     HostGroup,
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
     HostGroupConfigurationPartialParams,
-    Icon,
 )
 
 MODULE = "centreon_mcp.components.host_group"
@@ -117,12 +115,7 @@ async def test_update_host_group_configuration(
     logger.info.return_value = None
 
     # Mock HostGroupConfiguration.get
-    hostgroup = HostGroupConfiguration.model_construct(
-        id=1,
-        name="HostGroup",
-        icon=Icon.model_construct(id=1),
-        hosts=[Link(id=10, name="host_name_10")],
-    )
+    hostgroup = HostGroupConfiguration.model_construct(id=1, name="HostGroup")
     hostgroup_configuration_get.return_value = hostgroup
 
     # Mock HostGroupConfiguration.update
@@ -135,10 +128,7 @@ async def test_update_host_group_configuration(
     hostgroup_configuration_get.assert_awaited_once_with(hostgroup_id)
 
     # Assert HostSeverity.update called with right args
-    data = hostgroup.model_dump(exclude={"id", "is_activated", "icon", "hosts"})
-    data["icon_id"] = hostgroup.icon.id if hostgroup.icon else None
-    data["hosts"] = [host.id for host in hostgroup.hosts if host.id not in params.hosts_removed]
-    data["hosts"] += [host_id for host_id in params.hosts_added if host_id not in data["hosts"]]
+    data = hostgroup.model_dump(exclude={"id", "is_activated"})
     data |= params.model_dump(exclude_none=True)
     hostgroup_configuration_update.assert_awaited_once_with(
         hostgroup_id, HostGroupConfigurationFullParams(**data)

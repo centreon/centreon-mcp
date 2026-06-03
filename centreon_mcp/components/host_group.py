@@ -121,14 +121,11 @@ async def update_host_group_configuration(
     host_group_id: int, params: HostGroupConfigurationPartialParams
 ) -> bool:
     """
-    Update a host group from params.
+    Update a host group from params. Just need to get host_group_id first.
     """
     logger.info("Executing tool update_host_group_configuration")
     hostgroup = await HostGroupConfiguration.get(host_group_id)
-    data = hostgroup.model_dump(exclude={"id", "is_activated", "icon", "hosts"}, exclude_none=True)
-    data["icon_id"] = hostgroup.icon.id if hostgroup.icon else None
-    data["hosts"] = [host.id for host in hostgroup.hosts if host.id not in params.hosts_removed]
-    data["hosts"] += [host_id for host_id in params.hosts_added if host_id not in data["hosts"]]
+    data = hostgroup.model_dump(exclude={"id"}, exclude_none=True)
     data |= params.model_dump(exclude_none=True)
     return await HostGroupConfiguration.update(
         host_group_id, HostGroupConfigurationFullParams(**data)

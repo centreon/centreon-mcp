@@ -56,7 +56,7 @@ class DeleteMixin:
         return True
 
 
-class UpdateMixin[Params: BaseModel]:
+class UpdateMixin[Params: BaseModel](ReadMixin):
     """
     Mixin to add to a Centreon Model a update method via heritage
     """

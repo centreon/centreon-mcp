@@ -4,6 +4,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
 from centreon_mcp.types.base import ResourceType, StatusType
 from centreon_mcp.types.resource import Resource, ResourceStatus
 from centreon_mcp.utils import logger
@@ -74,18 +75,15 @@ async def list_resources(
     to avoid retrieving all resources except if explicitly intended.
     """
     logger.info("Executing tool list_resources")
-    order = order or ResourceOrder()
-    return await Resource.list(
-        search=json.dumps(ResourceFilter.join(filters)),
-        types=json.dumps(types or []),
-        statuses=json.dumps(statuses or []),
-        hostgroup_names=json.dumps(hostgroup_names or []),
-        servicegroup_names=json.dumps(servicegroup_names or []),
-        host_category_names=json.dumps(host_category_names or []),
-        service_category_names=json.dumps(service_category_names or []),
-        monitoring_server_names=json.dumps(monitoring_server_names or []),
-        status_types=json.dumps(status_types or []),
-        limit=limit,
-        page=page,
-        sort_by=order.model_dump_json(),
-    )
+    fields = {
+        "types": types,
+        "statuses": statuses,
+        "hostgroup_names": hostgroup_names,
+        "servicegroup_names": servicegroup_names,
+        "host_category_names": host_category_names,
+        "service_category_names": service_category_names,
+        "monitoring_server_names": monitoring_server_names,
+        "status_types": status_types,
+    }
+    extras = {name: json.dumps(value) for name, value in fields.items() if value}
+    return await _list(Resource, filters, limit, page, order, extras)

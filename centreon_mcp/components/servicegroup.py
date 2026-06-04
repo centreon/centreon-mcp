@@ -3,10 +3,11 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
 from centreon_mcp.types.host import HostState
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 servicegroup = FastMCP()
 
@@ -59,4 +60,4 @@ async def list_servicegroups(
     to avoid retrieving all services groups except if explicitly intended.
     """
     logger.info("Executing tool list_servicegroups")
-    return await _list(ServiceGroup, ServiceGroupOrder, filters, limit, page, order)
+    return await _list(ServiceGroup, filters, limit, page, order)

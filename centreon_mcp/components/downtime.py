@@ -1,13 +1,13 @@
-import asyncio
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _delete, _list
 from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
 from centreon_mcp.types.host import HostState
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 downtime = FastMCP()
 
@@ -59,7 +59,7 @@ async def list_downtimes(
     to avoid retrieving all downtimes except if explicitly intended.
     """
     logger.info("Executing tool list_downtimes")
-    return await _list(Downtime, DowntimeOrder, filters, limit, page, order)
+    return await _list(Downtime, filters, limit, page, order)
 
 
 @downtime.tool(
@@ -95,6 +95,4 @@ async def cancel_downtimes(downtime_ids: list[int]) -> dict[int, bool | BaseExce
     Use tools `list_downtimes` first to get downtime IDs.
     """
     logger.info("Executing tool cancel_downtimes")
-    tasks = [asyncio.create_task(Downtime.delete(downtime_id)) for downtime_id in downtime_ids]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(downtime_ids, results, strict=True))
+    return await _delete(Downtime, downtime_ids)

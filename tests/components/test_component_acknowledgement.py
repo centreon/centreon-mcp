@@ -37,9 +37,7 @@ async def test_list_acknowledgements(logger: MagicMock, _list: AsyncMock):
     results = await list_acknowledgements(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(
-        Acknowledgement, AcknowledgementOrder, filters, limit, page, order
-    )
+    _list.assert_awaited_once_with(Acknowledgement, filters, limit, page, order)
 
     # Assert result
     assert results[0] == acknowledgement

@@ -1,8 +1,7 @@
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import AliasPath, BaseModel, Field, field_validator
 
-from centreon_mcp.types.base import Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
@@ -12,15 +11,7 @@ DESCRIPTION = {
     "geo_coords": "Geographical coordinates use by Centreon Map module to position element on map",
     "comment": "Comments on this host group",
     "hosts": "Hosts linked to this host group",
-    "hosts_added": "Ids of the hosts to add to the host group.",
-    "hosts_removed": "Ids of the hosts to remove from the host group.",
 }
-
-
-class Icon(BaseModel):
-    id: int
-    name: str
-    url: str
 
 
 class HostGroup(BaseModel, ListMixin):
@@ -35,17 +26,15 @@ class HostGroupConfigurationBaseParams(BaseModel):
     icon_id: int | None = Field(None, description=DESCRIPTION["icon_id"])
     geo_coords: str | None = Field(None, description=DESCRIPTION["geo_coords"])
     comment: str | None = Field(None, description=DESCRIPTION["comment"])
+    hosts: list[int] | None = Field(None, description=DESCRIPTION["hosts"])
 
 
 class HostGroupConfigurationPartialParams(HostGroupConfigurationBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
-    hosts_added: list[int] = Field(default_factory=list, description=DESCRIPTION["hosts_added"])
-    hosts_removed: list[int] = Field(default_factory=list, description=DESCRIPTION["hosts_removed"])
 
 
 class HostGroupConfigurationFullParams(HostGroupConfigurationBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
-    hosts: list[int] | None = Field(None, description=DESCRIPTION["hosts"])
 
 
 class HostGroupConfiguration(
@@ -61,10 +50,18 @@ class HostGroupConfiguration(
     id: int
     name: str
     alias: str | None = None
-    icon: Icon | None = None
+    icon_id: int | None = Field(None, validation_alias=AliasPath("icon", "id"))
     geo_coords: str | None = None
     comment: str | None = None
     is_activated: bool
     enabled_hosts_count: int | None = None
     disabled_hosts_count: int | None = None
-    hosts: list[Link] = Field(default_factory=list)
+    hosts: list[int] = Field(default_factory=list)
+
+    @field_validator("hosts", mode="before")
+    @classmethod
+    def validate_hosts(cls, hosts: list[dict]) -> list[int]:
+        """
+        Convert list of Link to list of int to be aligned with params.
+        """
+        return [host["id"] for host in hosts]

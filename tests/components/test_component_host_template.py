@@ -38,15 +38,15 @@ async def test_list_host_templates(logger: MagicMock, _list: AsyncMock):
     results = await list_host_templates(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(HostTemplate, HostTemplateOrder, filters, limit, page, order)
+    _list.assert_awaited_once_with(HostTemplate, filters, limit, page, order)
 
     # Assert result
     assert results[0] == host_template
 
 
-@patch(f"{MODULE}.HostTemplate.create", new_callable=AsyncMock)
+@patch(f"{MODULE}._create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_create_host_template(logger: MagicMock, host_template_create: AsyncMock):
+async def test_create_host_template(logger: MagicMock, _create: AsyncMock):
 
     # Setup args
     params = HostTemplateFullParams.model_construct()
@@ -54,22 +54,22 @@ async def test_create_host_template(logger: MagicMock, host_template_create: Asy
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostTemplate.create
-    host_template_create.return_value = True
+    # Mock _create
+    _create.return_value = True
 
     # Call test function
     result = await create_host_template(params)
 
-    # Assert HostTemplate.create called with right args
-    host_template_create.assert_awaited_once_with(params)
+    # Assert _create called with right args
+    _create.assert_awaited_once_with(HostTemplate, params)
 
     # Assert result
     assert result
 
 
-@patch(f"{MODULE}.HostTemplate.patch", new_callable=AsyncMock)
+@patch(f"{MODULE}._patch", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_template(logger: MagicMock, host_template_patch: AsyncMock):
+async def test_update_host_template(logger: MagicMock, _patch: AsyncMock):
 
     # Setup args
     host_id = 10
@@ -78,22 +78,22 @@ async def test_update_host_template(logger: MagicMock, host_template_patch: Asyn
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostTemplate.patch
-    host_template_patch.return_value = True
+    # Mock _patch
+    _patch.return_value = True
 
     # Call test function
     result = await update_host_template(host_id, params)
 
-    # Assert HostTemplate.patch called with right args
-    host_template_patch.assert_awaited_once_with(host_id, params)
+    # Assert _patch called with right args
+    _patch.assert_awaited_once_with(HostTemplate, host_id, params)
 
     # Assert result
     assert result
 
 
-@patch(f"{MODULE}.HostTemplate.delete", new_callable=AsyncMock)
+@patch(f"{MODULE}._delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_delete_host_templates(logger: MagicMock, host_template_delete: AsyncMock):
+async def test_delete_host_templates(logger: MagicMock, _delete: AsyncMock):
 
     # Setup args
     host_template_id = 10
@@ -101,14 +101,14 @@ async def test_delete_host_templates(logger: MagicMock, host_template_delete: As
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostTemplate.delete
-    host_template_delete.return_value = True
+    # Mock _delete
+    _delete.return_value = {host_template_id: True}
 
     # Call test function
     result = await delete_host_templates([host_template_id])
 
-    # Assert HostTemplate.delete called with right args
-    host_template_delete.assert_awaited_once_with(host_template_id)
+    # Assert _delete called with right args
+    _delete.assert_awaited_once_with(HostTemplate, [host_template_id])
 
     # Assert result
     assert result == {host_template_id: True}

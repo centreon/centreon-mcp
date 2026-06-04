@@ -1,4 +1,4 @@
-from typing import ClassVar, Self
+from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
@@ -56,7 +56,7 @@ class DeleteMixin:
         return True
 
 
-class UpdateMixin[Params: BaseModel]:
+class UpdateMixin[Params: BaseModel](ReadMixin):
     """
     Mixin to add to a Centreon Model a update method via heritage
     """
@@ -106,10 +106,12 @@ class ListMixin:
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
+        extras: dict[str, Any] | None = None,
     ) -> list[Self]:
         """
         List resources matching the search string using the model's endpoint.
         """
-        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        extras = extras or {}
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by, **extras}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]

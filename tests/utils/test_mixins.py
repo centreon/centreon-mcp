@@ -19,6 +19,7 @@ from centreon_mcp.types.host_template import (
     HostTemplatePartialParams,
 )
 from centreon_mcp.types.monitoring_server import MonitoringServer
+from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import (
     CreateMixin,
@@ -325,6 +326,24 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
                 "name": "host_template_name",
                 "alias": "host_template_alias",
                 "is_locked": True,
+            },
+        ),
+        (
+            Resource,
+            "monitoring/resources",
+            {
+                "id": 10,
+                "uuid": "resource_uuid",
+                "type": "host",
+                "name": "resource_name",
+                "host_id": 10,
+                "monitoring_server_name": "poller_name",
+                "is_in_downtime": False,
+                "is_acknowledged": False,
+                "is_in_flapping": False,
+                "status": {"code": 0, "severity_code": 0, "name": "UP"},
+                "has_active_checks_enabled": False,
+                "has_passive_checks_enabled": False,
             },
         ),
     ],

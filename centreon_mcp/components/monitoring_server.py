@@ -3,9 +3,10 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
 from centreon_mcp.types.monitoring_server import MonitoringServer
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 monitoring_server = FastMCP()
 
@@ -41,4 +42,4 @@ async def list_monitoring_servers(
     to avoid retrieving all monitoring servers except if explicitly intended.
     """
     logger.info("Executing tool list_monitoring_servers")
-    return await _list(MonitoringServer, MonitoringServerOrder, filters, limit, page, order)
+    return await _list(MonitoringServer, filters, limit, page, order)

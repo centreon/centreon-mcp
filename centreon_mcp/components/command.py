@@ -3,9 +3,10 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
 from centreon_mcp.types.command import Command, CommandParams, CommandType
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 command = FastMCP()
 
@@ -42,7 +43,7 @@ async def list_commands(
     to avoid retrieving all commands except if explicitly intended.
     """
     logger.info("Executing tool list_commands")
-    return await _list(Command, CommandOrder, filters, limit, page, order)
+    return await _list(Command, filters, limit, page, order)
 
 
 @command.tool(

@@ -1,16 +1,16 @@
-import asyncio
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types.host_severity import (
     HostSeverity,
     HostSeverityFullParams,
     HostSeverityPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_severity = FastMCP()
 
@@ -49,7 +49,7 @@ async def list_host_severities(
     to avoid retrieving all host severities except if explicitly intended.
     """
     logger.info("Executing tool list_host_severities")
-    return await _list(HostSeverity, HostSeverityOrder, filters, limit, page, order)
+    return await _list(HostSeverity, filters, limit, page, order)
 
 
 @host_severity.tool(
@@ -66,7 +66,7 @@ async def create_host_severity(params: HostSeverityFullParams) -> bool:
     Create a host severity from params.
     """
     logger.info("Executing tool create_host_severity")
-    return await HostSeverity.create(params)
+    return await _create(HostSeverity, params)
 
 
 @host_severity.tool(
@@ -83,9 +83,7 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityPartia
     Update a host severity from params.
     """
     logger.info("Executing tool update_host_severity")
-    host_severity = await HostSeverity.get(host_severity_id)
-    data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
-    return await HostSeverity.update(host_severity_id, HostSeverityFullParams(**data))
+    return await _update(HostSeverity, HostSeverityFullParams, host_severity_id, params)
 
 
 @host_severity.tool(
@@ -103,9 +101,4 @@ async def delete_host_severities(host_severity_ids: list[int]) -> dict[int, bool
     Use tools `list_host_severities` first to get host severities IDs.
     """
     logger.info("Executing tool delete_host_severities")
-    tasks = [
-        asyncio.create_task(HostSeverity.delete(host_severity_id))
-        for host_severity_id in host_severity_ids
-    ]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    return dict(zip(host_severity_ids, results, strict=True))
+    return await _delete(HostSeverity, host_severity_ids)

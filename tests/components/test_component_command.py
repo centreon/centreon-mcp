@@ -32,7 +32,7 @@ async def test_list_commands(logger: MagicMock, _list: AsyncMock):
     results = await list_commands(filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(Command, CommandOrder, filters, limit, page, order)
+    _list.assert_awaited_once_with(Command, filters, limit, page, order)
 
     # Assert result
     assert results[0] == command

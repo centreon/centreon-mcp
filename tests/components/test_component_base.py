@@ -1,5 +1,5 @@
 import json
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, call, patch
 
 import pytest
 from pydantic import BaseModel
@@ -37,6 +37,7 @@ from centreon_mcp.types.monitoring_server import MonitoringServer
 from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, UpdateMixin
+from centreon_mcp.utils.request import CentreonAPIError
 
 MODULE = "centreon_mcp.components.base"
 
@@ -85,19 +86,20 @@ async def test_delete[CentreonModel: DeleteMixin](
 ):
 
     # Setup args
-    model_id = 1
+    model_ids = [1, 2]
 
     # Mock DeleteMixin.delete
-    delete_mixin.return_value = True
+    error = CentreonAPIError(404, "fake_url", "GET", {})
+    delete_mixin.side_effect = [True, error]
 
     # Call test function
-    results = await _delete(model, [model_id])
+    results = await _delete(model, model_ids)
 
     # Assert DeleteMixin.delete called with right args
-    delete_mixin.assert_awaited_once_with(model_id)
+    delete_mixin.assert_has_awaits([call(model_id) for model_id in model_ids])
 
     # Assert result
-    assert results == {model_id: True}
+    assert results == {model_ids[0]: True, model_ids[1]: error}
 
 
 @pytest.mark.parametrize(

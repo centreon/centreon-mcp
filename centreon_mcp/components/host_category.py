@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _create, _delete, _list
+from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
@@ -83,11 +83,8 @@ async def update_host_category_configuration(
     Update a host category from params.
     """
     logger.info("Executing tool update_host_category_configuration")
-    host_category = await HostCategoryConfiguration.get(host_category_id)
-    data = host_category.model_dump(exclude={"id"}, exclude_none=True)
-    data |= params.model_dump(exclude_none=True)
-    return await HostCategoryConfiguration.update(
-        host_category_id, HostCategoryConfigurationFullParams(**data)
+    return await _update(
+        HostCategoryConfiguration, HostCategoryConfigurationFullParams, host_category_id, params
     )
 
 

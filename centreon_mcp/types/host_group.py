@@ -15,12 +15,6 @@ DESCRIPTION = {
 }
 
 
-class Icon(BaseModel):
-    id: int
-    name: str
-    url: str
-
-
 class HostGroup(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
 

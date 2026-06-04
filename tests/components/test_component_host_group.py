@@ -98,40 +98,26 @@ async def test_create_host_group_configuration(logger: MagicMock, _create: Async
     assert result
 
 
-@patch(f"{MODULE}.HostGroupConfiguration.update", new_callable=AsyncMock)
-@patch(f"{MODULE}.HostGroupConfiguration.get", new_callable=AsyncMock)
+@patch(f"{MODULE}._update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_host_group_configuration(
-    logger: MagicMock,
-    hostgroup_configuration_get: AsyncMock,
-    hostgroup_configuration_update: AsyncMock,
-):
+async def test_update_host_severity(logger: MagicMock, _update: AsyncMock):
 
     # Setup args
-    hostgroup_id = 10
+    host_group_id = 10
     params = HostGroupConfigurationPartialParams.model_construct()
 
     # Mock logger
     logger.info.return_value = None
 
-    # Mock HostGroupConfiguration.get
-    hostgroup = HostGroupConfiguration.model_construct(id=1, name="HostGroup")
-    hostgroup_configuration_get.return_value = hostgroup
-
-    # Mock HostGroupConfiguration.update
-    hostgroup_configuration_update.return_value = True
+    # Mock _update
+    _update.return_value = True
 
     # Call test function
-    result = await update_host_group_configuration(hostgroup_id, params)
+    result = await update_host_group_configuration(host_group_id, params)
 
-    # Assert HostGrougConfiguration.get called with right args
-    hostgroup_configuration_get.assert_awaited_once_with(hostgroup_id)
-
-    # Assert HostSeverity.update called with right args
-    data = hostgroup.model_dump(exclude={"id", "is_activated"})
-    data |= params.model_dump(exclude_none=True)
-    hostgroup_configuration_update.assert_awaited_once_with(
-        hostgroup_id, HostGroupConfigurationFullParams(**data)
+    # Assert _update called with right args
+    _update.assert_awaited_once_with(
+        HostGroupConfiguration, HostGroupConfigurationFullParams, host_group_id, params
     )
 
     # Assert result

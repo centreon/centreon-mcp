@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _create, _delete, _list
+from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types.host import HostState
 from centreon_mcp.types.host_group import (
     HostGroup,
@@ -124,11 +124,8 @@ async def update_host_group_configuration(
     Update a host group from params. Just need to get host_group_id first.
     """
     logger.info("Executing tool update_host_group_configuration")
-    hostgroup = await HostGroupConfiguration.get(host_group_id)
-    data = hostgroup.model_dump(exclude={"id"}, exclude_none=True)
-    data |= params.model_dump(exclude_none=True)
-    return await HostGroupConfiguration.update(
-        host_group_id, HostGroupConfigurationFullParams(**data)
+    return await _update(
+        HostGroupConfiguration, HostGroupConfigurationFullParams, host_group_id, params
     )
 
 

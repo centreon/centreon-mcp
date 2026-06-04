@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _create, _delete, _list
+from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types.host_severity import (
     HostSeverity,
     HostSeverityFullParams,
@@ -83,9 +83,7 @@ async def update_host_severity(host_severity_id: int, params: HostSeverityPartia
     Update a host severity from params.
     """
     logger.info("Executing tool update_host_severity")
-    host_severity = await HostSeverity.get(host_severity_id)
-    data = host_severity.model_dump(exclude={"id"}) | params.model_dump(exclude_none=True)
-    return await HostSeverity.update(host_severity_id, HostSeverityFullParams(**data))
+    return await _update(HostSeverity, HostSeverityFullParams, host_severity_id, params)
 
 
 @host_severity.tool(

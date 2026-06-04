@@ -4,7 +4,15 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
-from centreon_mcp.components.base import BaseFilter, BaseOrder, _create, _delete, _list, _patch
+from centreon_mcp.components.base import (
+    BaseFilter,
+    BaseOrder,
+    _create,
+    _delete,
+    _list,
+    _patch,
+    _update,
+)
 from centreon_mcp.types.acknowledgement import Acknowledgement
 from centreon_mcp.types.command import Command
 from centreon_mcp.types.downtime import Downtime
@@ -12,9 +20,14 @@ from centreon_mcp.types.host import HostConfiguration, HostConfigurationPartialP
 from centreon_mcp.types.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
+    HostCategoryConfigurationPartialParams,
 )
 from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
-from centreon_mcp.types.host_severity import HostSeverity, HostSeverityFullParams
+from centreon_mcp.types.host_severity import (
+    HostSeverity,
+    HostSeverityFullParams,
+    HostSeverityPartialParams,
+)
 from centreon_mcp.types.host_template import (
     HostTemplate,
     HostTemplateFullParams,
@@ -23,7 +36,7 @@ from centreon_mcp.types.host_template import (
 from centreon_mcp.types.monitoring_server import MonitoringServer
 from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, UpdateMixin
 
 MODULE = "centreon_mcp.components.base"
 
@@ -144,7 +157,7 @@ async def test_patch[CentreonModel: PatchMixin](
     # Setup args
     model_id = 10
 
-    # PatchMixin.patch
+    # Mock PatchMixin.patch
     patch_mixin.return_value = True
 
     # Call test function
@@ -152,6 +165,62 @@ async def test_patch[CentreonModel: PatchMixin](
 
     # Assert PatchMixin.patch called with right args
     patch_mixin.assert_awaited_once_with(model_id, params)
+
+    # Assert result
+    assert result
+
+
+@pytest.mark.parametrize(
+    "model_cls,full_params_cls,partial_params",
+    [
+        (
+            HostGroupConfiguration,
+            HostGroupConfigurationFullParams,
+            HostConfigurationPartialParams.model_construct(name="host_group_name"),
+        ),
+        (
+            HostCategoryConfiguration,
+            HostCategoryConfigurationFullParams,
+            HostCategoryConfigurationPartialParams.model_construct(
+                name="host_category_name", alias="host_category_alias"
+            ),
+        ),
+        (
+            HostSeverity,
+            HostGroupConfigurationFullParams,
+            HostSeverityPartialParams.model_construct(name="host_severity_name"),
+        ),
+    ],
+)
+@patch(f"{MODULE}.UpdateMixin.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.UpdateMixin.get", new_callable=AsyncMock)
+async def test_update[CentreonModel: UpdateMixin](
+    get_mixin: AsyncMock,
+    update_mixin: AsyncMock,
+    model_cls: type[CentreonModel],
+    full_params_cls: type[BaseModel],
+    partial_params: BaseModel,
+):
+    # Setup args
+    model_id = 10
+
+    # Mock ReadMixin.get
+    model = model_cls.model_construct()  # type: ignore
+    get_mixin.return_value = model
+
+    # Mock UpdateMixin.update
+    update_mixin.return_value = True
+
+    # Call test function
+    result = await _update(model_cls, full_params_cls, model_id, partial_params)
+
+    # Assert ReadMixin.get called with right args
+    get_mixin.assert_awaited_once_with(model_id)
+
+    # Assert UpdateMixin.update called with right args
+    data = model.model_dump(exclude={"id"}, exclude_none=True)
+    data |= partial_params.model_dump(exclude_none=True)
+    update_mixin.assert_awaited_once_with(model_id, full_params_cls(**data))
 
     # Assert result
     assert result

@@ -6,7 +6,13 @@ from typing import Any
 from pydantic import BaseModel
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
+from centreon_mcp.utils.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ListMixin,
+    PatchMixin,
+    UpdateMixin,
+)
 
 
 async def _list[CentreonModel: ListMixin](
@@ -52,3 +58,15 @@ async def _patch[CentreonModel: PatchMixin](
     Generic function to patch a resource based on params.
     """
     return await model.patch(model_id, params)
+
+
+async def _update[CentreonModel: UpdateMixin, FullParams: BaseModel](
+    model: type[CentreonModel], full_params_cls: type[FullParams], model_id: int, params: BaseModel
+) -> bool:
+    """
+    Generic function to update a resource from params.
+    """
+    current = await model.get(model_id)
+    data = current.model_dump(exclude={"id"}, exclude_none=True)  # type: ignore
+    data |= params.model_dump(exclude_none=True)
+    return await model.update(model_id, full_params_cls(**data))

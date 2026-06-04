@@ -1,8 +1,7 @@
 from typing import ClassVar
 
-from pydantic import AliasPath, BaseModel, Field
+from pydantic import AliasPath, BaseModel, Field, field_validator
 
-from centreon_mcp.types.base import Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
@@ -57,4 +56,12 @@ class HostGroupConfiguration(
     is_activated: bool
     enabled_hosts_count: int | None = None
     disabled_hosts_count: int | None = None
-    hosts: list[Link] = Field(default_factory=list)
+    hosts: list[int] = Field(default_factory=list)
+
+    @field_validator("hosts", mode="before")
+    @classmethod
+    def validate_hosts(cls, hosts: list[dict]) -> list[int]:
+        """
+        Convert list of Link to list of int to be aligned with params.
+        """
+        return [host["id"] for host in hosts]

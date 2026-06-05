@@ -101,7 +101,7 @@ async def generate_monitoring_servers_configurations(
     if monitoring_servers_ids is None:
         return await MonitoringServerConfiguration.generate()
 
-    # Else, generate configurations concurently
+    # Else, generate configurations concurrently
     tasks = [
         asyncio.create_task(MonitoringServerConfiguration.generate(monitoring_server_id))
         for monitoring_server_id in monitoring_servers_ids
@@ -132,7 +132,7 @@ async def reload_monitoring_servers_configurations(
     if monitoring_servers_ids is None:
         return await MonitoringServerConfiguration.reload()
 
-    # Else, reload configurations concurently
+    # Else, reload configurations concurrently
     tasks = [
         asyncio.create_task(MonitoringServerConfiguration.reload(monitoring_server_id))
         for monitoring_server_id in monitoring_servers_ids

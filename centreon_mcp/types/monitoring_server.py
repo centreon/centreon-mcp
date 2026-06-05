@@ -65,7 +65,7 @@ class MonitoringServerConfiguration(BaseModel, ListMixin):
     @classmethod
     async def reload(cls, monitoring_server_id: int | None = None) -> bool:
         """
-        Reload the configuration of a monitoring server based on its id is provided.
+        Reload the configuration of a monitoring server based on its id if provided.
         Else, reload configuration of all monitoring servers.
         Return True if successful; otherwise, raise an exception.
         """

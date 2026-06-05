@@ -121,8 +121,8 @@ async def test_generate_monitoring_servers_configurations_all(
 
 @patch(f"{MODULE}.MonitoringServerConfiguration.reload", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_relaod_monitoring_servers_configurations(
-    logger: MagicMock, monitoring_server_configuration_relaod: AsyncMock
+async def test_reload_monitoring_servers_configurations(
+    logger: MagicMock, monitoring_server_configuration_reload: AsyncMock
 ):
 
     # Setup args
@@ -133,13 +133,13 @@ async def test_relaod_monitoring_servers_configurations(
 
     # Mock MonitoringServerConfiguration.reload
     output = [True, True, True]
-    monitoring_server_configuration_relaod.side_effect = output
+    monitoring_server_configuration_reload.side_effect = output
 
     # Call the test function
     results = await reload_monitoring_servers_configurations(monitoring_servers_ids)
 
     # Check MonitoringServerConfiguration.reload was called with right args
-    monitoring_server_configuration_relaod.assert_has_awaits(
+    monitoring_server_configuration_reload.assert_has_awaits(
         [call(monitoring_server_id) for monitoring_server_id in monitoring_servers_ids]
     )
 
@@ -149,21 +149,21 @@ async def test_relaod_monitoring_servers_configurations(
 
 @patch(f"{MODULE}.MonitoringServerConfiguration.reload", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_relaod_monitoring_servers_configurations_all(
-    logger: MagicMock, monitoring_server_configuration_relaod: AsyncMock
+async def test_reload_monitoring_servers_configurations_all(
+    logger: MagicMock, monitoring_server_configuration_reload: AsyncMock
 ):
 
     # Mock logger
     logger.debug.return_value = None
 
     # Mock MonitoringServerConfiguration.reload
-    monitoring_server_configuration_relaod.return_value = True
+    monitoring_server_configuration_reload.return_value = True
 
     # Call the test function
     result = await reload_monitoring_servers_configurations(None)
 
     # Check MonitoringServerConfiguration.reload was called with right args
-    monitoring_server_configuration_relaod.assert_awaited_once_with()
+    monitoring_server_configuration_reload.assert_awaited_once_with()
 
     # Check result
     assert result

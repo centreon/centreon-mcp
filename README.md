@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 39 tools organized across eleven functional areas.
+The MCP server currently exposes 41 tools organized across eleven functional areas.
 
 ### Resource Monitoring
 
@@ -44,7 +44,7 @@ Three read-only tools allow AI assistants to explore your monitoring topology:
 
 These tools serve as natural building blocks: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
 
-Two additional tools manage the configuration lifecycle of monitoring servers (pollers):
+Three additional tools manage the configuration lifecycle of monitoring servers (pollers):
 
 - **list_monitoring_servers_configurations** — List poller configurations, filterable by ID or name. Results are paginated and sortable by name or ID.
 - **generate_monitoring_servers_configurations** — Generate the configuration files for one or more pollers by their IDs. If no IDs are provided, generates configurations for all pollers. Runs concurrently when multiple IDs are given.

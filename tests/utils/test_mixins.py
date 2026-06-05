@@ -18,7 +18,7 @@ from centreon_mcp.types.host_template import (
     HostTemplateFullParams,
     HostTemplatePartialParams,
 )
-from centreon_mcp.types.monitoring_server import MonitoringServer
+from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
 from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import (
@@ -344,6 +344,34 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
                 "status": {"code": 0, "severity_code": 0, "name": "UP"},
                 "has_active_checks_enabled": False,
                 "has_passive_checks_enabled": False,
+            },
+        ),
+        (
+            MonitoringServerConfiguration,
+            "configuration/monitoring-servers",
+            {
+                "id": 10,
+                "name": "monitoring_server_name",
+                "address": "",
+                "is_localhost": True,
+                "is_default": True,
+                "ssh_port": 0,
+                "engine_start_command": "",
+                "engine_stop_command": "",
+                "engine_restart_command": "",
+                "engine_reload_command": "",
+                "nagios_bin": "",
+                "nagiostats_bin": "",
+                "broker_reload_command": "",
+                "centreonbroker_cfg_path": "",
+                "centreonbroker_module_path": "",
+                "centreonbroker_logs_path": "",
+                "centreonconnector_path": "",
+                "init_script_centreontrapd": "",
+                "snmp_trapd_path_conf": "",
+                "remote_server_use_as_proxy": True,
+                "is_updated": True,
+                "is_activate": True,
             },
         ),
     ],

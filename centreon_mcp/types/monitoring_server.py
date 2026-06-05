@@ -36,10 +36,10 @@ class MonitoringServerConfiguration(BaseModel, ListMixin):
     nagios_bin: str
     nagiostats_bin: str
     broker_reload_command: str
-    centreonbroker_cfg_path: str
-    centreonbroker_module_path: str
-    centreonbroker_logs_path: str
-    centreonconnector_path: str
+    centreonbroker_cfg_path: str | None = None
+    centreonbroker_module_path: str | None = None
+    centreonbroker_logs_path: str | None = None
+    centreonconnector_path: str | None = None
     init_script_centreontrapd: str
     snmp_trapd_path_conf: str
     remote_id: int | None = None

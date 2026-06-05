@@ -33,7 +33,7 @@ from centreon_mcp.types.host_template import (
     HostTemplateFullParams,
     HostTemplatePartialParams,
 )
-from centreon_mcp.types.monitoring_server import MonitoringServer
+from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
 from centreon_mcp.types.resource import Resource
 from centreon_mcp.types.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, UpdateMixin
@@ -116,6 +116,7 @@ async def test_delete[CentreonModel: DeleteMixin](
         (MonitoringServer, MonitoringServer.model_construct()),
         (ServiceGroup, ServiceGroup.model_construct()),
         (Resource, Resource.model_construct()),
+        (MonitoringServerConfiguration, MonitoringServerConfiguration.model_construct()),
     ],
 )
 @patch(f"{MODULE}.ListMixin.list", new_callable=AsyncMock)

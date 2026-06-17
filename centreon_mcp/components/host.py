@@ -5,11 +5,13 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _create, _delete, _list, _patch
-from centreon_mcp.types.host import (
-    Host,
+from centreon_mcp.types.configuration.host import (
     HostConfiguration,
     HostConfigurationFullParams,
     HostConfigurationPartialParams,
+)
+from centreon_mcp.types.monitoring.host import (
+    Host,
     HostStatusCount,
 )
 from centreon_mcp.utils import logger

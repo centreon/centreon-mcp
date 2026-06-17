@@ -5,7 +5,8 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
+from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
 

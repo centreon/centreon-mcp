@@ -7,18 +7,6 @@ from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
 
-class MonitoringServer(BaseModel, ListMixin):
-    endpoint: ClassVar[str] = "monitoring/servers"
-
-    id: int
-    name: str
-    address: str | None = None
-    description: str | None = None
-    is_running: bool
-    last_alive: int | None = None
-    version: str | None = None
-
-
 class MonitoringServerConfiguration(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "configuration/monitoring-servers"
 

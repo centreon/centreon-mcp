@@ -2,9 +2,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from centreon_mcp.types.monitoring_server import MonitoringServerConfiguration
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
 
-MODULE = "centreon_mcp.types.monitoring_server"
+MODULE = "centreon_mcp.types.configuration.monitoring_server"
 
 
 @pytest.mark.parametrize(

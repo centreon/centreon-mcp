@@ -8,7 +8,7 @@ from centreon_mcp.components.host_category import (
     list_host_category_configurations,
     update_host_category_configuration,
 )
-from centreon_mcp.types.host_category import (
+from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
     HostCategoryConfigurationPartialParams,

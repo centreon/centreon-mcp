@@ -4,8 +4,8 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.host import HostState
-from centreon_mcp.types.servicegroup import ServiceGroup
+from centreon_mcp.types.base import HostState
+from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
 

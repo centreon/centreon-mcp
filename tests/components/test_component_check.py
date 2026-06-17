@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.check import request_check
-from centreon_mcp.types.check import CheckParams, CheckResource
+from centreon_mcp.types.monitoring.check import CheckParams, CheckResource
 
 MODULE = "centreon_mcp.components.check"
 

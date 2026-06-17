@@ -8,7 +8,7 @@ from centreon_mcp.components.host_severity import (
     list_host_severities,
     update_host_severity,
 )
-from centreon_mcp.types.host_severity import (
+from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
     HostSeverityFullParams,
     HostSeverityPartialParams,

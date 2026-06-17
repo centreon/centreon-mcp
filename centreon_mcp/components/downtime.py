@@ -4,8 +4,8 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _delete, _list
-from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
-from centreon_mcp.types.host import HostState
+from centreon_mcp.types.base import HostState
+from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeParams, DowntimeResource
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
 

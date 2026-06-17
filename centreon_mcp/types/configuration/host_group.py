@@ -14,13 +14,6 @@ DESCRIPTION = {
 }
 
 
-class HostGroup(BaseModel, ListMixin):
-    endpoint: ClassVar[str] = "monitoring/hostgroups"
-
-    id: int
-    name: str
-
-
 class HostGroupConfigurationBaseParams(BaseModel):
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
     icon_id: int | None = Field(None, description=DESCRIPTION["icon_id"])

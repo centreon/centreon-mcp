@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import AliasPath, BaseModel, Field, field_validator
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {

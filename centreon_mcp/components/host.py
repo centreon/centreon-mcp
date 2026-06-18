@@ -1,5 +1,5 @@
 import json
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -7,24 +7,15 @@ from pydantic import Field
 from centreon_mcp.components.base import _create, _delete, _list, _patch
 from centreon_mcp.types.configuration.host import (
     HostConfiguration,
+    HostConfigurationFilter,
     HostConfigurationFullParams,
+    HostConfigurationOrder,
     HostConfigurationPartialParams,
 )
-from centreon_mcp.types.monitoring.host import (
-    Host,
-    HostStatusCount,
-)
+from centreon_mcp.types.monitoring.host import Host, HostFilter, HostStatusCount
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host = FastMCP()
-
-
-class HostFilter(BaseFilter):
-    host_group_id: int | None = Field(None, serialization_alias="host_group.id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
-    host_category_id: int | None = Field(None, serialization_alias="host_category.id $eq")
-    host_category_name: str | None = Field(None, serialization_alias="host_category.name $eq")
 
 
 @host.tool(
@@ -49,23 +40,6 @@ async def count_hosts_by_status(
     logger.info("Executing tool count_hosts_by_status")
     search = json.dumps(HostFilter.join(filters))
     return await Host.count_by_status(search)
-
-
-class HostConfigurationOrder(BaseOrder):
-    field: Literal["name", "alias", "address"] = "name"
-
-
-class HostConfigurationFilter(BaseFilter):
-    host_configuration_id: int | None = Field(None, serialization_alias="id $eq")
-    host_configuration_name: str | None = Field(None, serialization_alias="name $eq")
-    host_configuration_address: str | None = Field(None, serialization_alias="address $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
-    poller_name: str | None = Field(None, serialization_alias="poller.name $eq")
-    host_group_id: int | None = Field(None, serialization_alias="group.id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="group.name $eq")
-    host_category_id: int | None = Field(None, serialization_alias="category.id $eq")
-    host_category_name: str | None = Field(None, serialization_alias="category.name $eq")
-    is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 @host.tool(

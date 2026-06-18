@@ -3,6 +3,7 @@ from typing import ClassVar, Literal
 from pydantic import BaseModel, Field
 
 from centreon_mcp.types.base import EnablementStatus, Link
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 
 DESCRIPTION = {
@@ -59,6 +60,23 @@ DESCRIPTION = {
     "groups": "Define the host groups IDs that should be associated with this host",
     "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
 }
+
+
+class HostConfigurationOrder(BaseOrder):
+    field: Literal["name", "alias", "address"] = "name"
+
+
+class HostConfigurationFilter(BaseFilter):
+    host_configuration_id: int | None = Field(None, serialization_alias="id $eq")
+    host_configuration_name: str | None = Field(None, serialization_alias="name $eq")
+    host_configuration_address: str | None = Field(None, serialization_alias="address $eq")
+    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
+    poller_name: str | None = Field(None, serialization_alias="poller.name $eq")
+    host_group_id: int | None = Field(None, serialization_alias="group.id $eq")
+    host_group_name: str | None = Field(None, serialization_alias="group.name $eq")
+    host_category_id: int | None = Field(None, serialization_alias="category.id $eq")
+    host_category_name: str | None = Field(None, serialization_alias="category.name $eq")
+    is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 class HostConfigurationBaseParams(BaseModel):

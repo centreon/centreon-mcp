@@ -1,11 +1,37 @@
 from datetime import datetime
-from typing import ClassVar
+from typing import ClassVar, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseResource
+from centreon_mcp.types.base import BaseFilter, BaseOrder, BaseResource, HostState
 from centreon_mcp.utils.mixins import DeleteMixin, ListMixin
 from centreon_mcp.utils.request import request
+
+
+class DowntimeOrder(BaseOrder):
+    field: Literal[
+        "id",
+        "host.id",
+        "host.name",
+        "host.alias",
+        "host.address",
+        "host.state",
+        "start_time",
+        "end_time",
+        "entry_time",
+        "deletion_time",
+    ] = "id"
+
+
+class DowntimeFilter(BaseFilter):
+    host_id: int | None = Field(None, serialization_alias="host.id $eq")
+    host_name: str | None = Field(None, serialization_alias="host.name $eq")
+    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
+    host_address: str | None = Field(None, serialization_alias="host.address $eq")
+    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
+    is_fixed: bool | None = Field(None, serialization_alias="is_fixed $eq")
+    is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled $eq")
+    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
 
 
 class DowntimeParams(BaseModel):

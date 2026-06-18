@@ -1,8 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.host_template import (
-    HostTemplateFilter,
-    HostTemplateOrder,
     create_host_template,
     delete_host_templates,
     list_host_templates,
@@ -10,7 +8,9 @@ from centreon_mcp.components.host_template import (
 )
 from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
+    HostTemplateFilter,
     HostTemplateFullParams,
+    HostTemplateOrder,
     HostTemplatePartialParams,
 )
 

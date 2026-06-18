@@ -1,12 +1,38 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import Status
+from centreon_mcp.types.base import BaseFilter, BaseOrder, Status
 from centreon_mcp.utils.request import request
 
 TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
+
+
+class TimelineOrder(BaseOrder):
+    field: Literal["date", "type", "content"] = "date"
+    order: Literal["ASC", "DESC"] = "DESC"
+
+
+class TimelineFilter(BaseFilter):
+    event_type: TimelineEventType | None = Field(
+        None,
+        serialization_alias="type $eq",
+        description=(
+            "Restrict to a single event type (event, notification, downtime, "
+            "acknowledgement, comment)."
+        ),
+    )
+    start_date: datetime | None = Field(
+        None,
+        serialization_alias="date $ge",
+        description="Only return events whose date is greater than or equal to this ISO8601 datetime.",
+    )
+    end_date: datetime | None = Field(
+        None,
+        serialization_alias="date $le",
+        description="Only return events whose date is less than or equal to this ISO8601 datetime.",
+    )
 
 
 class TimelineContact(BaseModel):

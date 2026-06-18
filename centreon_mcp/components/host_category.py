@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -6,24 +6,14 @@ from pydantic import Field
 from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
+    HostCategoryConfigurationFilter,
     HostCategoryConfigurationFullParams,
+    HostCategoryConfigurationOrder,
     HostCategoryConfigurationPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_category = FastMCP()
-
-
-class HostCategoryConfigurationOrder(BaseOrder):
-    field: Literal["id", "name", "alias", "is_activated"] = "name"
-
-
-class HostCategoryConfigurationFilter(BaseFilter):
-    host_category_id: int | None = Field(None, serialization_alias="id $eq")
-    host_category_name: str | None = Field(None, serialization_alias="name $eq")
-    host_category_alias: str | None = Field(None, serialization_alias="alias $eq")
-    host_category_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 @host_category.tool(

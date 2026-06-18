@@ -1,12 +1,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.command import (
+from centreon_mcp.components.command import add_command, list_commands
+from centreon_mcp.types.configuration.command import (
+    Command,
     CommandFilter,
     CommandOrder,
-    add_command,
-    list_commands,
+    CommandParams,
 )
-from centreon_mcp.types.configuration.command import Command, CommandParams
 
 MODULE = "centreon_mcp.components.command"
 

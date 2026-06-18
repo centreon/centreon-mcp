@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import EnablementStatus
+from centreon_mcp.types.base import BaseFilter, BaseOrder, EnablementStatus
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 DESCRIPTION = {
@@ -62,6 +62,17 @@ DESCRIPTION = {
     "comment": "Comment for this host",
     "categories": "Define the host categories IDs that should be associated with this host",
 }
+
+
+class HostTemplateOrder(BaseOrder):
+    field: Literal["name", "alias"] = "name"
+
+
+class HostTemplateFilter(BaseFilter):
+    host_template_id: int | None = Field(None, serialization_alias="id $eq")
+    host_template_name: str | None = Field(None, serialization_alias="name $eq")
+    host_template_alias: str | None = Field(None, serialization_alias="alias $eq")
+    host_template_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
 
 
 class HostTemplateBaseParams(BaseModel):

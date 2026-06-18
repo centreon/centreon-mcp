@@ -5,14 +5,13 @@ import pytest
 from pydantic import BaseModel
 
 from centreon_mcp.components.base import (
-    BaseFilter,
-    BaseOrder,
     _create,
     _delete,
     _list,
     _patch,
     _update,
 )
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.types.configuration.command import Command
 from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.configuration.host_category import (

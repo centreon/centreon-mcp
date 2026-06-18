@@ -1,7 +1,8 @@
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import AliasPath, BaseModel, Field, field_validator
 
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
@@ -12,6 +13,17 @@ DESCRIPTION = {
     "comment": "Comments on this host group",
     "hosts": "Hosts linked to this host group",
 }
+
+
+class HostGroupConfigurationOrder(BaseOrder):
+    field: Literal["id", "name", "alias", "is_activated"] = "name"
+
+
+class HostGroupConfigurationFilter(BaseFilter):
+    host_group_id: int | None = Field(None, serialization_alias="id $eq")
+    host_group_name: str | None = Field(None, serialization_alias="name $eq")
+    host_group_alias: str | None = Field(None, serialization_alias="alias $eq")
+    host_group_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 class HostGroupConfigurationBaseParams(BaseModel):

@@ -1,41 +1,13 @@
 import json
-from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineEventType
+from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineFilter, TimelineOrder
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 timeline = FastMCP()
-
-
-class TimelineOrder(BaseOrder):
-    field: Literal["date", "type", "content"] = "date"
-    order: Literal["ASC", "DESC"] = "DESC"
-
-
-class TimelineFilter(BaseFilter):
-    event_type: TimelineEventType | None = Field(
-        None,
-        serialization_alias="type $eq",
-        description=(
-            "Restrict to a single event type (event, notification, downtime, "
-            "acknowledgement, comment)."
-        ),
-    )
-    start_date: datetime | None = Field(
-        None,
-        serialization_alias="date $ge",
-        description="Only return events whose date is greater than or equal to this ISO8601 datetime.",
-    )
-    end_date: datetime | None = Field(
-        None,
-        serialization_alias="date $le",
-        description="Only return events whose date is less than or equal to this ISO8601 datetime.",
-    )
 
 
 @timeline.tool(

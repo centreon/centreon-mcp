@@ -20,9 +20,9 @@ dependencies = [
 dev = [
     "coverage>=7.14.1",
     "mypy>=2.1.0",
-    "pytest>=9.0.3",
+    "pytest>=9.1.0",
     "pytest-asyncio>=1.4.0",
-    "ruff>=0.15.16",
+    "ruff>=0.15.17",
     "types-requests>=2.33.0.20260518",
 ]
 

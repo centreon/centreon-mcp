@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -6,33 +6,14 @@ from pydantic import Field
 from centreon_mcp.components.base import _list
 from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
+    AcknowledgementFilter,
+    AcknowledgementOrder,
     AcknowledgementParams,
     AcknowledgementResource,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 acknowledgement = FastMCP()
-
-
-class AcknowledgementOrder(BaseOrder):
-    field: Literal[
-        "id",
-        "host.id",
-        "host.name",
-        "host.alias",
-        "host.address",
-        "host.state",
-        "start_time",
-        "end_time",
-        "entry_time",
-        "deletion_time",
-    ] = "id"
-
-
-class AcknowledgementFilter(BaseFilter):
-    # Fields available for filtering in Centreon API
-    pass
 
 
 @acknowledgement.tool(

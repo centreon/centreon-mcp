@@ -1,11 +1,32 @@
 from datetime import datetime
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel
 
 from centreon_mcp.types.base import BaseResource
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
+
+
+class AcknowledgementOrder(BaseOrder):
+    field: Literal[
+        "id",
+        "host.id",
+        "host.name",
+        "host.alias",
+        "host.address",
+        "host.state",
+        "start_time",
+        "end_time",
+        "entry_time",
+        "deletion_time",
+    ] = "id"
+
+
+class AcknowledgementFilter(BaseFilter):
+    # Fields available for filtering in Centreon API
+    pass
 
 
 class AcknowledgementParams(BaseModel):

@@ -1,7 +1,8 @@
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, ReadMixin, UpdateMixin
 
 DESCRIPTION = {
@@ -12,6 +13,19 @@ DESCRIPTION = {
     "comment": "Host severity comment",
     "is_activated": "Indicates whether this host severity is enabled or not",
 }
+
+
+class HostSeverityOrder(BaseOrder):
+    field: Literal["name", "alias", "level"] = "name"
+
+
+class HostSeverityFilter(BaseFilter):
+    host_severity_id: int | None = Field(None, serialization_alias="id $eq")
+    host_severity_name: str | None = Field(None, serialization_alias="name $eq")
+    host_severity_alias: str | None = Field(None, serialization_alias="alias $eq")
+    min_host_severity_level: int | None = Field(None, serialization_alias="level $ge")
+    max_host_severity_level: int | None = Field(None, serialization_alias="level $le")
+    host_severity_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 class HostSeverityBaseParams(BaseModel):

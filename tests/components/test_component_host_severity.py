@@ -1,8 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.host_severity import (
-    HostSeverityFilter,
-    HostSeverityOrder,
     create_host_severity,
     delete_host_severities,
     list_host_severities,
@@ -10,7 +8,9 @@ from centreon_mcp.components.host_severity import (
 )
 from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
+    HostSeverityFilter,
     HostSeverityFullParams,
+    HostSeverityOrder,
     HostSeverityPartialParams,
 )
 

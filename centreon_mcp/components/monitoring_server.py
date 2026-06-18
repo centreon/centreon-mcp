@@ -1,26 +1,23 @@
 import asyncio
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
-from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
+from centreon_mcp.types.configuration.monitoring_server import (
+    MonitoringServerConfiguration,
+    MonitoringServerConfigurationFilter,
+    MonitoringServerConfigurationOrder,
+)
+from centreon_mcp.types.monitoring.monitoring_server import (
+    MonitoringServer,
+    MonitoringServerFilter,
+    MonitoringServerOrder,
+)
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 monitoring_server = FastMCP()
-
-
-class MonitoringServerOrder(BaseOrder):
-    field: Literal["id", "name", "running"] = "name"
-
-
-class MonitoringServerFilter(BaseFilter):
-    monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
-    monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
-    monitoring_server_running: bool | None = Field(None, serialization_alias="running $eq")
 
 
 @monitoring_server.tool(
@@ -45,15 +42,6 @@ async def list_monitoring_servers(
     """
     logger.info("Executing tool list_monitoring_servers")
     return await _list(MonitoringServer, filters, limit, page, order)
-
-
-class MonitoringServerConfigurationOrder(BaseOrder):
-    field: Literal["id", "name"] = "name"
-
-
-class MonitoringServerConfigurationFilter(BaseFilter):
-    monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
-    monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
 
 
 @monitoring_server.tool(

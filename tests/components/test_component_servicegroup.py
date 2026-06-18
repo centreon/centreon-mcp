@@ -1,11 +1,11 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.servicegroup import (
+from centreon_mcp.components.servicegroup import list_servicegroups
+from centreon_mcp.types.monitoring.servicegroup import (
+    ServiceGroup,
     ServiceGroupFilter,
     ServiceGroupOrder,
-    list_servicegroups,
 )
-from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
 
 MODULE = "centreon_mcp.components.servicegroup"
 

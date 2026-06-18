@@ -1,49 +1,15 @@
 import json
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
 from centreon_mcp.types.base import ResourceStatus, ResourceType, StatusType
-from centreon_mcp.types.monitoring.resource import Resource
+from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 resource = FastMCP()
-
-
-class ResourceOrder(BaseOrder):
-    field: Literal["host.name", "host.alias", "host.address", "host.state"] = "host.name"
-
-
-class ResourceFilter(BaseFilter):
-    # Fields available for filtering in Centreon API
-    name: str | None = Field(
-        None,
-        serialization_alias="name $lk",
-        description="Name of the resource (host or service)",
-    )
-    alias: str | None = Field(
-        None,
-        serialization_alias="alias $lk",
-        description="Alias of the resource (host or service)",
-    )
-    parent_name: str | None = Field(
-        None,
-        serialization_alias="parent_name $lk",
-        description="Name of the parent resource (host or service)",
-    )
-    information_like: str | None = Field(
-        None,
-        serialization_alias="information $lk",
-        description="Filter resources whose output/information contains this string (case-insensitive substring match)",
-    )
-    information_unlike: str | None = Field(
-        None,
-        serialization_alias="information $nk",
-        description="Filter resources whose output/information does not contain this string (case-insensitive substring exclusion)",
-    )
 
 
 @resource.tool(

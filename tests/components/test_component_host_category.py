@@ -1,8 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.host_category import (
-    HostCategoryConfigurationFilter,
-    HostCategoryConfigurationOrder,
     create_host_category_configuration,
     delete_host_category_configurations,
     list_host_category_configurations,
@@ -10,7 +8,9 @@ from centreon_mcp.components.host_category import (
 )
 from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
+    HostCategoryConfigurationFilter,
     HostCategoryConfigurationFullParams,
+    HostCategoryConfigurationOrder,
     HostCategoryConfigurationPartialParams,
 )
 

@@ -3,7 +3,7 @@ import json
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types.service import Service, ServiceStatusCount
+from centreon_mcp.types.monitoring.service import Service, ServiceStatusCount
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter
 

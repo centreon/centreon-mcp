@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.command import Command, CommandParams
+from centreon_mcp.types.configuration.command import Command, CommandParams
 
-MODULE = "centreon_mcp.types.command"
+MODULE = "centreon_mcp.types.configuration.command"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

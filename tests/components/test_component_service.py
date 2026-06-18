@@ -2,7 +2,7 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.service import ServiceFilter, count_services_by_status
-from centreon_mcp.types.service import ServiceStatusCount
+from centreon_mcp.types.monitoring.service import ServiceStatusCount
 
 MODULE = "centreon_mcp.components.service"
 

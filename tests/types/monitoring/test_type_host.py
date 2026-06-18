@@ -1,11 +1,11 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.host import (
+from centreon_mcp.types.monitoring.host import (
     Host,
     HostStatusCount,
 )
 
-MODULE = "centreon_mcp.types.host"
+MODULE = "centreon_mcp.types.monitoring.host"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

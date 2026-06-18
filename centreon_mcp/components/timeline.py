@@ -5,7 +5,7 @@ from typing import Annotated, Literal
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types.timeline import TimelineEvent, TimelineEventType
+from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineEventType
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseFilter, BaseOrder
 

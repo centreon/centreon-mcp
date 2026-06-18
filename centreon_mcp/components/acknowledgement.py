@@ -4,7 +4,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.acknowledgement import (
+from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
     AcknowledgementParams,
     AcknowledgementResource,

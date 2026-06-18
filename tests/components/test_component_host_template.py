@@ -8,7 +8,7 @@ from centreon_mcp.components.host_template import (
     list_host_templates,
     update_host_template,
 )
-from centreon_mcp.types.host_template import (
+from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
     HostTemplateFullParams,
     HostTemplatePartialParams,

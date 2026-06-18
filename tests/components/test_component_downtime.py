@@ -7,7 +7,7 @@ from centreon_mcp.components.downtime import (
     list_downtimes,
     set_downtimes,
 )
-from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
+from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeParams, DowntimeResource
 
 MODULE = "centreon_mcp.components.downtime"
 

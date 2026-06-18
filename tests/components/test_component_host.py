@@ -11,12 +11,12 @@ from centreon_mcp.components.host import (
     list_host_configurations,
     update_host_configuration,
 )
-from centreon_mcp.types.host import (
+from centreon_mcp.types.configuration.host import (
     HostConfiguration,
     HostConfigurationFullParams,
     HostConfigurationPartialParams,
-    HostStatusCount,
 )
+from centreon_mcp.types.monitoring.host import HostStatusCount
 
 MODULE = "centreon_mcp.components.host"
 

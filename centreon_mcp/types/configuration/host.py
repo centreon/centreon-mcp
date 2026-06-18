@@ -1,11 +1,9 @@
-from enum import IntEnum
 from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import EnablementStatus, Link, StatusCount
+from centreon_mcp.types.base import EnablementStatus, Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
-from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
     "monitoring_server_id": "ID of the host's monitoring server",
@@ -61,32 +59,6 @@ DESCRIPTION = {
     "groups": "Define the host groups IDs that should be associated with this host",
     "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
 }
-
-HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
-
-
-class HostState(IntEnum):
-    UP = 0
-    DOWN = 1
-    UNREACHABLE = 2
-    PENDING = 4
-
-
-class HostStatusCount(StatusCount):
-    up: int
-    down: int
-    unreachable: int
-
-
-class Host(BaseModel):
-    @staticmethod
-    async def count_by_status(search: str | None) -> HostStatusCount:
-        """
-        Count hosts by status.
-        """
-        params = {"search": search}
-        content = await request("GET", "monitoring/hosts/status", params=params)
-        return HostStatusCount(**content)
 
 
 class HostConfigurationBaseParams(BaseModel):

@@ -10,7 +10,8 @@ from centreon_mcp.components.monitoring_server import (
     list_monitoring_servers_configurations,
     reload_monitoring_servers_configurations,
 )
-from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
+from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 
 MODULE = "centreon_mcp.components.monitoring_server"
 

@@ -11,12 +11,12 @@ from centreon_mcp.components.host_group import (
     list_host_groups,
     update_host_group_configuration,
 )
-from centreon_mcp.types.host_group import (
-    HostGroup,
+from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
     HostGroupConfigurationPartialParams,
 )
+from centreon_mcp.types.monitoring.host_group import HostGroup
 
 MODULE = "centreon_mcp.components.host_group"
 

@@ -4,7 +4,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _create, _delete, _list, _patch
-from centreon_mcp.types.host_template import (
+from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
     HostTemplateFullParams,
     HostTemplatePartialParams,

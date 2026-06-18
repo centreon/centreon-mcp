@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.resource import Status
+from centreon_mcp.types.base import Status
 from centreon_mcp.utils.request import request
 
 TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]

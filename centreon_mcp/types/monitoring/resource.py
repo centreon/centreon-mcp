@@ -3,18 +3,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import ResourceType
-from centreon_mcp.types.host import HostStatus
-from centreon_mcp.types.service import ServiceStatus
+from centreon_mcp.types.base import ResourceType, Status
 from centreon_mcp.utils.mixins import ListMixin
-
-ResourceStatus = HostStatus | ServiceStatus
-
-
-class Status(BaseModel):
-    code: int
-    name: ResourceStatus
-    severity_code: int
 
 
 class Resource(BaseModel, ListMixin):

@@ -1,12 +1,12 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.acknowledgement import (
+from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
     AcknowledgementParams,
     AcknowledgementResource,
 )
 
-MODULE = "centreon_mcp.types.acknowledgement"
+MODULE = "centreon_mcp.types.monitoring.acknowledgement"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

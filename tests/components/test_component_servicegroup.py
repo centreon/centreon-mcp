@@ -5,7 +5,7 @@ from centreon_mcp.components.servicegroup import (
     ServiceGroupOrder,
     list_servicegroups,
 )
-from centreon_mcp.types.servicegroup import ServiceGroup
+from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
 
 MODULE = "centreon_mcp.components.servicegroup"
 

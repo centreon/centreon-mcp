@@ -1,35 +1,20 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _create, _delete, _list, _update
-from centreon_mcp.types.host import HostState
-from centreon_mcp.types.host_group import (
-    HostGroup,
+from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
+    HostGroupConfigurationFilter,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationOrder,
     HostGroupConfigurationPartialParams,
 )
+from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter, HostGroupOrder
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_group = FastMCP()
-
-
-class HostGroupOrder(BaseOrder):
-    field: Literal["name", "host.name", "host.alias", "host.address", "host.state"] = "host.name"
-
-
-class HostGroupFilter(BaseFilter):
-    host_id: int | None = Field(None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(None, serialization_alias="host.address $eq")
-    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
-    host_group_id: int | None = Field(None, serialization_alias="id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="name $eq")
 
 
 @host_group.tool(
@@ -54,17 +39,6 @@ async def list_host_groups(
     """
     logger.info("Executing tool list_host_groups")
     return await _list(HostGroup, filters, limit, page, order)
-
-
-class HostGroupConfigurationOrder(BaseOrder):
-    field: Literal["id", "name", "alias", "is_activated"] = "name"
-
-
-class HostGroupConfigurationFilter(BaseFilter):
-    host_group_id: int | None = Field(None, serialization_alias="id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="name $eq")
-    host_group_alias: str | None = Field(None, serialization_alias="alias $eq")
-    host_group_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 @host_group.tool(

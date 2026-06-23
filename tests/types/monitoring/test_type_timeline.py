@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.timeline import TimelineEvent
+from centreon_mcp.types.monitoring.timeline import TimelineEvent
 
-MODULE = "centreon_mcp.types.timeline"
+MODULE = "centreon_mcp.types.monitoring.timeline"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

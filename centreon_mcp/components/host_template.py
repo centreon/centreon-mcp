@@ -1,29 +1,19 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _create, _delete, _list, _patch
-from centreon_mcp.types.host_template import (
+from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
+    HostTemplateFilter,
     HostTemplateFullParams,
+    HostTemplateOrder,
     HostTemplatePartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_template = FastMCP()
-
-
-class HostTemplateOrder(BaseOrder):
-    field: Literal["name", "alias"] = "name"
-
-
-class HostTemplateFilter(BaseFilter):
-    host_template_id: int | None = Field(None, serialization_alias="id $eq")
-    host_template_name: str | None = Field(None, serialization_alias="name $eq")
-    host_template_alias: str | None = Field(None, serialization_alias="alias $eq")
-    host_template_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
 
 
 @host_template.tool(

@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.check import Check, CheckParams, CheckResource
+from centreon_mcp.types.monitoring.check import Check, CheckParams, CheckResource
 
-MODULE = "centreon_mcp.types.check"
+MODULE = "centreon_mcp.types.monitoring.check"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

@@ -1,14 +1,14 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.acknowledgement import (
-    AcknowledgementFilter,
-    AcknowledgementOrder,
     add_acknowledgements,
     cancel_acknowledgements,
     list_acknowledgements,
 )
-from centreon_mcp.types.acknowledgement import (
+from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
+    AcknowledgementFilter,
+    AcknowledgementOrder,
     AcknowledgementParams,
     AcknowledgementResource,
 )

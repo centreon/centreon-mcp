@@ -5,37 +5,40 @@ import pytest
 from pydantic import BaseModel
 
 from centreon_mcp.components.base import (
-    BaseFilter,
-    BaseOrder,
     _create,
     _delete,
     _list,
     _patch,
     _update,
 )
-from centreon_mcp.types.acknowledgement import Acknowledgement
-from centreon_mcp.types.command import Command
-from centreon_mcp.types.downtime import Downtime
-from centreon_mcp.types.host import HostConfiguration, HostConfigurationPartialParams
-from centreon_mcp.types.host_category import (
+from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.types.configuration.command import Command
+from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
+from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
     HostCategoryConfigurationPartialParams,
 )
-from centreon_mcp.types.host_group import HostGroupConfiguration, HostGroupConfigurationFullParams
-from centreon_mcp.types.host_severity import (
+from centreon_mcp.types.configuration.host_group import (
+    HostGroupConfiguration,
+    HostGroupConfigurationFullParams,
+)
+from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
     HostSeverityFullParams,
     HostSeverityPartialParams,
 )
-from centreon_mcp.types.host_template import (
+from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
     HostTemplateFullParams,
     HostTemplatePartialParams,
 )
-from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
-from centreon_mcp.types.resource import Resource
-from centreon_mcp.types.servicegroup import ServiceGroup
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
+from centreon_mcp.types.monitoring.acknowledgement import Acknowledgement
+from centreon_mcp.types.monitoring.downtime import Downtime
+from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
+from centreon_mcp.types.monitoring.resource import Resource
+from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, UpdateMixin
 from centreon_mcp.utils.request import CentreonAPIError
 

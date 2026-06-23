@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.service import Service, ServiceStatusCount
+from centreon_mcp.types.monitoring.service import Service, ServiceStatusCount
 
-MODULE = "centreon_mcp.types.service"
+MODULE = "centreon_mcp.types.monitoring.service"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

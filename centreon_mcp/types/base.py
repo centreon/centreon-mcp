@@ -1,11 +1,35 @@
+from collections.abc import Sequence
 from enum import IntEnum
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
 ResourceType = Literal["host", "service"]
-
 StatusType = Literal["soft", "hard"]
+HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
+ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
+ResourceStatus = HostStatus | ServiceStatus
+
+
+class HostState(IntEnum):
+    UP = 0
+    DOWN = 1
+    UNREACHABLE = 2
+    PENDING = 4
+
+
+class ServiceState(IntEnum):
+    OK = 0
+    WARNING = 1
+    CRITICAL = 2
+    UNKNOWN = 3
+    PENDING = 4
+
+
+class Status(BaseModel):
+    code: int
+    name: ResourceStatus
+    severity_code: int
 
 
 class EnablementStatus(IntEnum):
@@ -50,3 +74,30 @@ class Link(BaseModel):
 
     id: int
     name: str
+
+
+class BaseOrder(BaseModel):
+    order: Literal["ASC", "DESC"] = "ASC"
+
+
+class BaseFilter(BaseModel):
+    @staticmethod
+    def join(filters: Sequence["BaseFilter"] | None) -> dict:
+        """
+        Join multiple filters conditions using OR operator.
+        """
+        return {"$or": [{"$and": f.conditions} for f in filters if f.conditions]} if filters else {}
+
+    @property
+    def conditions(self) -> list:
+        """
+        Generate list of conditions dictionary for filtering.
+        """
+        return [
+            {name: {operator: value}}
+            for (name, operator), value in {
+                tuple(condition.split()): value
+                for condition, value in self.model_dump(mode="json", by_alias=True).items()
+                if value is not None
+            }.items()
+        ]

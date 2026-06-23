@@ -2,21 +2,20 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.host import (
-    HostConfigurationFilter,
-    HostConfigurationOrder,
-    HostFilter,
     count_hosts_by_status,
     create_host_configuration,
     delete_host_configurations,
     list_host_configurations,
     update_host_configuration,
 )
-from centreon_mcp.types.host import (
+from centreon_mcp.types.configuration.host import (
     HostConfiguration,
+    HostConfigurationFilter,
     HostConfigurationFullParams,
+    HostConfigurationOrder,
     HostConfigurationPartialParams,
-    HostStatusCount,
 )
+from centreon_mcp.types.monitoring.host import HostFilter, HostStatusCount
 
 MODULE = "centreon_mcp.components.host"
 

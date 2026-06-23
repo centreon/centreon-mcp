@@ -1,22 +1,20 @@
 from datetime import datetime
-from typing import ClassVar
+from typing import ClassVar, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
 
-class MonitoringServer(BaseModel, ListMixin):
-    endpoint: ClassVar[str] = "monitoring/servers"
+class MonitoringServerConfigurationOrder(BaseOrder):
+    field: Literal["id", "name"] = "name"
 
-    id: int
-    name: str
-    address: str | None = None
-    description: str | None = None
-    is_running: bool
-    last_alive: int | None = None
-    version: str | None = None
+
+class MonitoringServerConfigurationFilter(BaseFilter):
+    monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
+    monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
 
 
 class MonitoringServerConfiguration(BaseModel, ListMixin):

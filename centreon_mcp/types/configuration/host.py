@@ -1,11 +1,9 @@
-from enum import IntEnum
 from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import EnablementStatus, Link, StatusCount
+from centreon_mcp.types.base import BaseFilter, BaseOrder, EnablementStatus, Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
-from centreon_mcp.utils.request import request
 
 DESCRIPTION = {
     "monitoring_server_id": "ID of the host's monitoring server",
@@ -62,31 +60,22 @@ DESCRIPTION = {
     "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
 }
 
-HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
+
+class HostConfigurationOrder(BaseOrder):
+    field: Literal["name", "alias", "address"] = "name"
 
 
-class HostState(IntEnum):
-    UP = 0
-    DOWN = 1
-    UNREACHABLE = 2
-    PENDING = 4
-
-
-class HostStatusCount(StatusCount):
-    up: int
-    down: int
-    unreachable: int
-
-
-class Host(BaseModel):
-    @staticmethod
-    async def count_by_status(search: str | None) -> HostStatusCount:
-        """
-        Count hosts by status.
-        """
-        params = {"search": search}
-        content = await request("GET", "monitoring/hosts/status", params=params)
-        return HostStatusCount(**content)
+class HostConfigurationFilter(BaseFilter):
+    host_configuration_id: int | None = Field(None, serialization_alias="id $eq")
+    host_configuration_name: str | None = Field(None, serialization_alias="name $eq")
+    host_configuration_address: str | None = Field(None, serialization_alias="address $eq")
+    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
+    poller_name: str | None = Field(None, serialization_alias="poller.name $eq")
+    host_group_id: int | None = Field(None, serialization_alias="group.id $eq")
+    host_group_name: str | None = Field(None, serialization_alias="group.name $eq")
+    host_category_id: int | None = Field(None, serialization_alias="category.id $eq")
+    host_category_name: str | None = Field(None, serialization_alias="category.name $eq")
+    is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 class HostConfigurationBaseParams(BaseModel):

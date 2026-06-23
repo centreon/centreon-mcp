@@ -1,41 +1,19 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _delete, _list
-from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
-from centreon_mcp.types.host import HostState
+from centreon_mcp.types.monitoring.downtime import (
+    Downtime,
+    DowntimeFilter,
+    DowntimeOrder,
+    DowntimeParams,
+    DowntimeResource,
+)
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 downtime = FastMCP()
-
-
-class DowntimeOrder(BaseOrder):
-    field: Literal[
-        "id",
-        "host.id",
-        "host.name",
-        "host.alias",
-        "host.address",
-        "host.state",
-        "start_time",
-        "end_time",
-        "entry_time",
-        "deletion_time",
-    ] = "id"
-
-
-class DowntimeFilter(BaseFilter):
-    host_id: int | None = Field(None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(None, serialization_alias="host.address $eq")
-    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
-    is_fixed: bool | None = Field(None, serialization_alias="is_fixed $eq")
-    is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
 
 
 @downtime.tool(

@@ -1,22 +1,20 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.host_group import (
-    HostGroupConfigurationFilter,
-    HostGroupConfigurationOrder,
-    HostGroupFilter,
-    HostGroupOrder,
     create_host_group_configuration,
     delete_host_group_configurations,
     list_host_group_configurations,
     list_host_groups,
     update_host_group_configuration,
 )
-from centreon_mcp.types.host_group import (
-    HostGroup,
+from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
+    HostGroupConfigurationFilter,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationOrder,
     HostGroupConfigurationPartialParams,
 )
+from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter, HostGroupOrder
 
 MODULE = "centreon_mcp.components.host_group"
 

@@ -1,16 +1,21 @@
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
 from centreon_mcp.components.monitoring_server import (
-    MonitoringServerConfigurationFilter,
-    MonitoringServerConfigurationOrder,
-    MonitoringServerFilter,
-    MonitoringServerOrder,
     generate_monitoring_servers_configurations,
     list_monitoring_servers,
     list_monitoring_servers_configurations,
     reload_monitoring_servers_configurations,
 )
-from centreon_mcp.types.monitoring_server import MonitoringServer, MonitoringServerConfiguration
+from centreon_mcp.types.configuration.monitoring_server import (
+    MonitoringServerConfiguration,
+    MonitoringServerConfigurationFilter,
+    MonitoringServerConfigurationOrder,
+)
+from centreon_mcp.types.monitoring.monitoring_server import (
+    MonitoringServer,
+    MonitoringServerFilter,
+    MonitoringServerOrder,
+)
 
 MODULE = "centreon_mcp.components.monitoring_server"
 

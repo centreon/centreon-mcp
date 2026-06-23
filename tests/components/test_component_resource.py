@@ -1,8 +1,8 @@
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.resource import ResourceFilter, ResourceOrder, list_resources
-from centreon_mcp.types.resource import Resource
+from centreon_mcp.components.resource import list_resources
+from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 
 MODULE = "centreon_mcp.components.resource"
 

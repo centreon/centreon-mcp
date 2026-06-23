@@ -1,25 +1,18 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.command import Command, CommandParams, CommandType
+from centreon_mcp.types.configuration.command import (
+    Command,
+    CommandFilter,
+    CommandOrder,
+    CommandParams,
+)
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 command = FastMCP()
-
-
-class CommandOrder(BaseOrder):
-    field: Literal["name"] = "name"
-
-
-class CommandFilter(BaseFilter):
-    command_id: int | None = Field(None, serialization_alias="id $eq")
-    command_name: str | None = Field(None, serialization_alias="name $eq")
-    command_type: CommandType | None = Field(None, serialization_alias="type $eq")
-    command_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
 
 
 @command.tool(

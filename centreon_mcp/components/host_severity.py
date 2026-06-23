@@ -1,31 +1,19 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _create, _delete, _list, _update
-from centreon_mcp.types.host_severity import (
+from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
+    HostSeverityFilter,
     HostSeverityFullParams,
+    HostSeverityOrder,
     HostSeverityPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
 
 host_severity = FastMCP()
-
-
-class HostSeverityOrder(BaseOrder):
-    field: Literal["name", "alias", "level"] = "name"
-
-
-class HostSeverityFilter(BaseFilter):
-    host_severity_id: int | None = Field(None, serialization_alias="id $eq")
-    host_severity_name: str | None = Field(None, serialization_alias="name $eq")
-    host_severity_alias: str | None = Field(None, serialization_alias="alias $eq")
-    min_host_severity_level: int | None = Field(None, serialization_alias="level $ge")
-    max_host_severity_level: int | None = Field(None, serialization_alias="level $le")
-    host_severity_is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
 
 
 @host_severity.tool(

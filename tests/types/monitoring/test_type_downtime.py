@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
+from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeParams, DowntimeResource
 
-MODULE = "centreon_mcp.types.downtime"
+MODULE = "centreon_mcp.types.monitoring.downtime"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

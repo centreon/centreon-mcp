@@ -1,13 +1,13 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.downtime import (
+from centreon_mcp.components.downtime import cancel_downtimes, list_downtimes, set_downtimes
+from centreon_mcp.types.monitoring.downtime import (
+    Downtime,
     DowntimeFilter,
     DowntimeOrder,
-    cancel_downtimes,
-    list_downtimes,
-    set_downtimes,
+    DowntimeParams,
+    DowntimeResource,
 )
-from centreon_mcp.types.downtime import Downtime, DowntimeParams, DowntimeResource
 
 MODULE = "centreon_mcp.components.downtime"
 

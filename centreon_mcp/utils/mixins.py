@@ -18,7 +18,7 @@ class CreateMixin[Params: BaseModel]:
         Create a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("POST", cls.endpoint, payload)
         return True
 
@@ -69,7 +69,7 @@ class UpdateMixin[Params: BaseModel](ReadMixin):
         Update a reource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("PUT", f"{cls.endpoint}/{model_id}", payload)
         return True
 
@@ -87,7 +87,7 @@ class PatchMixin[Params: BaseModel]:
         Patch a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
         return True
 

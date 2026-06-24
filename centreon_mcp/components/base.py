@@ -27,7 +27,7 @@ async def _list[CentreonModel: ListMixin](
     Generic function to list resources based on provided filters, pagination and order.
     """
     search = json.dumps(BaseFilter.join(filters))
-    sort_by = order.model_dump_json() if order else None
+    sort_by = order.model_dump_json(exclude={"model_type"}) if order else None
     return await model.list(search, limit, page, sort_by, extras)
 
 
@@ -68,5 +68,5 @@ async def _update[CentreonModel: UpdateMixin, FullParams: BaseModel](
     """
     current = await model.get(model_id)
     data = current.model_dump(exclude={"id"}, exclude_none=True)  # type: ignore
-    data |= params.model_dump(exclude_none=True)
+    data |= params.model_dump(exclude_none=True, exclude={"model_type"})
     return await model.update(model_id, full_params_cls(**data))

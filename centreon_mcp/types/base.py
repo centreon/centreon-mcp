@@ -97,7 +97,9 @@ class BaseFilter(BaseModel):
             {name: {operator: value}}
             for (name, operator), value in {
                 tuple(condition.split()): value
-                for condition, value in self.model_dump(mode="json", by_alias=True).items()
+                for condition, value in self.model_dump(
+                    mode="json", by_alias=True, exclude={"model_type"}
+                ).items()
                 if value is not None
             }.items()
         ]

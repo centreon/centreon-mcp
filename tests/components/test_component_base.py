@@ -22,6 +22,7 @@ from centreon_mcp.types.configuration.host_category import (
 from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationPartialParams,
 )
 from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
@@ -142,7 +143,7 @@ async def test_list[CentreonModel: ListMixin](
 
     # Assert ListMixin.list called with right args
     search = json.dumps(BaseFilter.join(filters))
-    sort_by = order.model_dump_json()
+    sort_by = order.model_dump_json(exclude={"model_type"})
     list_mixin.assert_awaited_once_with(search, limit, page, sort_by, extras)
 
     # Assert result
@@ -182,7 +183,7 @@ async def test_patch[CentreonModel: PatchMixin](
         (
             HostGroupConfiguration,
             HostGroupConfigurationFullParams,
-            HostConfigurationPartialParams.model_construct(name="host_group_name"),
+            HostGroupConfigurationPartialParams.model_construct(name="host_group_name"),
         ),
         (
             HostCategoryConfiguration,
@@ -193,8 +194,10 @@ async def test_patch[CentreonModel: PatchMixin](
         ),
         (
             HostSeverity,
-            HostGroupConfigurationFullParams,
-            HostSeverityPartialParams.model_construct(name="host_severity_name"),
+            HostSeverityFullParams,
+            HostSeverityPartialParams.model_construct(
+                name="host_severity_name", alias="host_severity_alias", level=1, icon_id=1
+            ),
         ),
     ],
 )

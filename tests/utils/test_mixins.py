@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
-from centreon_mcp.types.configuration.command import Command
+from centreon_mcp.types.configuration.command import Command, CommandParams
 from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
@@ -52,6 +52,7 @@ MODULE = "centreon_mcp.utils.mixins"
         ),
         (HostSeverity, HostSeverityFullParams.model_construct(), "configuration/hosts/severities"),
         (HostTemplate, HostTemplateFullParams.model_construct(), "configuration/hosts/templates"),
+        (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -66,7 +67,7 @@ async def test_create_mixin[CentreonModel: CreateMixin](
     await model.create(params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True)
+    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
     request.assert_awaited_once_with("POST", endpoint, payload)
 
 
@@ -130,7 +131,7 @@ async def test_update_mixin[CentreonModel: UpdateMixin](
     await model.update(model_id, params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True)
+    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
     request.assert_awaited_once_with("PUT", f"{endpoint}/{model_id}", payload)
 
 
@@ -223,7 +224,7 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
     await model.patch(model_id, params)
 
     # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True)
+    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
     request.assert_awaited_once_with("PATCH", f"{endpoint}/{model_id}", payload)
 
 

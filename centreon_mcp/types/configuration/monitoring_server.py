@@ -9,16 +9,21 @@ from centreon_mcp.utils.request import request
 
 
 class MonitoringServerConfigurationOrder(BaseOrder):
+    model_type: Literal["monitoring_server"] = "monitoring_server"
+
     field: Literal["id", "name"] = "name"
 
 
 class MonitoringServerConfigurationFilter(BaseFilter):
+    model_type: Literal["monitoring_server"] = "monitoring_server"
+
     monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
     monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
 
 
 class MonitoringServerConfiguration(BaseModel, ListMixin):
     endpoint: ClassVar[str] = "configuration/monitoring-servers"
+    model_type: ClassVar[str] = "monitoring_server"
 
     id: int
     name: str

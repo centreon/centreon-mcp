@@ -62,10 +62,14 @@ DESCRIPTION = {
 
 
 class HostConfigurationOrder(BaseOrder):
+    model_type: Literal["host"] = "host"
+
     field: Literal["name", "alias", "address"] = "name"
 
 
 class HostConfigurationFilter(BaseFilter):
+    model_type: Literal["host"] = "host"
+
     host_configuration_id: int | None = Field(None, serialization_alias="id $eq")
     host_configuration_name: str | None = Field(None, serialization_alias="name $eq")
     host_configuration_address: str | None = Field(None, serialization_alias="address $eq")
@@ -79,6 +83,8 @@ class HostConfigurationFilter(BaseFilter):
 
 
 class HostConfigurationBaseParams(BaseModel):
+    model_type: Literal["host"] = "host"
+
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
     snmp_community: str | None = Field(None, description=DESCRIPTION["snmp_community"])
     snmp_version: Literal["1", "2c", "3"] | None = Field(
@@ -166,6 +172,7 @@ class HostConfiguration(
     ListMixin,
 ):
     endpoint: ClassVar[str] = "configuration/hosts"
+    model_type: ClassVar[str] = "host"
 
     id: int
     name: str

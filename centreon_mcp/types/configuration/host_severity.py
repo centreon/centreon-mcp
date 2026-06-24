@@ -16,10 +16,14 @@ DESCRIPTION = {
 
 
 class HostSeverityOrder(BaseOrder):
+    model_type: Literal["host_severity"] = "host_severity"
+
     field: Literal["name", "alias", "level"] = "name"
 
 
 class HostSeverityFilter(BaseFilter):
+    model_type: Literal["host_severity"] = "host_severity"
+
     host_severity_id: int | None = Field(None, serialization_alias="id $eq")
     host_severity_name: str | None = Field(None, serialization_alias="name $eq")
     host_severity_alias: str | None = Field(None, serialization_alias="alias $eq")
@@ -29,6 +33,8 @@ class HostSeverityFilter(BaseFilter):
 
 
 class HostSeverityBaseParams(BaseModel):
+    model_type: Literal["host_severity"] = "host_severity"
+
     comment: str | None = Field(None, description=DESCRIPTION["comment"])
 
 
@@ -57,6 +63,7 @@ class HostSeverity(
     ListMixin,
 ):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
+    model_type: ClassVar[str] = "host_severity"
 
     id: int
     name: str

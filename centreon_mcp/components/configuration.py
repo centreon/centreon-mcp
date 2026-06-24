@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
@@ -14,13 +13,13 @@ from centreon_mcp.types import (
 )
 from centreon_mcp.types.configuration import (
     CONFIGURATIONS_FULL_PARAMS,
+    Configuration,
     ConfigurationFilter,
     ConfigurationFullParams,
     ConfigurationOrder,
     ConfigurationPartialParams,
 )
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.mixins import ListMixin
 
 configuration = FastMCP()
 
@@ -48,7 +47,7 @@ async def list_configurations(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ConfigurationOrder | None = None,
-) -> Sequence[ListMixin]:
+) -> list[Configuration]:
     """
     List configurations matching the given filters for follwoing entities:
         - Commands

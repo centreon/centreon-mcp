@@ -3,13 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 from centreon_mcp.components.monitoring_server import (
     generate_monitoring_servers_configurations,
     list_monitoring_servers,
-    list_monitoring_servers_configurations,
     reload_monitoring_servers_configurations,
-)
-from centreon_mcp.types.configuration.monitoring_server import (
-    MonitoringServerConfiguration,
-    MonitoringServerConfigurationFilter,
-    MonitoringServerConfigurationOrder,
 )
 from centreon_mcp.types.monitoring.monitoring_server import (
     MonitoringServer,
@@ -45,33 +39,6 @@ async def test_list_monitoring_servers(logger: MagicMock, _list: AsyncMock):
 
     # Assert result
     assert results[0] == monitoring_server
-
-
-@patch(f"{MODULE}._list", new_callable=AsyncMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_monitoring_servers_configurations(logger: MagicMock, _list: AsyncMock):
-
-    # Setup args
-    filters = [MonitoringServerConfigurationFilter.model_construct()]
-    limit = 50
-    page = 1
-    order = MonitoringServerConfigurationOrder()
-
-    # Mock logger
-    logger.debug.return_value = None
-
-    # Mock _list
-    monitoring_server_configuration = MonitoringServerConfiguration.model_construct()
-    _list.return_value = [monitoring_server_configuration]
-
-    # Call test function
-    results = await list_monitoring_servers_configurations(filters, limit, page, order)
-
-    # Assert _list called with right args
-    _list.assert_awaited_once_with(MonitoringServerConfiguration, filters, limit, page, order)
-
-    # Assert result
-    assert results[0] == monitoring_server_configuration
 
 
 @patch(f"{MODULE}.MonitoringServerConfiguration.generate", new_callable=AsyncMock)

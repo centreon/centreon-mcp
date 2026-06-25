@@ -55,6 +55,9 @@ class HostCategoryConfiguration(
 ):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
     model_type: ClassVar[str] = "host_category"
+    full_params_cls: ClassVar[type[HostCategoryConfigurationFullParams]] = (
+        HostCategoryConfigurationFullParams
+    )
 
     id: int
     name: str

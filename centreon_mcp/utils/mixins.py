@@ -62,6 +62,7 @@ class UpdateMixin[Params: BaseModel](ReadMixin):
     """
 
     endpoint: ClassVar[str]
+    full_params_cls: ClassVar[type[BaseModel]]
 
     @classmethod
     async def update(cls, model_id: int, params: Params) -> bool:

@@ -64,6 +64,7 @@ class HostSeverity(
 ):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
     model_type: ClassVar[str] = "host_severity"
+    full_params_cls: ClassVar[type[HostSeverityFullParams]] = HostSeverityFullParams
 
     id: int
     name: str

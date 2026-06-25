@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Annotated, Literal
 
 from fastmcp import FastMCP
@@ -12,7 +13,6 @@ from centreon_mcp.types import (
     MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.types.configuration import (
-    CONFIGURATIONS_FULL_PARAMS,
     Configuration,
     ConfigurationFilter,
     ConfigurationFullParams,
@@ -43,7 +43,7 @@ async def list_configurations(
         "host",
         "monitoring_server",
     ],
-    filters: list[ConfigurationFilter] | None = None,
+    filters: Sequence[ConfigurationFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ConfigurationOrder | None = None,
@@ -118,14 +118,8 @@ async def update_configuration(
 
     if model_type in ["host", "host_template"]:
         return await _patch(MODELS_MIXIN_PATCH[model_type], model_id, params)
-
     else:
-        return await _update(
-            MODELS_MIXIN_UPDATE[model_type],
-            CONFIGURATIONS_FULL_PARAMS[model_type],
-            model_id,
-            params,
-        )
+        return await _update(MODELS_MIXIN_UPDATE[model_type], model_id, params)
 
 
 @configuration.tool(

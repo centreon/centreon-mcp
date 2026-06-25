@@ -99,10 +99,3 @@ Configuration = (
     | HostConfiguration
     | MonitoringServerConfiguration
 )
-
-
-CONFIGURATIONS_FULL_PARAMS = {
-    "host_category": HostCategoryConfigurationFullParams,
-    "host_group": HostGroupConfigurationFullParams,
-    "host_severity": HostSeverityFullParams,
-}

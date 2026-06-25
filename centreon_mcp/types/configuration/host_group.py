@@ -58,6 +58,9 @@ class HostGroupConfiguration(
 ):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
     model_type: ClassVar[str] = "host_group"
+    full_params_cls: ClassVar[type[HostGroupConfigurationFullParams]] = (
+        HostGroupConfigurationFullParams
+    )
 
     id: int
     name: str

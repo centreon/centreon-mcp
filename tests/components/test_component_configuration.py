@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from centreon_mcp.components.configuration import (
-    CONFIGURATIONS_FULL_PARAMS,
     create_configuration,
     delete_configurations,
     list_configurations,
@@ -25,11 +24,11 @@ MODULE = "centreon_mcp.components.configuration"
     "model_type",
     [
         "command",
-        "host_category",
-        "host_group",
-        "host_severity",
-        "host_template",
         "host",
+        "host_group",
+        "host_category",
+        "host_template",
+        "host_severity",
         "monitoring_server",
     ],
 )
@@ -40,11 +39,11 @@ async def test_list_configurations(
     _list: AsyncMock,
     model_type: Literal[
         "command",
-        "host_category",
-        "host_group",
-        "host_severity",
-        "host_template",
         "host",
+        "host_group",
+        "host_category",
+        "host_template",
+        "host_severity",
         "monitoring_server",
     ],
 ):
@@ -58,16 +57,14 @@ async def test_list_configurations(
     # Mock logger
     logger.debug.return_value = None
 
-    # Mock _list
-    model_cls = MODELS_MIXIN_LIST[model_type]
-    model = model_cls.model_construct()
+    model = MagicMock()
     _list.return_value = [model]
 
     # Call test function
     results = await list_configurations(model_type, filters, limit, page, order)
 
     # Assert _list called with right args
-    _list.assert_awaited_once_with(model_cls, filters, limit, page, order)
+    _list.assert_awaited_once_with(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
 
     # Assert result
     assert results == [model]
@@ -132,10 +129,7 @@ async def test_update_configuration_put(
     result = await update_configuration(model_type, model_id, params)
 
     # Assert _update called with right args
-    full_params_cls = CONFIGURATIONS_FULL_PARAMS[model_type]
-    _update.assert_awaited_once_with(
-        MODELS_MIXIN_UPDATE[model_type], full_params_cls, model_id, params
-    )
+    _update.assert_awaited_once_with(MODELS_MIXIN_UPDATE[model_type], model_id, params)
 
     # Assert result
     assert result

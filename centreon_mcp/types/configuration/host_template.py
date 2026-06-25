@@ -65,10 +65,14 @@ DESCRIPTION = {
 
 
 class HostTemplateOrder(BaseOrder):
+    model_type: Literal["host_template"] = "host_template"
+
     field: Literal["name", "alias"] = "name"
 
 
 class HostTemplateFilter(BaseFilter):
+    model_type: Literal["host_template"] = "host_template"
+
     host_template_id: int | None = Field(None, serialization_alias="id $eq")
     host_template_name: str | None = Field(None, serialization_alias="name $eq")
     host_template_alias: str | None = Field(None, serialization_alias="alias $eq")
@@ -76,6 +80,8 @@ class HostTemplateFilter(BaseFilter):
 
 
 class HostTemplateBaseParams(BaseModel):
+    model_type: Literal["host_template"] = "host_template"
+
     snmp_community: str | None = Field(None, description=DESCRIPTION["snmp_community"])
     snmp_version: Literal["1", "2c", "3"] | None = Field(
         None, description=DESCRIPTION["snmp_version"]
@@ -164,6 +170,7 @@ class HostTemplate(
     DeleteMixin,
 ):
     endpoint: ClassVar[str] = "configuration/hosts/templates"
+    model_type: ClassVar[str] = "host_template"
 
     id: int
     name: str

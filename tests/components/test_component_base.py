@@ -22,6 +22,7 @@ from centreon_mcp.types.configuration.host_category import (
 from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationPartialParams,
 )
 from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
@@ -142,7 +143,7 @@ async def test_list[CentreonModel: ListMixin](
 
     # Assert ListMixin.list called with right args
     search = json.dumps(BaseFilter.join(filters))
-    sort_by = order.model_dump_json()
+    sort_by = order.model_dump_json(exclude={"model_type"})
     list_mixin.assert_awaited_once_with(search, limit, page, sort_by, extras)
 
     # Assert result
@@ -177,24 +178,23 @@ async def test_patch[CentreonModel: PatchMixin](
 
 
 @pytest.mark.parametrize(
-    "model_cls,full_params_cls,partial_params",
+    "model_cls,partial_params",
     [
         (
             HostGroupConfiguration,
-            HostGroupConfigurationFullParams,
-            HostConfigurationPartialParams.model_construct(name="host_group_name"),
+            HostGroupConfigurationPartialParams.model_construct(name="host_group_name"),
         ),
         (
             HostCategoryConfiguration,
-            HostCategoryConfigurationFullParams,
             HostCategoryConfigurationPartialParams.model_construct(
                 name="host_category_name", alias="host_category_alias"
             ),
         ),
         (
             HostSeverity,
-            HostGroupConfigurationFullParams,
-            HostSeverityPartialParams.model_construct(name="host_severity_name"),
+            HostSeverityPartialParams.model_construct(
+                name="host_severity_name", alias="host_severity_alias", level=1, icon_id=1
+            ),
         ),
     ],
 )
@@ -204,7 +204,6 @@ async def test_update[CentreonModel: UpdateMixin](
     get_mixin: AsyncMock,
     update_mixin: AsyncMock,
     model_cls: type[CentreonModel],
-    full_params_cls: type[BaseModel],
     partial_params: BaseModel,
 ):
     # Setup args
@@ -218,7 +217,7 @@ async def test_update[CentreonModel: UpdateMixin](
     update_mixin.return_value = True
 
     # Call test function
-    result = await _update(model_cls, full_params_cls, model_id, partial_params)
+    result = await _update(model_cls, model_id, partial_params)
 
     # Assert ReadMixin.get called with right args
     get_mixin.assert_awaited_once_with(model_id)
@@ -226,7 +225,7 @@ async def test_update[CentreonModel: UpdateMixin](
     # Assert UpdateMixin.update called with right args
     data = model.model_dump(exclude={"id"}, exclude_none=True)
     data |= partial_params.model_dump(exclude_none=True)
-    update_mixin.assert_awaited_once_with(model_id, full_params_cls(**data))
+    update_mixin.assert_awaited_once_with(model_id, model_cls.full_params_cls(**data))
 
     # Assert result
     assert result

@@ -4,8 +4,7 @@ from typing import ClassVar, Literal
 from pydantic import BaseModel, Field
 
 from centreon_mcp.types.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.mixins import ListMixin
-from centreon_mcp.utils.request import request
+from centreon_mcp.utils.mixins import CreateMixin, ListMixin
 
 
 class CommandType(IntEnum):
@@ -16,10 +15,14 @@ class CommandType(IntEnum):
 
 
 class CommandOrder(BaseOrder):
+    model_type: Literal["command"] = "command"
+
     field: Literal["name"] = "name"
 
 
 class CommandFilter(BaseFilter):
+    model_type: Literal["command"] = "command"
+
     command_id: int | None = Field(None, serialization_alias="id $eq")
     command_name: str | None = Field(None, serialization_alias="name $eq")
     command_type: CommandType | None = Field(None, serialization_alias="type $eq")
@@ -43,6 +46,8 @@ class CommandMacro(BaseModel):
 
 
 class CommandParams(BaseModel):
+    model_type: Literal["command"] = "command"
+
     name: str
     type: CommandType
     command_line: str
@@ -74,8 +79,9 @@ class CommandParams(BaseModel):
     )
 
 
-class Command(BaseModel, ListMixin):
+class Command(BaseModel, ListMixin, CreateMixin[CommandParams]):
     endpoint: ClassVar[str] = "configuration/commands"
+    model_type: ClassVar[str] = "command"
 
     id: int
     name: str
@@ -84,13 +90,3 @@ class Command(BaseModel, ListMixin):
     is_activated: bool
     is_shell: bool
     is_locked: bool
-
-    @staticmethod
-    async def add(params: CommandParams) -> bool:
-        """
-        Add a command.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = params.model_dump(mode="json")
-        await request("POST", "configuration/commands", payload=payload)
-        return True

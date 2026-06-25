@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 41 tools organized across eleven functional areas.
+The MCP server currently exposes 22 tools organized across six functional areas.
 
 ### Resource Monitoring
 
@@ -44,57 +44,25 @@ Three read-only tools allow AI assistants to explore your monitoring topology:
 
 These tools serve as natural building blocks: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
 
-Three additional tools manage the configuration lifecycle of monitoring servers (pollers):
+Two additional tools manage the configuration lifecycle of monitoring servers (pollers):
 
-- **list_monitoring_servers_configurations** — List poller configurations, filterable by ID or name. Results are paginated and sortable by name or ID.
 - **generate_monitoring_servers_configurations** — Generate the configuration files for one or more pollers by their IDs. If no IDs are provided, generates configurations for all pollers. Runs concurrently when multiple IDs are given.
 - **reload_monitoring_servers_configurations** — Reload the configuration of one or more pollers by their IDs, pushing the generated files to the monitoring engines. If no IDs are provided, reloads all pollers. Runs concurrently when multiple IDs are given.
 
+Poller configurations can be listed using **list_configurations** with `model_type` set to `monitoring_server` (see [Configuration](#configuration) below).
+
 These tools are typically chained: after modifying host or service configurations, an AI assistant can generate then reload the affected pollers to apply changes without leaving the conversation.
 
-### Host Configuration
+### Configuration
 
-Full host configuration lifecycle management through conversation:
+Four generic tools cover the full configuration lifecycle for hosts, host groups, host categories, host severities, host templates, and commands. Each tool accepts a `model_type` parameter to select the entity to operate on.
 
-- **list_host_configurations** — List host configurations, filterable by ID, name, address, poller, host group, host category, and activation status. Results are paginated and sortable by name, alias, or address.
-- **create_host_configuration** — Create a new host configuration by specifying the monitoring server, name, and IP address. Supports a wide range of optional parameters: SNMP community and version, geographic coordinates, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and host group/category/template associations.
-- **update_host_configuration** — Partially update an existing host configuration by ID, using the same parameter set as creation.
-- **delete_host_configurations** — Delete one or more host configurations by their IDs.
+- **list_configurations** — List configurations, filterable by entity-specific fields (ID, name, alias, address, activation status, etc.). Results are paginated and sortable. Supported entity types: `command`, `host`, `host_category`, `host_group`, `host_severity`, `host_template`, `monitoring_server`.
+- **create_configuration** — Create a new configuration by providing the required and optional parameters for the chosen entity type. Supported entity types: `command`, `host`, `host_category`, `host_group`, `host_severity`, `host_template`.
+- **update_configuration** — Partially update an existing configuration by ID, using only the fields that need to change. Supported entity types: `host`, `host_category`, `host_group`, `host_severity`, `host_template`.
+- **delete_configurations** — Delete one or more configurations by their IDs. Supported entity types: `host`, `host_category`, `host_group`, `host_severity`, `host_template`.
 
-### Host Severities
-
-Manage host severity levels used to prioritize hosts in your monitoring:
-
-- **list_host_severities** — List host severities, filterable by ID, name, alias, level range, and activation status. Results are paginated and sortable by name, alias, or level.
-- **create_host_severity** — Create a new host severity by specifying a name, level, and icon ID. An alias is optional.
-- **delete_host_severities** — Delete one or more host severities by their IDs.
-
-### Host Group Configuration
-
-Full host group configuration lifecycle management through conversation:
-
-- **list_hostgroup_configurations** — List host group configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
-- **create_host_group_configuration** — Create a new host group configuration by specifying its name.
-- **update_host_group_configuration** — Partially update an existing host group configuration by ID.
-- **delete_host_group_configurations** — Delete one or more host group configurations by their IDs.
-
-### Host Category Configuration
-
-Full host category configuration lifecycle management through conversation:
-
-- **list_host_category_configurations** — List host category configurations, filterable by ID, name, alias, and activation status. Results are paginated and sortable by id, name, alias, or activation status.
-- **create_host_category_configuration** — Create a new host category configuration by specifying its name and alias. Supports an optional comment and activation status.
-- **update_host_category_configuration** — Partially update an existing host category configuration by ID.
-- **delete_host_category_configurations** — Delete one or more host category configurations by their IDs.
-
-### Host Template Configuration
-
-Full host template configuration lifecycle management through conversation:
-
-- **list_host_templates** — List host templates, filterable by ID, name, alias, and locked status. Results are paginated and sortable by name, or alias.
-- **create_host_template** — Create a new host template by specifying a name and alias. Supports a wide range of optional parameters: SNMP community and version, severity, check and event handler commands with arguments, check interval settings, notification options, flap detection thresholds, freshness checking, and category associations.
-- **update_host_template** — Partially update an existing host template by ID, using the same parameter set as creation.
-- **delete_host_templates** — Delete one or more host templates by their IDs.
+Each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations.
 
 ### Acknowledgements
 
@@ -111,13 +79,6 @@ Full downtime lifecycle management through conversation:
 - **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
 - **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
 - **cancel_downtimes** — Cancel one or more downtimes by their IDs
-
-### Commands
-
-Manage check, notification, discovery, and miscellaneous commands from within the conversation:
-
-- **list_commands** — List commands, filterable by ID, name, type (CHECK, NOTIFICATION, MISCELLANEOUS, DISCOVERY), or locked status. Results are paginated and sortable by name.
-- **add_command** — Create a new command by specifying its name, type, and command line. Supports optional shell mode, argument descriptions, macro descriptions, a connector, and a graph template.
 
 ### Comments
 

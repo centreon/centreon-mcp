@@ -16,10 +16,14 @@ DESCRIPTION = {
 
 
 class HostGroupConfigurationOrder(BaseOrder):
+    model_type: Literal["host_group"] = "host_group"
+
     field: Literal["id", "name", "alias", "is_activated"] = "name"
 
 
 class HostGroupConfigurationFilter(BaseFilter):
+    model_type: Literal["host_group"] = "host_group"
+
     host_group_id: int | None = Field(None, serialization_alias="id $eq")
     host_group_name: str | None = Field(None, serialization_alias="name $eq")
     host_group_alias: str | None = Field(None, serialization_alias="alias $eq")
@@ -27,6 +31,8 @@ class HostGroupConfigurationFilter(BaseFilter):
 
 
 class HostGroupConfigurationBaseParams(BaseModel):
+    model_type: Literal["host_group"] = "host_group"
+
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
     icon_id: int | None = Field(None, description=DESCRIPTION["icon_id"])
     geo_coords: str | None = Field(None, description=DESCRIPTION["geo_coords"])
@@ -51,6 +57,10 @@ class HostGroupConfiguration(
     ListMixin,
 ):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
+    model_type: ClassVar[str] = "host_group"
+    full_params_cls: ClassVar[type[HostGroupConfigurationFullParams]] = (
+        HostGroupConfigurationFullParams
+    )
 
     id: int
     name: str

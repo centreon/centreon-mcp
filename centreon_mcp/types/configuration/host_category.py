@@ -14,10 +14,14 @@ DESCRIPTION = {
 
 
 class HostCategoryConfigurationOrder(BaseOrder):
+    model_type: Literal["host_category"] = "host_category"
+
     field: Literal["id", "name", "alias", "is_activated"] = "name"
 
 
 class HostCategoryConfigurationFilter(BaseFilter):
+    model_type: Literal["host_category"] = "host_category"
+
     host_category_id: int | None = Field(None, serialization_alias="id $eq")
     host_category_name: str | None = Field(None, serialization_alias="name $eq")
     host_category_alias: str | None = Field(None, serialization_alias="alias $eq")
@@ -25,6 +29,8 @@ class HostCategoryConfigurationFilter(BaseFilter):
 
 
 class HostCategoryConfigurationBaseParams(BaseModel):
+    model_type: Literal["host_category"] = "host_category"
+
     is_activated: bool | None = Field(None, description=DESCRIPTION["is_activated"])
     comment: str | None = Field(None, description=DESCRIPTION["comment"])
 
@@ -48,6 +54,10 @@ class HostCategoryConfiguration(
     ListMixin,
 ):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
+    model_type: ClassVar[str] = "host_category"
+    full_params_cls: ClassVar[type[HostCategoryConfigurationFullParams]] = (
+        HostCategoryConfigurationFullParams
+    )
 
     id: int
     name: str

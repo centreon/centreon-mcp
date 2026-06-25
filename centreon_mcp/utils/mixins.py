@@ -5,12 +5,15 @@ from pydantic import BaseModel
 from centreon_mcp.utils.request import request
 
 
-class CreateMixin[Params: BaseModel]:
+class BaseMixin:
+    model_type: ClassVar[str]
+    endpoint: ClassVar[str]
+
+
+class CreateMixin[Params: BaseModel](BaseMixin):
     """
     Mixin to add to a Centreon Model a creation method via heritage
     """
-
-    endpoint: ClassVar[str]
 
     @classmethod
     async def create(cls, params: Params) -> bool:
@@ -18,17 +21,15 @@ class CreateMixin[Params: BaseModel]:
         Create a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("POST", cls.endpoint, payload)
         return True
 
 
-class ReadMixin:
+class ReadMixin(BaseMixin):
     """
     Mixin to add to a Centreon Model a get method via heritage
     """
-
-    endpoint: ClassVar[str]
 
     @classmethod
     async def get(cls: type[Self], model_id: int) -> Self:
@@ -39,12 +40,10 @@ class ReadMixin:
         return cls(**content)
 
 
-class DeleteMixin:
+class DeleteMixin(BaseMixin):
     """
     Mixin to add to a Centreon Model a delete method via heritage
     """
-
-    endpoint: ClassVar[str]
 
     @classmethod
     async def delete(cls, model_id: int) -> bool:
@@ -61,7 +60,7 @@ class UpdateMixin[Params: BaseModel](ReadMixin):
     Mixin to add to a Centreon Model a update method via heritage
     """
 
-    endpoint: ClassVar[str]
+    full_params_cls: ClassVar[type[BaseModel]]
 
     @classmethod
     async def update(cls, model_id: int, params: Params) -> bool:
@@ -69,17 +68,15 @@ class UpdateMixin[Params: BaseModel](ReadMixin):
         Update a reource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("PUT", f"{cls.endpoint}/{model_id}", payload)
         return True
 
 
-class PatchMixin[Params: BaseModel]:
+class PatchMixin[Params: BaseModel](BaseMixin):
     """
     Mixin to add to a Centreon Model a patch method via heritage
     """
-
-    endpoint: ClassVar[str]
 
     @classmethod
     async def patch(cls, host_id: int, params: Params) -> bool:
@@ -87,17 +84,15 @@ class PatchMixin[Params: BaseModel]:
         Patch a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
-        payload = params.model_dump(mode="json", exclude_none=True)
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
         return True
 
 
-class ListMixin:
+class ListMixin(BaseMixin):
     """
     Mixin to add to a Centreon Model a list method via heritage
     """
-
-    endpoint: ClassVar[str]
 
     @classmethod
     async def list(

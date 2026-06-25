@@ -49,16 +49,16 @@ async def list_configurations(
     order: ConfigurationOrder | None = None,
 ) -> list[Configuration]:
     """
-    List configurations matching the given filters for follwoing entities:
+    List configurations matching the given filters for following entities:
         - Commands
         - Hosts
         - Host Categories
         - Host Groups
-        - Hosts Severities
+        - Host Severities
         - Host Templates
         - Monitoring Servers
     If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all commands except if explicitly intended.
+    to avoid retrieving all entities except if explicitly intended.
     """
     logger.info("Executing tool list_configurations")
     return await _list(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
@@ -80,12 +80,12 @@ async def create_configuration(
     params: ConfigurationFullParams,
 ) -> bool:
     """
-    Create a configuration for follwoing entities:
+    Create a configuration for following entities:
         - Commands
         - Hosts
         - Host Categories
         - Host Groups
-        - Hosts Severities
+        - Host Severities
         - Host Templates
     """
     logger.info("Executing tool create_configuration")
@@ -107,11 +107,11 @@ async def update_configuration(
     params: ConfigurationPartialParams,
 ) -> bool:
     """
-    Update a configuration from partial params for follwoing entities:
+    Update a configuration from partial params for following entities:
         - Hosts
         - Host Categories
         - Host Groups
-        - Hosts Severities
+        - Host Severities
         - Host Templates
     """
     logger.info("Executing tool update_configuration")
@@ -142,11 +142,11 @@ async def delete_configurations(
     model_ids: list[int],
 ) -> dict[int, bool | BaseException]:
     """
-    Delete multiple configurations from their ids for follwoing entities:
+    Delete multiple configurations from their ids for following entities:
         - Hosts
         - Host Categories
         - Host Groups
-        - Hosts Severities
+        - Host Severities
         - Host Templates
     """
     logger.info("Executing tool delete_configurations")

@@ -53,5 +53,6 @@ MODELS_MIXIN_DELETE: dict[str, type[DeleteMixin]] = {
         HostGroupConfiguration,
         HostCategoryConfiguration,
         HostSeverity,
+        HostTemplate,
     ]
 }

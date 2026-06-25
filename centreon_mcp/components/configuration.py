@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -61,7 +61,8 @@ async def list_configurations(
     to avoid retrieving all entities except if explicitly intended.
     """
     logger.info("Executing tool list_configurations")
-    return await _list(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
+    models = await _list(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
+    return [cast(Configuration, model) for model in models]
 
 
 @configuration.tool(

@@ -84,6 +84,10 @@ Full downtime lifecycle management through conversation:
 
 - **add_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
 
+### Metrics
+
+- **get_service_metrics** — Retrieve all metrics of a service with their current values, units, and warning/critical thresholds. Useful for answering questions like "what is the current CPU usage?" or "how close is disk usage to the critical threshold?" without leaving the conversation.
+
 ## Quick Start
 
 1. Clone the repository

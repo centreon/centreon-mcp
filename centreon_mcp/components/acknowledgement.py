@@ -1,43 +1,26 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, _list
-from centreon_mcp.utils.type import (
+from centreon_mcp.components.base import _list
+from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
+    AcknowledgementFilter,
+    AcknowledgementOrder,
     AcknowledgementParams,
     AcknowledgementResource,
 )
+from centreon_mcp.utils import logger
 
 acknowledgement = FastMCP()
-
-
-class AcknowledgementOrder(BaseOrder):
-    field: Literal[
-        "id",
-        "host.id",
-        "host.name",
-        "host.alias",
-        "host.address",
-        "host.state",
-        "start_time",
-        "end_time",
-        "entry_time",
-        "deletion_time",
-    ] = "id"
-
-
-class AcknowledgementFilter(BaseFilter):
-    # Fields available for filtering in Centreon API
-    pass
 
 
 @acknowledgement.tool(
     annotations={
         "title": "List all acknowledgements in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -52,15 +35,14 @@ async def list_acknowledgements(
     List all acknowledgements in real-time monitoring.
     """
     logger.info("Executing tool list_acknowledgements")
-    return await _list(
-        Acknowledgement, AcknowledgementOrder, filters, limit, page, order
-    )
+    return await _list(Acknowledgement, filters, limit, page, order)
 
 
 @acknowledgement.tool(
     annotations={
         "title": "Add acknowledgement on multiple resources in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -74,14 +56,14 @@ async def add_acknowledgements(
     Use tool `list_resources` first to get resources IDs.
     """
     logger.info("Executing tool add_acknowledgements")
-    await Acknowledgement.add(params, resources)
-    return True
+    return await Acknowledgement.add(params, resources)
 
 
 @acknowledgement.tool(
     annotations={
         "title": "Cancel acknowledgements on multiple resources in real-time monitoring",
         "readOnlyHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -97,5 +79,4 @@ async def cancel_acknowledgements(
     Use tool `list_acknowledgements` first to get acknowledged resources IDs.
     """
     logger.info("Executing tool cancel_acknowledgements")
-    await Acknowledgement.cancel(with_services, resources)
-    return True
+    return await Acknowledgement.cancel(with_services, resources)

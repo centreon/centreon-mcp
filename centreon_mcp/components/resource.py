@@ -1,55 +1,22 @@
 import json
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.components.base import _list
+from centreon_mcp.types.base import ResourceStatus, ResourceType, StatusType
+from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.utils import logger
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
-from centreon_mcp.utils.type import Resource, ResourceStatus, ResourceType, StatusType
 
 resource = FastMCP()
-
-
-class ResourceOrder(BaseOrder):
-    field: Literal["host.name", "host.alias", "host.address", "host.state"] = (
-        "host.name"
-    )
-
-
-class ResourceFilter(BaseFilter):
-    # Fields available for filtering in Centreon API
-    name: str | None = Field(
-        None,
-        serialization_alias="name $lk",
-        description="Name of the resource (host or service)",
-    )
-    alias: str | None = Field(
-        None,
-        serialization_alias="alias $lk",
-        description="Alias of the resource (host or service)",
-    )
-    parent_name: str | None = Field(
-        None,
-        serialization_alias="parent_name $lk",
-        description="Name of the parent resource (host or service)",
-    )
-    information_like: str | None = Field(
-        None,
-        serialization_alias="information $lk",
-        description="Filter resources whose output/information contains this string (case-insensitive substring match)",
-    )
-    information_unlike: str | None = Field(
-        None,
-        serialization_alias="information $nk",
-        description="Filter resources whose output/information does not contain this string (case-insensitive substring exclusion)",
-    )
 
 
 @resource.tool(
     annotations={
         "title": "List resources (hosts and services) in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
@@ -74,18 +41,15 @@ async def list_resources(
     to avoid retrieving all resources except if explicitly intended.
     """
     logger.info("Executing tool list_resources")
-    order = order or ResourceOrder()
-    return await Resource.list(
-        search=json.dumps(ResourceFilter.join(filters)),
-        types=json.dumps(types or []),
-        statuses=json.dumps(statuses or []),
-        hostgroup_names=json.dumps(hostgroup_names or []),
-        servicegroup_names=json.dumps(servicegroup_names or []),
-        host_category_names=json.dumps(host_category_names or []),
-        service_category_names=json.dumps(service_category_names or []),
-        monitoring_server_names=json.dumps(monitoring_server_names or []),
-        status_types=json.dumps(status_types or []),
-        limit=limit,
-        page=page,
-        sort_by=order.model_dump_json(),
-    )
+    fields = {
+        "types": types,
+        "statuses": statuses,
+        "hostgroup_names": hostgroup_names,
+        "servicegroup_names": servicegroup_names,
+        "host_category_names": host_category_names,
+        "service_category_names": service_category_names,
+        "monitoring_server_names": monitoring_server_names,
+        "status_types": status_types,
+    }
+    extras = {name: json.dumps(value) for name, value in fields.items() if value}
+    return await _list(Resource, filters, limit, page, order, extras)

@@ -8,12 +8,18 @@ from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigu
 from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
     HostCategoryConfigurationFullParams,
+    HostCategoryConfigurationPartialParams,
 )
 from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationPartialParams,
 )
-from centreon_mcp.types.configuration.host_severity import HostSeverity, HostSeverityFullParams
+from centreon_mcp.types.configuration.host_severity import (
+    HostSeverity,
+    HostSeverityFullParams,
+    HostSeverityPartialParams,
+)
 from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
     HostTemplateFullParams,
@@ -30,8 +36,8 @@ from centreon_mcp.utils.mixins import (
     DeleteMixin,
     ListMixin,
     PatchMixin,
+    PutMixin,
     ReadMixin,
-    UpdateMixin,
 )
 
 MODULE = "centreon_mcp.utils.mixins"
@@ -50,25 +56,34 @@ MODULE = "centreon_mcp.utils.mixins"
             HostGroupConfigurationFullParams.model_construct(),
             "configuration/hosts/groups",
         ),
-        (HostSeverity, HostSeverityFullParams.model_construct(), "configuration/hosts/severities"),
-        (HostTemplate, HostTemplateFullParams.model_construct(), "configuration/hosts/templates"),
+        (
+            HostSeverity,
+            HostSeverityFullParams.model_construct(),
+            "configuration/hosts/severities",
+        ),
+        (
+            HostTemplate,
+            HostTemplateFullParams.model_construct(),
+            "configuration/hosts/templates",
+        ),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_create_mixin[CentreonModel: CreateMixin](
-    request: AsyncMock, model: type[CentreonModel], params: BaseModel, endpoint: str
-):
+class TestCreateMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_create(
+        self, request: AsyncMock, model: type[CreateMixin], params: BaseModel, endpoint: str
+    ):
 
-    # Mock request
-    request.return_value = None
+        # Mock request
+        request.return_value = None
 
-    # Call test function
-    await model.create(params)
+        # Call test function
+        await model.create(params)
 
-    # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
-    request.assert_awaited_once_with("POST", endpoint, payload)
+        # Assert request called with right args
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
+        request.assert_awaited_once_with("POST", endpoint, payload)
 
 
 @pytest.mark.parametrize(
@@ -82,57 +97,141 @@ async def test_create_mixin[CentreonModel: CreateMixin](
         (HostTemplate, "configuration/hosts/templates"),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_delete_mixin[CentreonModel: DeleteMixin](
-    request: AsyncMock, model: type[CentreonModel], endpoint: str
-):
+class TestDeleteMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_delete(self, request: AsyncMock, model: type[DeleteMixin], endpoint: str):
 
-    # Setup args
-    model_id = 10
+        # Setup args
+        model_id = 10
 
-    # Mock request
-    request.return_value = None
+        # Mock request
+        request.return_value = None
 
-    # Call test function
-    await model.delete(model_id)
+        # Call test function
+        await model.delete(model_id)
 
-    # Assert request called with right args
-    request.assert_awaited_once_with("DELETE", f"{endpoint}/{model_id}")
+        # Assert request called with right args
+        request.assert_awaited_once_with("DELETE", f"{endpoint}/{model_id}")
 
 
 @pytest.mark.parametrize(
-    "model,params,endpoint",
+    "endpoint,model_cls,model,partial_params,full_params",
     [
         (
-            HostCategoryConfiguration,
-            HostCategoryConfigurationFullParams.model_construct(),
             "configuration/hosts/categories",
+            HostCategoryConfiguration,
+            HostCategoryConfiguration(
+                id=10, name="host_category_name", alias="host_category_alias", is_activated=True
+            ),
+            HostCategoryConfigurationPartialParams(
+                name="new_host_category_name", comment="new_host_category_comment"
+            ),
+            HostCategoryConfigurationFullParams(
+                name="new_host_category_name",
+                alias="host_category_alias",
+                comment="new_host_category_comment",
+                is_activated=True,
+            ),
         ),
         (
-            HostGroupConfiguration,
-            HostGroupConfigurationFullParams.model_construct(),
             "configuration/hosts/groups",
+            HostGroupConfiguration,
+            HostGroupConfiguration(
+                id=10,
+                name="host_group_name",
+                alias="host_group_alias",
+                icon_id=5,
+                is_activated=True,
+                hosts=[{"id": 10}, {"id": 11}, {"id": 12}],  # type: ignore[list-item]
+            ),
+            HostGroupConfigurationPartialParams(
+                name="new_host_group_name", icon_id=10, hosts=[11, 12, 13]
+            ),
+            HostGroupConfigurationFullParams(
+                name="new_host_group_name",
+                alias="host_group_alias",
+                icon_id=10,
+                geo_coords=None,
+                comment=None,
+                hosts=[11, 12, 13],
+            ),
         ),
-        (HostSeverity, HostSeverityFullParams.model_construct(), "configuration/hosts/severities"),
+        (
+            "configuration/hosts/severities",
+            HostSeverity,
+            HostSeverity(
+                id=10,
+                name="host_severity_name",
+                alias="host_severity_alias",
+                level=10,
+                icon_id=5,
+                is_activated=True,
+            ),
+            HostSeverityPartialParams(name="new_host_severity_name", is_activated=False),
+            HostSeverityFullParams(
+                name="new_host_severity_name",
+                alias="host_severity_alias",
+                level=10,
+                icon_id=5,
+                is_activated=False,
+                comment=None,
+            ),
+        ),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_update_mixin[CentreonModel: UpdateMixin](
-    request: AsyncMock, model: type[CentreonModel], params: BaseModel, endpoint: str
-):
+class TestPutMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_put(
+        self,
+        request: AsyncMock,
+        endpoint: str,
+        model_cls: type[PutMixin],
+        model: PutMixin,
+        partial_params: BaseModel,
+        full_params: BaseModel,
+    ):
+        # Setup args
+        model_id = 10
 
-    # Setup args
-    model_id = 10
+        # Mock request
+        request.return_value = None
 
-    # Mock request
-    request.return_value = None
+        # Call test function
+        await model_cls.put(model_id, full_params)
 
-    # Call test function
-    await model.update(model_id, params)
+        # Assert request called with right args
+        payload = full_params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
+        request.assert_awaited_once_with("PUT", f"{endpoint}/{model_id}", payload)
 
-    # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
-    request.assert_awaited_once_with("PUT", f"{endpoint}/{model_id}", payload)
+    @patch(f"{MODULE}.PutMixin.put", new_callable=AsyncMock)
+    @patch(f"{MODULE}.PutMixin.get", new_callable=AsyncMock)
+    async def test_update(
+        self,
+        get_mixin: AsyncMock,
+        put_mixin: AsyncMock,
+        endpoint: str,
+        model_cls: type[PutMixin],
+        model: PutMixin,
+        partial_params: BaseModel,
+        full_params: BaseModel,
+    ):
+        # Setup args
+        model_id = 10
+
+        # Mock PutMixin.get
+        get_mixin.return_value = model
+
+        # Mock PutMixin.put
+        put_mixin.return_value = True
+
+        # Call the test method
+        await model_cls.update(model_id, partial_params)
+
+        # Assert ReadMixin.get awaited with correct args
+        get_mixin.assert_awaited_once_with(model_id)
+
+        # Assert PutMixin.put awaited with correct args
+        put_mixin.assert_awaited_once_with(model_id, full_params)
 
 
 @pytest.mark.parametrize(
@@ -173,25 +272,26 @@ async def test_update_mixin[CentreonModel: UpdateMixin](
         ),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_get_mixin[CentreonModel: ReadMixin](
-    request: AsyncMock, model: type[CentreonModel], endpoint: str, payload: dict
-):
+class TestReadMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_get(
+        self, request: AsyncMock, model: type[ReadMixin], endpoint: str, payload: dict
+    ):
 
-    # Setup args
-    model_id = 10
+        # Setup args
+        model_id = 10
 
-    # Mock request
-    request.return_value = payload
+        # Mock request
+        request.return_value = payload
 
-    # Call test function
-    result = await model.get(model_id)
+        # Call test function
+        result = await model.get(model_id)
 
-    # Assert request called with right args
-    request.assert_awaited_once_with("GET", f"{endpoint}/{model_id}")
+        # Assert request called with right args
+        request.assert_awaited_once_with("GET", f"{endpoint}/{model_id}")
 
-    # Assert result
-    assert result == model(**payload)
+        # Assert result
+        assert result == model(**payload)
 
 
 @pytest.mark.parametrize(
@@ -209,23 +309,24 @@ async def test_get_mixin[CentreonModel: ReadMixin](
         ),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_patch_mixin[CentreonModel: PatchMixin](
-    request: AsyncMock, model: type[CentreonModel], params: BaseModel, endpoint: str
-):
+class TestPatchMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_patch_mixin(
+        self, request: AsyncMock, model: type[PatchMixin], params: BaseModel, endpoint: str
+    ):
 
-    # Setup args
-    model_id = 10
+        # Setup args
+        model_id = 10
 
-    # Mock request
-    request.return_value = None
+        # Mock request
+        request.return_value = None
 
-    # Call test function
-    await model.patch(model_id, params)
+        # Call test function
+        await model.patch(model_id, params)
 
-    # Assert request called with right args
-    payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
-    request.assert_awaited_once_with("PATCH", f"{endpoint}/{model_id}", payload)
+        # Assert request called with right args
+        payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
+        request.assert_awaited_once_with("PATCH", f"{endpoint}/{model_id}", payload)
 
 
 @pytest.mark.parametrize(
@@ -377,26 +478,27 @@ async def test_patch_mixin[CentreonModel: PatchMixin](
         ),
     ],
 )
-@patch(f"{MODULE}.request", new_callable=AsyncMock)
-async def test_list_mixin[CentreonModel: ListMixin](
-    request: AsyncMock, model: type[CentreonModel], endpoint: str, payload: dict
-):
+class TestListMixin:
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_list(
+        self, request: AsyncMock, model: type[ListMixin], endpoint: str, payload: dict
+    ):
 
-    # Setup args
-    search = ""
-    limit = 50
-    page = 1
-    sort_by = ""
+        # Setup args
+        search = ""
+        limit = 50
+        page = 1
+        sort_by = ""
 
-    # Mock request
-    request.return_value = {"result": [payload]}
+        # Mock request
+        request.return_value = {"result": [payload]}
 
-    # Call test function
-    results = await model.list(search, limit, page, sort_by)
+        # Call test function
+        results = await model.list(search, limit, page, sort_by)
 
-    # Assert request called with right args
-    params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
-    request.assert_awaited_once_with("GET", endpoint, params=params)
+        # Assert request called with right args
+        params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
+        request.assert_awaited_once_with("GET", endpoint, params=params)
 
-    # Assert result
-    assert results == [model(**payload)]
+        # Assert result
+        assert results == [model(**payload)]

@@ -4,12 +4,11 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _create, _delete, _list, _patch, _update
+from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types import (
     MODELS_MIXIN_CREATE,
     MODELS_MIXIN_DELETE,
     MODELS_MIXIN_LIST,
-    MODELS_MIXIN_PATCH,
     MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.types.configuration import (
@@ -116,11 +115,7 @@ async def update_configuration(
         - Host Templates
     """
     logger.info("Executing tool update_configuration")
-
-    if model_type in ["host", "host_template"]:
-        return await _patch(MODELS_MIXIN_PATCH[model_type], model_id, params)
-    else:
-        return await _update(MODELS_MIXIN_UPDATE[model_type], model_id, params)
+    return await _update(MODELS_MIXIN_UPDATE[model_type], model_id, params)
 
 
 @configuration.tool(

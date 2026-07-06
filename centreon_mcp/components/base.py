@@ -10,7 +10,6 @@ from centreon_mcp.utils.mixins import (
     CreateMixin,
     DeleteMixin,
     ListMixin,
-    PatchMixin,
     UpdateMixin,
 )
 
@@ -51,22 +50,8 @@ async def _create[CentreonModel: CreateMixin](
     return await model.create(params)
 
 
-async def _patch[CentreonModel: PatchMixin](
-    model: type[CentreonModel], model_id: int, params: BaseModel
-) -> bool:
-    """
-    Generic function to patch a resource based on params.
-    """
-    return await model.patch(model_id, params)
-
-
-async def _update[CentreonModel: UpdateMixin](
-    model: type[CentreonModel], model_id: int, params: BaseModel
-) -> bool:
+async def _update(model: type[UpdateMixin], model_id: int, params: BaseModel) -> bool:
     """
     Generic function to update a resource from params.
     """
-    current = await model.get(model_id)
-    data = current.model_dump(exclude={"id"}, exclude_none=True)  # type: ignore
-    data |= params.model_dump(exclude_none=True, exclude={"model_type"})
-    return await model.update(model_id, model.full_params_cls(**data))
+    return await model.update(model_id, params)

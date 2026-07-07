@@ -8,7 +8,6 @@ from centreon_mcp.components.base import (
     _create,
     _delete,
     _list,
-    _patch,
     _update,
 )
 from centreon_mcp.types.base import BaseFilter, BaseOrder
@@ -40,7 +39,7 @@ from centreon_mcp.types.monitoring.downtime import Downtime
 from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 from centreon_mcp.types.monitoring.resource import Resource
 from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
-from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, UpdateMixin
+from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, UpdateMixin
 from centreon_mcp.utils.request import CentreonAPIError
 
 MODULE = "centreon_mcp.components.base"
@@ -56,9 +55,7 @@ MODULE = "centreon_mcp.components.base"
     ],
 )
 @patch(f"{MODULE}.CreateMixin.create", new_callable=AsyncMock)
-async def test_create[CentreonModel: CreateMixin](
-    create_mixin: AsyncMock, model: type[CentreonModel], params: BaseModel
-):
+async def test_create(create_mixin: AsyncMock, model: type[CreateMixin], params: BaseModel):
 
     # CreateMixin.create
     create_mixin.return_value = True
@@ -85,9 +82,7 @@ async def test_create[CentreonModel: CreateMixin](
     ],
 )
 @patch(f"{MODULE}.DeleteMixin.delete", new_callable=AsyncMock)
-async def test_delete[CentreonModel: DeleteMixin](
-    delete_mixin: AsyncMock, model: type[CentreonModel]
-):
+async def test_delete(delete_mixin: AsyncMock, model: type[DeleteMixin]):
 
     # Setup args
     model_ids = [1, 2]
@@ -124,9 +119,7 @@ async def test_delete[CentreonModel: DeleteMixin](
     ],
 )
 @patch(f"{MODULE}.ListMixin.list", new_callable=AsyncMock)
-async def test_list[CentreonModel: ListMixin](
-    list_mixin: AsyncMock, model: type[CentreonModel], instance: CentreonModel
-):
+async def test_list(list_mixin: AsyncMock, model: type[ListMixin], instance: ListMixin):
 
     # Setup args
     filters = [BaseFilter()]
@@ -151,35 +144,10 @@ async def test_list[CentreonModel: ListMixin](
 
 
 @pytest.mark.parametrize(
-    "model,params",
+    "model_cls,partial_params",
     [
         (HostConfiguration, HostConfigurationPartialParams.model_construct()),
         (HostTemplate, HostTemplatePartialParams.model_construct()),
-    ],
-)
-@patch(f"{MODULE}.PatchMixin.patch", new_callable=AsyncMock)
-async def test_patch[CentreonModel: PatchMixin](
-    patch_mixin: AsyncMock, model: type[CentreonModel], params: BaseModel
-):
-    # Setup args
-    model_id = 10
-
-    # Mock PatchMixin.patch
-    patch_mixin.return_value = True
-
-    # Call test function
-    result = await _patch(model, model_id, params)
-
-    # Assert PatchMixin.patch called with right args
-    patch_mixin.assert_awaited_once_with(model_id, params)
-
-    # Assert result
-    assert result
-
-
-@pytest.mark.parametrize(
-    "model_cls,partial_params",
-    [
         (
             HostGroupConfiguration,
             HostGroupConfigurationPartialParams.model_construct(name="host_group_name"),
@@ -198,34 +166,22 @@ async def test_patch[CentreonModel: PatchMixin](
         ),
     ],
 )
-@patch(f"{MODULE}.UpdateMixin.update", new_callable=AsyncMock)
-@patch(f"{MODULE}.UpdateMixin.get", new_callable=AsyncMock)
-async def test_update[CentreonModel: UpdateMixin](
-    get_mixin: AsyncMock,
-    update_mixin: AsyncMock,
-    model_cls: type[CentreonModel],
+async def test_update(
+    model_cls: type[UpdateMixin],
     partial_params: BaseModel,
 ):
     # Setup args
     model_id = 10
 
-    # Mock ReadMixin.get
-    model = model_cls.model_construct()  # type: ignore
-    get_mixin.return_value = model
-
-    # Mock UpdateMixin.update
-    update_mixin.return_value = True
-
     # Call test function
-    result = await _update(model_cls, model_id, partial_params)
+    with patch.object(model_cls, "update", new_callable=AsyncMock) as update_mixin:
+        # Mock UpdateMixin.update
+        update_mixin.return_value = True
 
-    # Assert ReadMixin.get called with right args
-    get_mixin.assert_awaited_once_with(model_id)
+        result = await _update(model_cls, model_id, partial_params)
 
     # Assert UpdateMixin.update called with right args
-    data = model.model_dump(exclude={"id"}, exclude_none=True)
-    data |= partial_params.model_dump(exclude_none=True)
-    update_mixin.assert_awaited_once_with(model_id, model_cls.full_params_cls(**data))
+    update_mixin.assert_awaited_once_with(model_id, partial_params)
 
     # Assert result
     assert result

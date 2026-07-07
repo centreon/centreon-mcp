@@ -13,7 +13,6 @@ from centreon_mcp.types import (
     MODELS_MIXIN_CREATE,
     MODELS_MIXIN_DELETE,
     MODELS_MIXIN_LIST,
-    MODELS_MIXIN_PATCH,
     MODELS_MIXIN_UPDATE,
 )
 
@@ -105,11 +104,11 @@ async def test_create_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity"],
+    ["host_template", "host", "host_category", "host_group", "host_severity"],
 )
 @patch(f"{MODULE}._update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_configuration_put(
+async def test_update_configuration(
     logger: MagicMock,
     _update: AsyncMock,
     model_type: Literal["host_category", "host_group", "host_severity"],
@@ -130,38 +129,6 @@ async def test_update_configuration_put(
 
     # Assert _update called with right args
     _update.assert_awaited_once_with(MODELS_MIXIN_UPDATE[model_type], model_id, params)
-
-    # Assert result
-    assert result
-
-
-@pytest.mark.parametrize(
-    "model_type",
-    ["host_template", "host"],
-)
-@patch(f"{MODULE}._patch", new_callable=AsyncMock)
-@patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_configuration_patch(
-    logger: MagicMock,
-    _patch: AsyncMock,
-    model_type: Literal["host_template", "host"],
-):
-
-    # Setup args
-    model_id = 10
-    params = MagicMock()
-
-    # Mock logger
-    logger.info.return_value = None
-
-    # Mock _patch
-    _patch.return_value = True
-
-    # Call test function
-    result = await update_configuration(model_type, model_id, params)
-
-    # Assert _patch called with right args
-    _patch.assert_awaited_once_with(MODELS_MIXIN_PATCH[model_type], model_id, params)
 
     # Assert result
     assert result

@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
@@ -55,38 +56,69 @@ class DeleteMixin(BaseMixin):
         return True
 
 
-class UpdateMixin[Params: BaseModel](ReadMixin):
+class UpdateMixin[PartialParams: BaseModel](BaseMixin, ABC):
     """
     Mixin to add to a Centreon Model a update method via heritage
     """
 
-    full_params_cls: ClassVar[type[BaseModel]]
+    @classmethod
+    @abstractmethod
+    async def update(cls, model_id: int, params: PartialParams) -> bool: ...
+
+
+class PutMixin[PartialParams: BaseModel, FullParams: BaseModel](
+    UpdateMixin[PartialParams], ReadMixin
+):
+    """
+    Mixin to add to a Centreon Model a update method via heritage
+    """
+
+    full_params_cls: ClassVar[type[FullParams]]
 
     @classmethod
-    async def update(cls, model_id: int, params: Params) -> bool:
+    async def put(cls, model_id: int, params: FullParams) -> bool:
         """
-        Update a reource using the model's endpoint.
+        Put a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         await request("PUT", f"{cls.endpoint}/{model_id}", payload)
         return True
 
+    @classmethod
+    async def update(cls, model_id: int, params: PartialParams) -> bool:
+        """
+        Update a resource by fetching its current state, merging the partial params over it, and sending the result via PUT.
+        Return True if successful; otherwise, raise an exception.
+        """
+        current = await cls.get(model_id)
+        data = current.model_dump(exclude={"id"}, exclude_none=True)  # type: ignore
+        data |= params.model_dump(exclude_none=True, exclude={"model_type"})
+        return await cls.put(model_id, cls.full_params_cls(**data))
 
-class PatchMixin[Params: BaseModel](BaseMixin):
+
+class PatchMixin[PartialParams: BaseModel](UpdateMixin[PartialParams]):
     """
     Mixin to add to a Centreon Model a patch method via heritage
     """
 
     @classmethod
-    async def patch(cls, host_id: int, params: Params) -> bool:
+    async def patch(cls, model_id: int, params: PartialParams) -> bool:
         """
         Patch a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
-        await request("PATCH", f"{cls.endpoint}/{host_id}", payload)
+        await request("PATCH", f"{cls.endpoint}/{model_id}", payload)
         return True
+
+    @classmethod
+    async def update(cls, model_id: int, params: PartialParams) -> bool:
+        """
+        Update a resource using PATCH method.
+        Return True if successful; otherwise, raise an exception.
+        """
+        return await cls.patch(model_id, params)
 
 
 class ListMixin(BaseMixin):

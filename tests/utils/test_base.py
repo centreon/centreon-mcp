@@ -1,6 +1,6 @@
 from centreon_mcp.utils.base import BaseResource, StatusCount
 
-MODULE = "centreon_mcp.types.base"
+MODULE = "centreon_mcp.utils.base"
 
 
 async def test_status_count_flatten():

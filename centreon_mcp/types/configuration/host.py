@@ -169,7 +169,7 @@ class HostConfiguration(
     PatchMixin[HostConfigurationPartialParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostConfigurationFilter, HostConfigurationOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts"
     model_type: ClassVar[str] = "host"

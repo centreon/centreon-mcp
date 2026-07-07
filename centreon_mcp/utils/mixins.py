@@ -1,8 +1,11 @@
+import json
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.request import request
 
 
@@ -121,7 +124,7 @@ class PatchMixin[PartialParams: BaseModel](UpdateMixin[PartialParams]):
         return await cls.patch(model_id, params)
 
 
-class ListMixin(BaseMixin):
+class ListMixin[Filter: BaseFilter, Order: BaseOrder](BaseMixin):
     """
     Mixin to add to a Centreon Model a list method via heritage
     """
@@ -129,16 +132,18 @@ class ListMixin(BaseMixin):
     @classmethod
     async def list(
         cls: type[Self],
-        search: str | None = None,
+        filters: Sequence[Filter] | None = None,
         limit: int | None = None,
         page: int | None = None,
-        sort_by: str | None = None,
+        order: Order | None = None,
         extras: dict[str, Any] | None = None,
     ) -> list[Self]:
         """
         List resources matching the search string using the model's endpoint.
         """
         extras = extras or {}
+        search = json.dumps(BaseFilter.join(filters))
+        sort_by = order.model_dump_json(exclude={"model_type"}) if order else None
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by, **extras}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]

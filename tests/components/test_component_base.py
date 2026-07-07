@@ -1,4 +1,3 @@
-import json
 from unittest.mock import AsyncMock, call, patch
 
 import pytest
@@ -135,9 +134,7 @@ async def test_list(list_mixin: AsyncMock, model: type[ListMixin], instance: Lis
     results = await _list(model, filters, limit, page, order, extras)
 
     # Assert ListMixin.list called with right args
-    search = json.dumps(BaseFilter.join(filters))
-    sort_by = order.model_dump_json(exclude={"model_type"})
-    list_mixin.assert_awaited_once_with(search, limit, page, sort_by, extras)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order, extras)
 
     # Assert result
     assert results == [instance]

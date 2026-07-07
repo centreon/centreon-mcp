@@ -62,7 +62,7 @@ class HostSeverity(
     PutMixin[HostSeverityPartialParams, HostSeverityFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostSeverityFilter, HostSeverityOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
     model_type: ClassVar[str] = "host_severity"

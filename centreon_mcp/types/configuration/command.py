@@ -79,7 +79,7 @@ class CommandParams(BaseModel):
     )
 
 
-class Command(BaseModel, ListMixin, CreateMixin[CommandParams]):
+class Command(BaseModel, ListMixin[CommandFilter, CommandOrder], CreateMixin[CommandParams]):
     endpoint: ClassVar[str] = "configuration/commands"
     model_type: ClassVar[str] = "command"
 

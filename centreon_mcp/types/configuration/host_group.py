@@ -56,7 +56,7 @@ class HostGroupConfiguration(
     PutMixin[HostGroupConfigurationPartialParams, HostGroupConfigurationFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostGroupConfigurationFilter, HostGroupConfigurationOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
     model_type: ClassVar[str] = "host_group"

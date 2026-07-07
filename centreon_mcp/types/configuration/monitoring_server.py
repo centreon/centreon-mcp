@@ -21,7 +21,9 @@ class MonitoringServerConfigurationFilter(BaseFilter):
     monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
 
 
-class MonitoringServerConfiguration(BaseModel, ListMixin):
+class MonitoringServerConfiguration(
+    BaseModel, ListMixin[MonitoringServerConfigurationFilter, MonitoringServerConfigurationOrder]
+):
     endpoint: ClassVar[str] = "configuration/monitoring-servers"
     model_type: ClassVar[str] = "monitoring_server"
 

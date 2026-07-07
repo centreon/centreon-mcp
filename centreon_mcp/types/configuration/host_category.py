@@ -53,7 +53,7 @@ class HostCategoryConfiguration(
     PutMixin[HostCategoryConfigurationPartialParams, HostCategoryConfigurationFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostCategoryConfigurationFilter, HostCategoryConfigurationOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
     model_type: ClassVar[str] = "host_category"

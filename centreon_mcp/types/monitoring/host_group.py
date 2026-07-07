@@ -21,7 +21,7 @@ class HostGroupFilter(BaseFilter):
     host_group_name: str | None = Field(None, serialization_alias="name $eq")
 
 
-class HostGroup(BaseModel, ListMixin):
+class HostGroup(BaseModel, ListMixin[HostGroupFilter, HostGroupOrder]):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
 
     id: int

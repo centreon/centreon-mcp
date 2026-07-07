@@ -40,7 +40,7 @@ class ResourceFilter(BaseFilter):
     )
 
 
-class Resource(BaseModel, ListMixin):
+class Resource(BaseModel, ListMixin[ResourceFilter, ResourceOrder]):
     endpoint: ClassVar[str] = "monitoring/resources"
 
     uuid: str

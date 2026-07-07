@@ -47,7 +47,7 @@ class DowntimeResource(BaseResource):
     pass
 
 
-class Downtime(BaseModel, ListMixin, DeleteMixin):
+class Downtime(BaseModel, ListMixin[DowntimeFilter, DowntimeOrder], DeleteMixin):
     endpoint: ClassVar[str] = "monitoring/downtimes"
 
     id: int

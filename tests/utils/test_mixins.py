@@ -1,8 +1,10 @@
+import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import BaseModel
 
+from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.types.configuration.command import Command, CommandParams
 from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.configuration.host_category import (
@@ -505,18 +507,20 @@ class TestListMixin:
     ):
 
         # Setup args
-        search = ""
-        limit = 50
+        filters = [BaseFilter()]
+        limit = 10
         page = 1
-        sort_by = ""
+        order = BaseOrder()
 
         # Mock request
         request.return_value = {"result": [payload]}
 
         # Call test function
-        results = await model.list(search, limit, page, sort_by)
+        results = await model.list(filters, limit, page, order)
 
         # Assert request called with right args
+        search = json.dumps(BaseFilter.join(filters))
+        sort_by = order.model_dump_json(exclude={"model_type"})
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         request.assert_awaited_once_with("GET", endpoint, params=params)
 

@@ -164,7 +164,7 @@ class HostTemplatePartialParams(HostTemplateBaseParams):
 
 class HostTemplate(
     BaseModel,
-    ListMixin,
+    ListMixin[HostTemplateFilter, HostTemplateOrder],
     CreateMixin[HostTemplateFullParams],
     PatchMixin[HostTemplatePartialParams],
     DeleteMixin,

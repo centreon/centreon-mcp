@@ -16,7 +16,7 @@ class MonitoringServerFilter(BaseFilter):
     monitoring_server_running: bool | None = Field(None, serialization_alias="running $eq")
 
 
-class MonitoringServer(BaseModel, ListMixin):
+class MonitoringServer(BaseModel, ListMixin[MonitoringServerFilter, MonitoringServerOrder]):
     endpoint: ClassVar[str] = "monitoring/servers"
 
     id: int

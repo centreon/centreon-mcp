@@ -33,7 +33,7 @@ class ServiceGroupFilter(BaseFilter):
     host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
 
 
-class ServiceGroup(BaseModel, ListMixin):
+class ServiceGroup(BaseModel, ListMixin[ServiceGroupFilter, ServiceGroupOrder]):
     endpoint: ClassVar[str] = "monitoring/servicegroups"
 
     id: int

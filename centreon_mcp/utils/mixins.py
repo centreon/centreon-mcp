@@ -5,7 +5,7 @@ from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.request import request
 
 

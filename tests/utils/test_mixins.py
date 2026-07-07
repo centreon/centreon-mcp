@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.types.configuration.command import Command, CommandParams
 from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.configuration.host_category import (
@@ -33,6 +32,7 @@ from centreon_mcp.types.monitoring.downtime import Downtime
 from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 from centreon_mcp.types.monitoring.resource import Resource
 from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import (
     CreateMixin,
     DeleteMixin,

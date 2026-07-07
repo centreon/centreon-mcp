@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder, BaseResource, HostState
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, HostState
 from centreon_mcp.utils.mixins import DeleteMixin, ListMixin
 from centreon_mcp.utils.request import request
 

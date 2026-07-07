@@ -1,4 +1,4 @@
-from centreon_mcp.types.base import BaseResource, StatusCount
+from centreon_mcp.utils.base import BaseResource, StatusCount
 
 MODULE = "centreon_mcp.types.base"
 

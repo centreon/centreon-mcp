@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, StatusCount
+from centreon_mcp.utils.base import BaseFilter, StatusCount
 from centreon_mcp.utils.request import request
 
 

@@ -78,7 +78,7 @@ class PutMixin[PartialParams: BaseModel, FullParams: BaseModel](
     @classmethod
     async def put(cls, model_id: int, params: FullParams) -> bool:
         """
-        Put a reource using the model's endpoint.
+        Put a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
@@ -88,7 +88,7 @@ class PutMixin[PartialParams: BaseModel, FullParams: BaseModel](
     @classmethod
     async def update(cls, model_id: int, params: PartialParams) -> bool:
         """
-        Update a resource using PATCH method.
+        Update a resource by fetching its current state, merging the partial params over it, and sending the result via PUT.
         Return True if successful; otherwise, raise an exception.
         """
         current = await cls.get(model_id)

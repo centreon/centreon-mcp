@@ -328,6 +328,26 @@ class TestPatchMixin:
         payload = params.model_dump(mode="json", exclude_none=True, exclude={"model_type"})
         request.assert_awaited_once_with("PATCH", f"{endpoint}/{model_id}", payload)
 
+    @patch(f"{MODULE}.PatchMixin.patch", new_callable=AsyncMock)
+    async def test_update(
+        self,
+        patch_mixin: AsyncMock,
+        model: type[PutMixin],
+        params: BaseModel,
+        endpoint: str,
+    ):
+        # Setup args
+        model_id = 10
+
+        # Mock PatchMixin.patch
+        patch_mixin.return_value = None
+
+        # Call test function
+        await model.update(model_id, params)
+
+        # Assert PatchMixin.patch called with right args
+        patch_mixin.assert_awaited_once_with(model_id, params)
+
 
 @pytest.mark.parametrize(
     "model,endpoint,payload",

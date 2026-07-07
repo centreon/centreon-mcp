@@ -14,27 +14,27 @@ class ResourceOrder(BaseOrder):
 class ResourceFilter(BaseFilter):
     # Fields available for filtering in Centreon API
     name: str | None = Field(
-        None,
+        default=None,
         serialization_alias="name $lk",
         description="Name of the resource (host or service)",
     )
     alias: str | None = Field(
-        None,
+        default=None,
         serialization_alias="alias $lk",
         description="Alias of the resource (host or service)",
     )
     parent_name: str | None = Field(
-        None,
+        default=None,
         serialization_alias="parent_name $lk",
         description="Name of the parent resource (host or service)",
     )
     information_like: str | None = Field(
-        None,
+        default=None,
         serialization_alias="information $lk",
         description="Filter resources whose output/information contains this string (case-insensitive substring match)",
     )
     information_unlike: str | None = Field(
-        None,
+        default=None,
         serialization_alias="information $nk",
         description="Filter resources whose output/information does not contain this string (case-insensitive substring exclusion)",
     )

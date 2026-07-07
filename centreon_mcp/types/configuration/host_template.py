@@ -73,10 +73,10 @@ class HostTemplateOrder(BaseOrder):
 class HostTemplateFilter(BaseFilter):
     model_type: Literal["host_template"] = "host_template"
 
-    host_template_id: int | None = Field(None, serialization_alias="id $eq")
-    host_template_name: str | None = Field(None, serialization_alias="name $eq")
-    host_template_alias: str | None = Field(None, serialization_alias="alias $eq")
-    host_template_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
+    host_template_id: int | None = Field(default=None, serialization_alias="id $eq")
+    host_template_name: str | None = Field(default=None, serialization_alias="name $eq")
+    host_template_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    host_template_is_locked: bool | None = Field(default=None, serialization_alias="is_locked $eq")
 
 
 class HostTemplateBaseParams(BaseModel):

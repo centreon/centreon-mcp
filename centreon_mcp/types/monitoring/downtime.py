@@ -24,14 +24,14 @@ class DowntimeOrder(BaseOrder):
 
 
 class DowntimeFilter(BaseFilter):
-    host_id: int | None = Field(None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(None, serialization_alias="host.address $eq")
-    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
-    is_fixed: bool | None = Field(None, serialization_alias="is_fixed $eq")
-    is_cancelled: bool | None = Field(None, serialization_alias="is_cancelled $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
+    host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
+    host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
+    host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
+    host_address: str | None = Field(default=None, serialization_alias="host.address $eq")
+    host_state: HostState | None = Field(default=None, serialization_alias="host.state $eq")
+    is_fixed: bool | None = Field(default=None, serialization_alias="is_fixed $eq")
+    is_cancelled: bool | None = Field(default=None, serialization_alias="is_cancelled $eq")
+    poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
 
 
 class DowntimeParams(BaseModel):

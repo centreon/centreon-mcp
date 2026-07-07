@@ -19,18 +19,20 @@ class ServiceGroupOrder(BaseOrder):
 
 
 class ServiceGroupFilter(BaseFilter):
-    host_id: int | None = Field(None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(None, serialization_alias="host.address $eq")
-    host_state: HostState | None = Field(None, serialization_alias="host.state $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
-    host_group_id: int | None = Field(None, serialization_alias="host_group.id $eq")
-    service_group_id: int | None = Field(None, serialization_alias="id $eq")
-    service_group_name: str | None = Field(None, serialization_alias="name $eq")
-    service_name: str | None = Field(None, serialization_alias="service.name $eq")
-    service_display_name: str | None = Field(None, serialization_alias="service.display_name $eq")
-    host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
+    host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
+    host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
+    host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
+    host_address: str | None = Field(default=None, serialization_alias="host.address $eq")
+    host_state: HostState | None = Field(default=None, serialization_alias="host.state $eq")
+    poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
+    host_group_id: int | None = Field(default=None, serialization_alias="host_group.id $eq")
+    service_group_id: int | None = Field(default=None, serialization_alias="id $eq")
+    service_group_name: str | None = Field(default=None, serialization_alias="name $eq")
+    service_name: str | None = Field(default=None, serialization_alias="service.name $eq")
+    service_display_name: str | None = Field(
+        default=None, serialization_alias="service.display_name $eq"
+    )
+    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $eq")
 
 
 class ServiceGroup(BaseModel, ListMixin[ServiceGroupFilter, ServiceGroupOrder]):

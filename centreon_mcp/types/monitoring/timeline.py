@@ -16,7 +16,7 @@ class TimelineOrder(BaseOrder):
 
 class TimelineFilter(BaseFilter):
     event_type: TimelineEventType | None = Field(
-        None,
+        default=None,
         serialization_alias="type $eq",
         description=(
             "Restrict to a single event type (event, notification, downtime, "
@@ -24,12 +24,12 @@ class TimelineFilter(BaseFilter):
         ),
     )
     start_date: datetime | None = Field(
-        None,
+        default=None,
         serialization_alias="date $ge",
         description="Only return events whose date is greater than or equal to this ISO8601 datetime.",
     )
     end_date: datetime | None = Field(
-        None,
+        default=None,
         serialization_alias="date $le",
         description="Only return events whose date is less than or equal to this ISO8601 datetime.",
     )

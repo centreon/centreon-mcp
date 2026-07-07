@@ -5,10 +5,12 @@ from centreon_mcp.utils.request import request
 
 
 class HostFilter(BaseFilter):
-    host_group_id: int | None = Field(None, serialization_alias="host_group.id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="host_group.name $eq")
-    host_category_id: int | None = Field(None, serialization_alias="host_category.id $eq")
-    host_category_name: str | None = Field(None, serialization_alias="host_category.name $eq")
+    host_group_id: int | None = Field(default=None, serialization_alias="host_group.id $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $eq")
+    host_category_id: int | None = Field(default=None, serialization_alias="host_category.id $eq")
+    host_category_name: str | None = Field(
+        default=None, serialization_alias="host_category.name $eq"
+    )
 
 
 class HostStatusCount(StatusCount):

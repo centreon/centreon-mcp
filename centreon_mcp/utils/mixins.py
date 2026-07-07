@@ -139,7 +139,7 @@ class ListMixin[Filter: BaseFilter, Order: BaseOrder](BaseMixin):
         extras: dict[str, Any] | None = None,
     ) -> list[Self]:
         """
-        List resources matching the search string using the model's endpoint.
+        List resources matching the provided filters, pagination and order using the model's endpoint.
         """
         extras = extras or {}
         search = json.dumps(BaseFilter.join(filters))

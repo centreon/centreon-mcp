@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
@@ -17,11 +17,13 @@ class MonitoringServerConfigurationOrder(BaseOrder):
 class MonitoringServerConfigurationFilter(BaseFilter):
     model_type: Literal["monitoring_server"] = "monitoring_server"
 
-    monitoring_server_id: int | None = Field(None, serialization_alias="id $eq")
-    monitoring_server_name: str | None = Field(None, serialization_alias="name $eq")
+    monitoring_server_id: int | None = Field(default=None, serialization_alias="id $eq")
+    monitoring_server_name: str | None = Field(default=None, serialization_alias="name $eq")
 
 
-class MonitoringServerConfiguration(BaseModel, ListMixin):
+class MonitoringServerConfiguration(
+    BaseModel, ListMixin[MonitoringServerConfigurationFilter, MonitoringServerConfigurationOrder]
+):
     endpoint: ClassVar[str] = "configuration/monitoring-servers"
     model_type: ClassVar[str] = "monitoring_server"
 

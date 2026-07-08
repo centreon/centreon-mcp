@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder, EnablementStatus, Link
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, EnablementStatus, Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 
 DESCRIPTION = {
@@ -70,16 +70,16 @@ class HostConfigurationOrder(BaseOrder):
 class HostConfigurationFilter(BaseFilter):
     model_type: Literal["host"] = "host"
 
-    host_configuration_id: int | None = Field(None, serialization_alias="id $eq")
-    host_configuration_name: str | None = Field(None, serialization_alias="name $eq")
-    host_configuration_address: str | None = Field(None, serialization_alias="address $eq")
-    poller_id: int | None = Field(None, serialization_alias="poller.id $eq")
-    poller_name: str | None = Field(None, serialization_alias="poller.name $eq")
-    host_group_id: int | None = Field(None, serialization_alias="group.id $eq")
-    host_group_name: str | None = Field(None, serialization_alias="group.name $eq")
-    host_category_id: int | None = Field(None, serialization_alias="category.id $eq")
-    host_category_name: str | None = Field(None, serialization_alias="category.name $eq")
-    is_activated: bool | None = Field(None, serialization_alias="is_activated $eq")
+    host_configuration_id: int | None = Field(default=None, serialization_alias="id $eq")
+    host_configuration_name: str | None = Field(default=None, serialization_alias="name $eq")
+    host_configuration_address: str | None = Field(default=None, serialization_alias="address $eq")
+    poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
+    poller_name: str | None = Field(default=None, serialization_alias="poller.name $eq")
+    host_group_id: int | None = Field(default=None, serialization_alias="group.id $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="group.name $eq")
+    host_category_id: int | None = Field(default=None, serialization_alias="category.id $eq")
+    host_category_name: str | None = Field(default=None, serialization_alias="category.name $eq")
+    is_activated: bool | None = Field(default=None, serialization_alias="is_activated $eq")
 
 
 class HostConfigurationBaseParams(BaseModel):
@@ -169,7 +169,7 @@ class HostConfiguration(
     PatchMixin[HostConfigurationPartialParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostConfigurationFilter, HostConfigurationOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts"
     model_type: ClassVar[str] = "host"

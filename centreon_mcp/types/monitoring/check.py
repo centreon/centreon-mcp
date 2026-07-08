@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseResource
+from centreon_mcp.utils.base import BaseResource
 from centreon_mcp.utils.request import request
 
 

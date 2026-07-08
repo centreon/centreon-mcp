@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
 
 DESCRIPTION = {
@@ -62,7 +62,7 @@ class HostSeverity(
     PutMixin[HostSeverityPartialParams, HostSeverityFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostSeverityFilter, HostSeverityOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/severities"
     model_type: ClassVar[str] = "host_severity"

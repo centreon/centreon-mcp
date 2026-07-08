@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
 
 DESCRIPTION = {
@@ -53,7 +53,7 @@ class HostCategoryConfiguration(
     PutMixin[HostCategoryConfigurationPartialParams, HostCategoryConfigurationFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin,
+    ListMixin[HostCategoryConfigurationFilter, HostCategoryConfigurationOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
     model_type: ClassVar[str] = "host_category"

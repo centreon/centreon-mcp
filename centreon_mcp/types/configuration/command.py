@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.types.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, ListMixin
 
 
@@ -23,10 +23,10 @@ class CommandOrder(BaseOrder):
 class CommandFilter(BaseFilter):
     model_type: Literal["command"] = "command"
 
-    command_id: int | None = Field(None, serialization_alias="id $eq")
-    command_name: str | None = Field(None, serialization_alias="name $eq")
-    command_type: CommandType | None = Field(None, serialization_alias="type $eq")
-    command_is_locked: bool | None = Field(None, serialization_alias="is_locked $eq")
+    command_id: int | None = Field(default=None, serialization_alias="id $eq")
+    command_name: str | None = Field(default=None, serialization_alias="name $eq")
+    command_type: CommandType | None = Field(default=None, serialization_alias="type $eq")
+    command_is_locked: bool | None = Field(default=None, serialization_alias="is_locked $eq")
 
 
 class CommandArgument(BaseModel):
@@ -79,7 +79,7 @@ class CommandParams(BaseModel):
     )
 
 
-class Command(BaseModel, ListMixin, CreateMixin[CommandParams]):
+class Command(BaseModel, ListMixin[CommandFilter, CommandOrder], CreateMixin[CommandParams]):
     endpoint: ClassVar[str] = "configuration/commands"
     model_type: ClassVar[str] = "command"
 

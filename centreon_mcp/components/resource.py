@@ -5,9 +5,9 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.components.base import _list
-from centreon_mcp.types.base import ResourceStatus, ResourceType, StatusType
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.utils import logger
+from centreon_mcp.utils.base import ResourceStatus, ResourceType, StatusType
 
 resource = FastMCP()
 

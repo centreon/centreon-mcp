@@ -1,4 +1,3 @@
-import json
 from unittest.mock import AsyncMock, call, patch
 
 import pytest
@@ -10,7 +9,6 @@ from centreon_mcp.components.base import (
     _list,
     _update,
 )
-from centreon_mcp.types.base import BaseFilter, BaseOrder
 from centreon_mcp.types.configuration.command import Command
 from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
 from centreon_mcp.types.configuration.host_category import (
@@ -39,6 +37,7 @@ from centreon_mcp.types.monitoring.downtime import Downtime
 from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 from centreon_mcp.types.monitoring.resource import Resource
 from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, UpdateMixin
 from centreon_mcp.utils.request import CentreonAPIError
 
@@ -135,9 +134,7 @@ async def test_list(list_mixin: AsyncMock, model: type[ListMixin], instance: Lis
     results = await _list(model, filters, limit, page, order, extras)
 
     # Assert ListMixin.list called with right args
-    search = json.dumps(BaseFilter.join(filters))
-    sort_by = order.model_dump_json(exclude={"model_type"})
-    list_mixin.assert_awaited_once_with(search, limit, page, sort_by, extras)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order, extras)
 
     # Assert result
     assert results == [instance]

@@ -1,36 +1,70 @@
+from collections.abc import Sequence
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import BaseModel
 
-from centreon_mcp.types.configuration.command import Command, CommandParams
-from centreon_mcp.types.configuration.host import HostConfiguration, HostConfigurationPartialParams
+from centreon_mcp.types.configuration.command import (
+    Command,
+    CommandFilter,
+    CommandOrder,
+    CommandParams,
+)
+from centreon_mcp.types.configuration.host import (
+    HostConfiguration,
+    HostConfigurationPartialParams,
+)
 from centreon_mcp.types.configuration.host_category import (
     HostCategoryConfiguration,
+    HostCategoryConfigurationFilter,
     HostCategoryConfigurationFullParams,
+    HostCategoryConfigurationOrder,
     HostCategoryConfigurationPartialParams,
 )
 from centreon_mcp.types.configuration.host_group import (
     HostGroupConfiguration,
+    HostGroupConfigurationFilter,
     HostGroupConfigurationFullParams,
+    HostGroupConfigurationOrder,
     HostGroupConfigurationPartialParams,
 )
 from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
+    HostSeverityFilter,
     HostSeverityFullParams,
+    HostSeverityOrder,
     HostSeverityPartialParams,
 )
 from centreon_mcp.types.configuration.host_template import (
     HostTemplate,
+    HostTemplateFilter,
     HostTemplateFullParams,
+    HostTemplateOrder,
     HostTemplatePartialParams,
 )
-from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
-from centreon_mcp.types.monitoring.acknowledgement import Acknowledgement
-from centreon_mcp.types.monitoring.downtime import Downtime
-from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
-from centreon_mcp.types.monitoring.resource import Resource
-from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
+from centreon_mcp.types.configuration.monitoring_server import (
+    MonitoringServerConfiguration,
+    MonitoringServerConfigurationFilter,
+    MonitoringServerConfigurationOrder,
+)
+from centreon_mcp.types.monitoring.acknowledgement import (
+    Acknowledgement,
+    AcknowledgementFilter,
+    AcknowledgementOrder,
+)
+from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeFilter, DowntimeOrder
+from centreon_mcp.types.monitoring.monitoring_server import (
+    MonitoringServer,
+    MonitoringServerFilter,
+    MonitoringServerOrder,
+)
+from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
+from centreon_mcp.types.monitoring.servicegroup import (
+    ServiceGroup,
+    ServiceGroupFilter,
+    ServiceGroupOrder,
+)
+from centreon_mcp.utils.base import BaseFilter, BaseOrder
 from centreon_mcp.utils.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -350,10 +384,14 @@ class TestPatchMixin:
 
 
 @pytest.mark.parametrize(
-    "model,endpoint,payload",
+    "model,filters,order,search,sort_by,endpoint,payload",
     [
         (
             Acknowledgement,
+            [AcknowledgementFilter()],
+            AcknowledgementOrder(order="ASC", field="host.state"),
+            '{"$or": []}',
+            '{"order":"ASC","field":"host.state"}',
             "monitoring/acknowledgements",
             {
                 "id": 10,
@@ -372,6 +410,10 @@ class TestPatchMixin:
         ),
         (
             Downtime,
+            [DowntimeFilter(host_name="host_name", is_fixed=True)],
+            DowntimeOrder(order="DESC", field="start_time"),
+            '{"$or": [{"$and": [{"host.name": {"$eq": "host_name"}}, {"is_fixed": {"$eq": true}}]}]}',
+            '{"order":"DESC","field":"start_time"}',
             "monitoring/downtimes",
             {
                 "id": 10,
@@ -387,6 +429,10 @@ class TestPatchMixin:
         ),
         (
             Command,
+            [CommandFilter(command_name="command_name", command_is_locked=False)],
+            CommandOrder(order="ASC", field="name"),
+            '{"$or": [{"$and": [{"name": {"$eq": "command_name"}}, {"is_locked": {"$eq": false}}]}]}',
+            '{"order":"ASC","field":"name"}',
             "configuration/commands",
             {
                 "id": 10,
@@ -400,6 +446,10 @@ class TestPatchMixin:
         ),
         (
             HostCategoryConfiguration,
+            [HostCategoryConfigurationFilter(host_category_name="host_category_name")],
+            HostCategoryConfigurationOrder(order="DESC", field="alias"),
+            '{"$or": [{"$and": [{"name": {"$eq": "host_category_name"}}]}]}',
+            '{"order":"DESC","field":"alias"}',
             "configuration/hosts/categories",
             {
                 "id": 10,
@@ -410,6 +460,10 @@ class TestPatchMixin:
         ),
         (
             HostGroupConfiguration,
+            [HostGroupConfigurationFilter(host_group_alias="host_group_alias")],
+            HostGroupConfigurationOrder(order="ASC", field="is_activated"),
+            '{"$or": [{"$and": [{"alias": {"$eq": "host_group_alias"}}]}]}',
+            '{"order":"ASC","field":"is_activated"}',
             "configuration/hosts/groups",
             {
                 "id": 10,
@@ -421,6 +475,10 @@ class TestPatchMixin:
         ),
         (
             HostSeverity,
+            [HostSeverityFilter(host_severity_id=10, min_host_severity_level=30)],
+            HostSeverityOrder(order="DESC", field="level"),
+            '{"$or": [{"$and": [{"id": {"$eq": 10}}, {"level": {"$ge": 30}}]}]}',
+            '{"order":"DESC","field":"level"}',
             "configuration/hosts/severities",
             {
                 "id": 10,
@@ -433,6 +491,10 @@ class TestPatchMixin:
         ),
         (
             ServiceGroup,
+            [ServiceGroupFilter(poller_id=10, host_address="host_address")],
+            ServiceGroupOrder(order="ASC", field="host.state"),
+            '{"$or": [{"$and": [{"host.address": {"$eq": "host_address"}}, {"poller.id": {"$eq": 10}}]}]}',
+            '{"order":"ASC","field":"host.state"}',
             "monitoring/servicegroups",
             {
                 "id": 10,
@@ -441,11 +503,19 @@ class TestPatchMixin:
         ),
         (
             MonitoringServer,
+            [MonitoringServerFilter(monitoring_server_name="poller_name")],
+            MonitoringServerOrder(order="DESC", field="running"),
+            '{"$or": [{"$and": [{"name": {"$eq": "poller_name"}}]}]}',
+            '{"order":"DESC","field":"running"}',
             "monitoring/servers",
             {"id": 10, "name": "monitoring_server_name", "is_running": True},
         ),
         (
             HostTemplate,
+            [HostTemplateFilter(host_template_alias="host_template_alias")],
+            HostTemplateOrder(order="ASC", field="name"),
+            '{"$or": [{"$and": [{"alias": {"$eq": "host_template_alias"}}]}]}',
+            '{"order":"ASC","field":"name"}',
             "configuration/hosts/templates",
             {
                 "id": 10,
@@ -456,6 +526,10 @@ class TestPatchMixin:
         ),
         (
             Resource,
+            [ResourceFilter(parent_name="parent_name", information_like="info_like")],
+            ResourceOrder(order="DESC", field="host.address"),
+            '{"$or": [{"$and": [{"parent_name": {"$lk": "parent_name"}}, {"information": {"$lk": "info_like"}}]}]}',
+            '{"order":"DESC","field":"host.address"}',
             "monitoring/resources",
             {
                 "id": 10,
@@ -474,6 +548,10 @@ class TestPatchMixin:
         ),
         (
             MonitoringServerConfiguration,
+            [MonitoringServerConfigurationFilter(monitoring_server_name="poller_name")],
+            MonitoringServerConfigurationOrder(order="ASC", field="name"),
+            '{"$or": [{"$and": [{"name": {"$eq": "poller_name"}}]}]}',
+            '{"order":"ASC","field":"name"}',
             "configuration/monitoring-servers",
             {
                 "id": 10,
@@ -501,20 +579,26 @@ class TestPatchMixin:
 class TestListMixin:
     @patch(f"{MODULE}.request", new_callable=AsyncMock)
     async def test_list(
-        self, request: AsyncMock, model: type[ListMixin], endpoint: str, payload: dict
+        self,
+        request: AsyncMock,
+        model: type[ListMixin],
+        filters: Sequence[BaseFilter],
+        order: BaseOrder,
+        search: str,
+        sort_by: str,
+        endpoint: str,
+        payload: dict,
     ):
 
         # Setup args
-        search = ""
-        limit = 50
+        limit = 10
         page = 1
-        sort_by = ""
 
         # Mock request
         request.return_value = {"result": [payload]}
 
         # Call test function
-        results = await model.list(search, limit, page, sort_by)
+        results = await model.list(filters, limit, page, order)
 
         # Assert request called with right args
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}

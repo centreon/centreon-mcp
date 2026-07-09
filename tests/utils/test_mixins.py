@@ -154,7 +154,7 @@ class TestDeleteMixin:
         # Setup args
         model_ids = [1, 2, 3]
 
-        # Mock DeleteMixin.delete
+        # Mock DeleteMixin._delete
         error = CentreonAPIError(404, "fake_url", "GET", {})
         _delete.side_effect = [True, error, True]
 

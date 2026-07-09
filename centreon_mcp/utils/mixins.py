@@ -62,7 +62,9 @@ class DeleteMixin(BaseMixin):
     @classmethod
     async def delete(cls, model_ids: list[int]) -> dict[int, bool | BaseException]:
         """
-        Delete multiple entities from their ids.
+        Delete multiple resources concurrently by their ids.
+        Return a dict mapping each id to True on success, or to the raised
+        exception on failure; never raises for individual deletion errors.
         """
         tasks = [asyncio.create_task(cls._delete(model_id)) for model_id in model_ids]
         results = await asyncio.gather(*tasks, return_exceptions=True)

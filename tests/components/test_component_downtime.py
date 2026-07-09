@@ -12,9 +12,9 @@ from centreon_mcp.types.monitoring.downtime import (
 MODULE = "centreon_mcp.components.downtime"
 
 
-@patch(f"{MODULE}._list", new_callable=AsyncMock)
+@patch(f"{MODULE}.Downtime.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_downtimes(logger: MagicMock, _list: AsyncMock):
+async def test_list_downtimes(logger: MagicMock, list: AsyncMock):
 
     # Setup args
     filters = [DowntimeFilter.model_construct()]
@@ -25,15 +25,15 @@ async def test_list_downtimes(logger: MagicMock, _list: AsyncMock):
     # Mock logger
     logger.info.return_value = None
 
-    # Mock _list
+    # Mock Downtime.list
     downtime = Downtime.model_construct()
-    _list.return_value = [downtime]
+    list.return_value = [downtime]
 
     # Call test function
     results = await list_downtimes(filters, limit, page, order)
 
-    # Assert _list called with right args
-    _list.assert_awaited_once_with(Downtime, filters, limit, page, order)
+    # Assert Downtime.list called with right args
+    list.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == downtime
@@ -63,9 +63,9 @@ async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
     assert result
 
 
-@patch(f"{MODULE}._delete", new_callable=AsyncMock)
+@patch(f"{MODULE}.Downtime.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_cancel_downtimes(logger: MagicMock, _delete: AsyncMock):
+async def test_cancel_downtimes(logger: MagicMock, delete: AsyncMock):
 
     # Setup args
     downtime_id = 10
@@ -73,14 +73,14 @@ async def test_cancel_downtimes(logger: MagicMock, _delete: AsyncMock):
     # Mock logger
     logger.info.return_value = None
 
-    # Mock _delete
-    _delete.return_value = {downtime_id: True}
+    # Mock Downtime.delete
+    delete.return_value = {downtime_id: True}
 
     # Call test function
     results = await cancel_downtimes([downtime_id])
 
-    # Assert _delete called with right args
-    _delete.assert_awaited_once_with(Downtime, [downtime_id])
+    # Assert Downtime.delete called with right args
+    delete.assert_awaited_once_with([downtime_id])
 
     # Assert result
     assert results == {downtime_id: True}

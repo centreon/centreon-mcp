@@ -3,7 +3,6 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _delete, _list
 from centreon_mcp.types.monitoring.downtime import (
     Downtime,
     DowntimeFilter,
@@ -37,7 +36,7 @@ async def list_downtimes(
     to avoid retrieving all downtimes except if explicitly intended.
     """
     logger.info("Executing tool list_downtimes")
-    return await _list(Downtime, filters, limit, page, order)
+    return await Downtime.list(filters, limit, page, order)
 
 
 @downtime.tool(
@@ -73,4 +72,4 @@ async def cancel_downtimes(downtime_ids: list[int]) -> dict[int, bool | BaseExce
     Use tools `list_downtimes` first to get downtime IDs.
     """
     logger.info("Executing tool cancel_downtimes")
-    return await _delete(Downtime, downtime_ids)
+    return await Downtime.delete(downtime_ids)

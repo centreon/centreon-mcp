@@ -4,7 +4,6 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _list
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import ResourceStatus, ResourceType, StatusType
@@ -52,4 +51,4 @@ async def list_resources(
         "status_types": status_types,
     }
     extras = {name: json.dumps(value) for name, value in fields.items() if value}
-    return await _list(Resource, filters, limit, page, order, extras)
+    return await Resource.list(filters, limit, page, order, extras)

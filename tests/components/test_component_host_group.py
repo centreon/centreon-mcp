@@ -8,9 +8,9 @@ from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter,
 MODULE = "centreon_mcp.components.host_group"
 
 
-@patch(f"{MODULE}._list", new_callable=AsyncMock)
+@patch(f"{MODULE}.HostGroup.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_resources(logger: MagicMock, _list: AsyncMock):
+async def test_list_resources(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [HostGroupFilter.model_construct()]
@@ -21,15 +21,15 @@ async def test_list_resources(logger: MagicMock, _list: AsyncMock):
     # Mock logger
     logger.debug.return_value = None
 
-    # Mock _list
+    # Mock HostGroup.list
     hostgroup = HostGroup.model_construct()
-    _list.return_value = [hostgroup]
+    list_mixin.return_value = [hostgroup]
 
     # Call test function
     results = await list_host_groups(filters, limit, page, order)
 
-    # Assert _list called with right args
-    _list.assert_awaited_once_with(HostGroup, filters, limit, page, order)
+    # Assert HostGroup.list called with right args
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == hostgroup

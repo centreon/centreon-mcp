@@ -9,12 +9,6 @@ from centreon_mcp.components.configuration import (
     list_configurations,
     update_configuration,
 )
-from centreon_mcp.types import (
-    MODELS_MIXIN_CREATE,
-    MODELS_MIXIN_DELETE,
-    MODELS_MIXIN_LIST,
-    MODELS_MIXIN_UPDATE,
-)
 
 MODULE = "centreon_mcp.components.configuration"
 
@@ -31,11 +25,11 @@ MODULE = "centreon_mcp.components.configuration"
         "monitoring_server",
     ],
 )
-@patch(f"{MODULE}._list", new_callable=AsyncMock)
+@patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_list_configurations(
     logger: MagicMock,
-    _list: AsyncMock,
+    list_mixin: AsyncMock,
     model_type: Literal[
         "command",
         "host",
@@ -57,13 +51,13 @@ async def test_list_configurations(
     logger.debug.return_value = None
 
     model = MagicMock()
-    _list.return_value = [model]
+    list_mixin.return_value = [model]
 
     # Call test function
     results = await list_configurations(model_type, filters, limit, page, order)
 
-    # Assert _list called with right args
-    _list.assert_awaited_once_with(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
+    # Assert ListMixin.list called with right args
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results == [model]
@@ -73,11 +67,11 @@ async def test_list_configurations(
     "model_type",
     ["command", "host_category", "host_group", "host_severity", "host_template", "host"],
 )
-@patch(f"{MODULE}._create", new_callable=AsyncMock)
+@patch("centreon_mcp.utils.mixins.CreateMixin.create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_create_configuration(
     logger: MagicMock,
-    _create: AsyncMock,
+    create: AsyncMock,
     model_type: Literal[
         "command", "host_category", "host_group", "host_severity", "host_template", "host"
     ],
@@ -89,14 +83,14 @@ async def test_create_configuration(
     # Mock logger
     logger.info.return_value = None
 
-    # Mock _create
-    _create.return_value = True
+    # Mock CreateMixin.create
+    create.return_value = True
 
     # Call test function
     result = await create_configuration(model_type, params)
 
-    # Assert _create called with right args
-    _create.assert_awaited_once_with(MODELS_MIXIN_CREATE[model_type], params)
+    # Assert  CreateMixin.create called with right args
+    create.assert_awaited_once_with(params)
 
     # Assert result
     assert result
@@ -104,13 +98,13 @@ async def test_create_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_template", "host", "host_category", "host_group", "host_severity"],
+    ["host_category", "host_group", "host_severity"],
 )
-@patch(f"{MODULE}._update", new_callable=AsyncMock)
+@patch("centreon_mcp.utils.mixins.PutMixin.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_update_configuration(
+async def test_put_configuration(
     logger: MagicMock,
-    _update: AsyncMock,
+    update_mixin: AsyncMock,
     model_type: Literal["host_category", "host_group", "host_severity"],
 ):
 
@@ -121,14 +115,46 @@ async def test_update_configuration(
     # Mock logger
     logger.info.return_value = None
 
-    # Mock _update
-    _update.return_value = True
+    # Mock PutMixin.update
+    update_mixin.return_value = True
 
     # Call test function
     result = await update_configuration(model_type, model_id, params)
 
-    # Assert _update called with right args
-    _update.assert_awaited_once_with(MODELS_MIXIN_UPDATE[model_type], model_id, params)
+    # Assert PutMixin.update called with right args
+    update_mixin.assert_awaited_once_with(model_id, params)
+
+    # Assert result
+    assert result
+
+
+@pytest.mark.parametrize(
+    "model_type",
+    ["host_template", "host"],
+)
+@patch("centreon_mcp.utils.mixins.PatchMixin.update", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_patch_configuration(
+    logger: MagicMock,
+    update_mixin: AsyncMock,
+    model_type: Literal["host", "host_template"],
+):
+
+    # Setup args
+    model_id = 10
+    params = MagicMock()
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock PatchMixin.update
+    update_mixin.return_value = True
+
+    # Call test function
+    result = await update_configuration(model_type, model_id, params)
+
+    # Assert PatchMixin.update called with right args
+    update_mixin.assert_awaited_once_with(model_id, params)
 
     # Assert result
     assert result
@@ -138,11 +164,11 @@ async def test_update_configuration(
     "model_type",
     ["host_category", "host_group", "host_severity", "host_template", "host"],
 )
-@patch(f"{MODULE}._delete", new_callable=AsyncMock)
+@patch("centreon_mcp.utils.mixins.DeleteMixin.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_delete_configurations(
     logger: MagicMock,
-    _delete: AsyncMock,
+    delete: AsyncMock,
     model_type: Literal["host_category", "host_group", "host_severity", "host_template", "host"],
 ):
 
@@ -152,14 +178,14 @@ async def test_delete_configurations(
     # Mock logger
     logger.info.return_value = None
 
-    # Mock _delete
-    _delete.return_value = {model_id: True}
+    # Mock DeleteMixin.delete
+    delete.return_value = {model_id: True}
 
     # Call test function
     result = await delete_configurations(model_type, [model_id])
 
-    # Assert _delete called with right args
-    _delete.assert_awaited_once_with(MODELS_MIXIN_DELETE[model_type], [model_id])
+    # Assert DeleteMixin.delete called with right args
+    delete.assert_awaited_once_with([model_id])
 
     # Assert result
     assert result == {model_id: True}

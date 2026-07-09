@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, call, patch
 
 import pytest
 from pydantic import BaseModel
@@ -73,6 +73,7 @@ from centreon_mcp.utils.mixins import (
     PutMixin,
     ReadMixin,
 )
+from centreon_mcp.utils.request import CentreonAPIError
 
 MODULE = "centreon_mcp.utils.mixins"
 
@@ -120,20 +121,20 @@ class TestCreateMixin:
         request.assert_awaited_once_with("POST", endpoint, payload)
 
 
-@pytest.mark.parametrize(
-    "model,endpoint",
-    [
-        (HostConfiguration, "configuration/hosts"),
-        (HostGroupConfiguration, "configuration/hosts/groups"),
-        (HostCategoryConfiguration, "configuration/hosts/categories"),
-        (HostSeverity, "configuration/hosts/severities"),
-        (Downtime, "monitoring/downtimes"),
-        (HostTemplate, "configuration/hosts/templates"),
-    ],
-)
 class TestDeleteMixin:
+    @pytest.mark.parametrize(
+        "model,endpoint",
+        [
+            (HostConfiguration, "configuration/hosts"),
+            (HostGroupConfiguration, "configuration/hosts/groups"),
+            (HostCategoryConfiguration, "configuration/hosts/categories"),
+            (HostSeverity, "configuration/hosts/severities"),
+            (Downtime, "monitoring/downtimes"),
+            (HostTemplate, "configuration/hosts/templates"),
+        ],
+    )
     @patch(f"{MODULE}.request", new_callable=AsyncMock)
-    async def test_delete(self, request: AsyncMock, model: type[DeleteMixin], endpoint: str):
+    async def test_delete_(self, request: AsyncMock, model: type[DeleteMixin], endpoint: str):
 
         # Setup args
         model_id = 10
@@ -142,10 +143,29 @@ class TestDeleteMixin:
         request.return_value = None
 
         # Call test function
-        await model.delete(model_id)
+        await model._delete(model_id)
 
         # Assert request called with right args
         request.assert_awaited_once_with("DELETE", f"{endpoint}/{model_id}")
+
+    @patch(f"{MODULE}.DeleteMixin._delete", new_callable=AsyncMock)
+    async def test_delete(self, _delete: AsyncMock):
+
+        # Setup args
+        model_ids = [1, 2, 3]
+
+        # Mock DeleteMixin._delete
+        error = CentreonAPIError(404, "fake_url", "GET", {})
+        _delete.side_effect = [True, error, True]
+
+        # Call test function
+        results = await DeleteMixin.delete(model_ids)
+
+        # Assert DeleteMixin._delete called with right args
+        _delete.assert_has_awaits([call(model_id) for model_id in model_ids])
+
+        # Assert result
+        assert results == {model_ids[0]: True, model_ids[1]: error, model_ids[2]: True}
 
 
 @pytest.mark.parametrize(

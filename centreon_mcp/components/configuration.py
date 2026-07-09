@@ -4,7 +4,6 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.components.base import _create, _delete, _list, _update
 from centreon_mcp.types import (
     MODELS_MIXIN_CREATE,
     MODELS_MIXIN_DELETE,
@@ -60,7 +59,7 @@ async def list_configurations(
     to avoid retrieving all entities except if explicitly intended.
     """
     logger.info("Executing tool list_configurations")
-    models = await _list(MODELS_MIXIN_LIST[model_type], filters, limit, page, order)
+    models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
     return [cast(Configuration, model) for model in models]
 
 
@@ -89,7 +88,7 @@ async def create_configuration(
         - Host Templates
     """
     logger.info("Executing tool create_configuration")
-    return await _create(MODELS_MIXIN_CREATE[model_type], params)
+    return await MODELS_MIXIN_CREATE[model_type].create(params)
 
 
 @configuration.tool(
@@ -115,7 +114,7 @@ async def update_configuration(
         - Host Templates
     """
     logger.info("Executing tool update_configuration")
-    return await _update(MODELS_MIXIN_UPDATE[model_type], model_id, params)
+    return await MODELS_MIXIN_UPDATE[model_type].update(model_id, params)
 
 
 @configuration.tool(
@@ -140,4 +139,4 @@ async def delete_configurations(
         - Host Templates
     """
     logger.info("Executing tool delete_configurations")
-    return await _delete(MODELS_MIXIN_DELETE[model_type], model_ids)
+    return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
@@ -50,13 +51,24 @@ class DeleteMixin(BaseMixin):
     """
 
     @classmethod
-    async def delete(cls, model_id: int) -> bool:
+    async def _delete(cls, model_id: int) -> bool:
         """
         Delete a resource using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
         """
         await request("DELETE", f"{cls.endpoint}/{model_id}")
         return True
+
+    @classmethod
+    async def delete(cls, model_ids: list[int]) -> dict[int, bool | BaseException]:
+        """
+        Delete multiple resources concurrently by their ids.
+        Return a dict mapping each id to True on success, or to the raised
+        exception on failure; never raises for individual deletion errors.
+        """
+        tasks = [asyncio.create_task(cls._delete(model_id)) for model_id in model_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        return dict(zip(model_ids, results, strict=True))
 
 
 class UpdateMixin[PartialParams: BaseModel](BaseMixin, ABC):

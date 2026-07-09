@@ -16,9 +16,9 @@ from centreon_mcp.types.monitoring.acknowledgement import (
 MODULE = "centreon_mcp.components.acknowledgement"
 
 
-@patch(f"{MODULE}._list", new_callable=AsyncMock)
+@patch(f"{MODULE}.Acknowledgement.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_acknowledgements(logger: MagicMock, _list: AsyncMock):
+async def test_list_acknowledgements(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [AcknowledgementFilter.model_construct()]
@@ -29,15 +29,15 @@ async def test_list_acknowledgements(logger: MagicMock, _list: AsyncMock):
     # Mock logger
     logger.debug.return_value = None
 
-    # Mock _list
+    # Mock Acknowledgement.list
     acknowledgement = Acknowledgement.model_construct()
-    _list.return_value = [acknowledgement]
+    list_mixin.return_value = [acknowledgement]
 
     # Call test function
     results = await list_acknowledgements(filters, limit, page, order)
 
-    # Assert _list called with right args
-    _list.assert_awaited_once_with(Acknowledgement, filters, limit, page, order)
+    # Assert Acknowledgement.list called with right args
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == acknowledgement

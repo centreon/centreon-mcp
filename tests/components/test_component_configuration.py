@@ -29,7 +29,7 @@ MODULE = "centreon_mcp.components.configuration"
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_list_configurations(
     logger: MagicMock,
-    list: AsyncMock,
+    list_mixin: AsyncMock,
     model_type: Literal[
         "command",
         "host",
@@ -51,13 +51,13 @@ async def test_list_configurations(
     logger.debug.return_value = None
 
     model = MagicMock()
-    list.return_value = [model]
+    list_mixin.return_value = [model]
 
     # Call test function
     results = await list_configurations(model_type, filters, limit, page, order)
 
     # Assert ListMixin.list called with right args
-    list.assert_awaited_once_with(filters, limit, page, order)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results == [model]

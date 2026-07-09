@@ -16,7 +16,7 @@ MODULE = "centreon_mcp.components.monitoring_server"
 
 @patch(f"{MODULE}.MonitoringServer.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_monitoring_servers(logger: MagicMock, list: AsyncMock):
+async def test_list_monitoring_servers(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [MonitoringServerFilter.model_construct()]
@@ -29,13 +29,13 @@ async def test_list_monitoring_servers(logger: MagicMock, list: AsyncMock):
 
     # Mock MonitoringServer.list
     monitoring_server = MonitoringServer.model_construct()
-    list.return_value = [monitoring_server]
+    list_mixin.return_value = [monitoring_server]
 
     # Call test function
     results = await list_monitoring_servers(filters, limit, page, order)
 
     # Assert MonitoringServer.list called with right args
-    list.assert_awaited_once_with(filters, limit, page, order)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == monitoring_server

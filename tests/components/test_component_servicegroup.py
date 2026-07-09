@@ -12,7 +12,7 @@ MODULE = "centreon_mcp.components.servicegroup"
 
 @patch(f"{MODULE}.ServiceGroup.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_servicegroups(logger: MagicMock, list: AsyncMock):
+async def test_list_servicegroups(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [ServiceGroupFilter.model_construct()]
@@ -25,13 +25,13 @@ async def test_list_servicegroups(logger: MagicMock, list: AsyncMock):
 
     # Mock ServiceGroup.list
     servicegroup = ServiceGroup.model_construct()
-    list.return_value = [servicegroup]
+    list_mixin.return_value = [servicegroup]
 
     # Call test function
     results = await list_servicegroups(filters, limit, page, order)
 
     # Assert ServiceGroup.list called with right args
-    list.assert_awaited_once_with(filters, limit, page, order)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == servicegroup

@@ -9,7 +9,7 @@ MODULE = "centreon_mcp.components.resource"
 
 @patch(f"{MODULE}.Resource.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_resources(logger: MagicMock, list: AsyncMock):
+async def test_list_resources(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [ResourceFilter.model_construct()]
@@ -24,7 +24,7 @@ async def test_list_resources(logger: MagicMock, list: AsyncMock):
 
     # Mock Resource.list
     resource = Resource.model_construct()
-    list.return_value = [resource]
+    list_mixin.return_value = [resource]
 
     # Call test function
     results = await list_resources(
@@ -42,7 +42,7 @@ async def test_list_resources(logger: MagicMock, list: AsyncMock):
         "monitoring_server_names": monitoring_server_names,
     }
     extras = {name: json.dumps(value) for name, value in fields.items() if value}
-    list.assert_awaited_once_with(filters, limit, page, order, extras)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order, extras)
 
     # Assert result
     assert results[0] == resource

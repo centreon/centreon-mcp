@@ -14,7 +14,7 @@ MODULE = "centreon_mcp.components.downtime"
 
 @patch(f"{MODULE}.Downtime.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_downtimes(logger: MagicMock, list: AsyncMock):
+async def test_list_downtimes(logger: MagicMock, list_mixin: AsyncMock):
 
     # Setup args
     filters = [DowntimeFilter.model_construct()]
@@ -27,13 +27,13 @@ async def test_list_downtimes(logger: MagicMock, list: AsyncMock):
 
     # Mock Downtime.list
     downtime = Downtime.model_construct()
-    list.return_value = [downtime]
+    list_mixin.return_value = [downtime]
 
     # Call test function
     results = await list_downtimes(filters, limit, page, order)
 
     # Assert Downtime.list called with right args
-    list.assert_awaited_once_with(filters, limit, page, order)
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
     assert results[0] == downtime

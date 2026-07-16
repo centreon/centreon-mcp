@@ -8,22 +8,20 @@ from centreon_mcp.utils.mixins import ListMixin
 from centreon_mcp.utils.request import request
 
 
-class MonitoringServerConfigurationOrder(BaseOrder):
+class MonitoringServerOrder(BaseOrder):
     model_type: Literal["monitoring_server"] = "monitoring_server"
 
     field: Literal["id", "name"] = "name"
 
 
-class MonitoringServerConfigurationFilter(BaseFilter):
+class MonitoringServerFilter(BaseFilter):
     model_type: Literal["monitoring_server"] = "monitoring_server"
 
     monitoring_server_id: int | None = Field(default=None, serialization_alias="id $eq")
     monitoring_server_name: str | None = Field(default=None, serialization_alias="name $eq")
 
 
-class MonitoringServerConfiguration(
-    BaseModel, ListMixin[MonitoringServerConfigurationFilter, MonitoringServerConfigurationOrder]
-):
+class MonitoringServer(BaseModel, ListMixin[MonitoringServerFilter, MonitoringServerOrder]):
     endpoint: ClassVar[str] = "configuration/monitoring-servers"
     model_type: ClassVar[str] = "monitoring_server"
 

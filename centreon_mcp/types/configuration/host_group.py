@@ -15,13 +15,13 @@ DESCRIPTION = {
 }
 
 
-class HostGroupConfigurationOrder(BaseOrder):
+class HostGroupOrder(BaseOrder):
     model_type: Literal["host_group"] = "host_group"
 
     field: Literal["id", "name", "alias", "is_activated"] = "name"
 
 
-class HostGroupConfigurationFilter(BaseFilter):
+class HostGroupFilter(BaseFilter):
     model_type: Literal["host_group"] = "host_group"
 
     host_group_id: int | None = Field(default=None, serialization_alias="id $eq")
@@ -32,7 +32,7 @@ class HostGroupConfigurationFilter(BaseFilter):
     )
 
 
-class HostGroupConfigurationBaseParams(BaseModel):
+class HostGroupBaseParams(BaseModel):
     model_type: Literal["host_group"] = "host_group"
 
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
@@ -42,27 +42,25 @@ class HostGroupConfigurationBaseParams(BaseModel):
     hosts: list[int] | None = Field(default=None, description=DESCRIPTION["hosts"])
 
 
-class HostGroupConfigurationPartialParams(HostGroupConfigurationBaseParams):
+class HostGroupPartialParams(HostGroupBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
 
 
-class HostGroupConfigurationFullParams(HostGroupConfigurationBaseParams):
+class HostGroupFullParams(HostGroupBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
 
 
-class HostGroupConfiguration(
+class HostGroup(
     BaseModel,
-    CreateMixin[HostGroupConfigurationFullParams],
-    PutMixin[HostGroupConfigurationPartialParams, HostGroupConfigurationFullParams],
+    CreateMixin[HostGroupFullParams],
+    PutMixin[HostGroupPartialParams, HostGroupFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin[HostGroupConfigurationFilter, HostGroupConfigurationOrder],
+    ListMixin[HostGroupFilter, HostGroupOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/groups"
     model_type: ClassVar[str] = "host_group"
-    full_params_cls: ClassVar[type[HostGroupConfigurationFullParams]] = (
-        HostGroupConfigurationFullParams
-    )
+    full_params_cls: ClassVar[type[HostGroupFullParams]] = HostGroupFullParams
 
     id: int
     name: str

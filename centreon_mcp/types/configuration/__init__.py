@@ -9,25 +9,25 @@ from centreon_mcp.types.configuration.command import (
     CommandParams,
 )
 from centreon_mcp.types.configuration.host import (
-    HostConfiguration,
-    HostConfigurationFilter,
-    HostConfigurationFullParams,
-    HostConfigurationOrder,
-    HostConfigurationPartialParams,
+    Host,
+    HostFilter,
+    HostFullParams,
+    HostOrder,
+    HostPartialParams,
 )
 from centreon_mcp.types.configuration.host_category import (
-    HostCategoryConfiguration,
-    HostCategoryConfigurationFilter,
-    HostCategoryConfigurationFullParams,
-    HostCategoryConfigurationOrder,
-    HostCategoryConfigurationPartialParams,
+    HostCategory,
+    HostCategoryFilter,
+    HostCategoryFullParams,
+    HostCategoryOrder,
+    HostCategoryPartialParams,
 )
 from centreon_mcp.types.configuration.host_group import (
-    HostGroupConfiguration,
-    HostGroupConfigurationFilter,
-    HostGroupConfigurationFullParams,
-    HostGroupConfigurationOrder,
-    HostGroupConfigurationPartialParams,
+    HostGroup,
+    HostGroupFilter,
+    HostGroupFullParams,
+    HostGroupOrder,
+    HostGroupPartialParams,
 )
 from centreon_mcp.types.configuration.host_severity import (
     HostSeverity,
@@ -44,58 +44,52 @@ from centreon_mcp.types.configuration.host_template import (
     HostTemplatePartialParams,
 )
 from centreon_mcp.types.configuration.monitoring_server import (
-    MonitoringServerConfiguration,
-    MonitoringServerConfigurationFilter,
-    MonitoringServerConfigurationOrder,
+    MonitoringServer,
+    MonitoringServerFilter,
+    MonitoringServerOrder,
 )
 
 ConfigurationFilter = Annotated[
     CommandFilter
-    | HostCategoryConfigurationFilter
-    | HostGroupConfigurationFilter
+    | HostCategoryFilter
+    | HostGroupFilter
     | HostSeverityFilter
     | HostTemplateFilter
-    | HostConfigurationFilter
-    | MonitoringServerConfigurationFilter,
+    | HostFilter
+    | MonitoringServerFilter,
     Field(discriminator="model_type"),
 ]
 
 ConfigurationOrder = Annotated[
     CommandOrder
-    | HostCategoryConfigurationOrder
-    | HostGroupConfigurationOrder
+    | HostCategoryOrder
+    | HostGroupOrder
     | HostSeverityOrder
     | HostTemplateOrder
-    | HostConfigurationOrder
-    | MonitoringServerConfigurationOrder,
+    | HostOrder
+    | MonitoringServerOrder,
     Field(discriminator="model_type"),
 ]
 
 ConfigurationFullParams = Annotated[
-    HostCategoryConfigurationFullParams
-    | HostGroupConfigurationFullParams
+    HostCategoryFullParams
+    | HostGroupFullParams
     | HostSeverityFullParams
     | HostTemplateFullParams
-    | HostConfigurationFullParams
+    | HostFullParams
     | CommandParams,
     Field(discriminator="model_type"),
 ]
 
 ConfigurationPartialParams = Annotated[
-    HostCategoryConfigurationPartialParams
-    | HostGroupConfigurationPartialParams
+    HostCategoryPartialParams
+    | HostGroupPartialParams
     | HostSeverityPartialParams
     | HostTemplatePartialParams
-    | HostConfigurationPartialParams,
+    | HostPartialParams,
     Field(discriminator="model_type"),
 ]
 
 Configuration = (
-    Command
-    | HostCategoryConfiguration
-    | HostGroupConfiguration
-    | HostSeverity
-    | HostTemplate
-    | HostConfiguration
-    | MonitoringServerConfiguration
+    Command | HostCategory | HostGroup | HostSeverity | HostTemplate | Host | MonitoringServer
 )

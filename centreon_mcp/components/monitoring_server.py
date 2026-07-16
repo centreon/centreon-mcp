@@ -1,44 +1,13 @@
 import asyncio
-from typing import Annotated
 
 from fastmcp import FastMCP
-from pydantic import Field
 
 from centreon_mcp.types.configuration.monitoring_server import (
     MonitoringServerConfiguration,
 )
-from centreon_mcp.types.monitoring.monitoring_server import (
-    MonitoringServer,
-    MonitoringServerFilter,
-    MonitoringServerOrder,
-)
 from centreon_mcp.utils import logger
 
 monitoring_server = FastMCP()
-
-
-@monitoring_server.tool(
-    annotations={
-        "title": "List monitoring servers in real-time monitoring",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    }
-)
-async def list_monitoring_servers(
-    filters: list[MonitoringServerFilter] | None = None,
-    limit: Annotated[int, Field(ge=1)] = 50,
-    page: Annotated[int, Field(ge=1)] = 1,
-    order: MonitoringServerOrder | None = None,
-) -> list[MonitoringServer]:
-    """
-    List monitoring servers in real-time monitoring matching the given filters.
-    If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all monitoring servers except if explicitly intended.
-    """
-    logger.info("Executing tool list_monitoring_servers")
-    return await MonitoringServer.list(filters, limit, page, order)
 
 
 @monitoring_server.tool(

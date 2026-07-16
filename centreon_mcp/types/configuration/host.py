@@ -180,8 +180,8 @@ class Host(
     address: str
     monitoring_server: Link
     templates: list[Link]
-    normal_check_interval: int | None
-    retry_check_interval: int | None
+    normal_check_interval: int | None = None
+    retry_check_interval: int | None = None
     categories: list[Link]
     groups: list[Link]
     is_activated: bool

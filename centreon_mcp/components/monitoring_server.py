@@ -1,44 +1,13 @@
 import asyncio
-from typing import Annotated
 
 from fastmcp import FastMCP
-from pydantic import Field
 
 from centreon_mcp.types.configuration.monitoring_server import (
-    MonitoringServerConfiguration,
-)
-from centreon_mcp.types.monitoring.monitoring_server import (
     MonitoringServer,
-    MonitoringServerFilter,
-    MonitoringServerOrder,
 )
 from centreon_mcp.utils import logger
 
 monitoring_server = FastMCP()
-
-
-@monitoring_server.tool(
-    annotations={
-        "title": "List monitoring servers in real-time monitoring",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    }
-)
-async def list_monitoring_servers(
-    filters: list[MonitoringServerFilter] | None = None,
-    limit: Annotated[int, Field(ge=1)] = 50,
-    page: Annotated[int, Field(ge=1)] = 1,
-    order: MonitoringServerOrder | None = None,
-) -> list[MonitoringServer]:
-    """
-    List monitoring servers in real-time monitoring matching the given filters.
-    If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all monitoring servers except if explicitly intended.
-    """
-    logger.info("Executing tool list_monitoring_servers")
-    return await MonitoringServer.list(filters, limit, page, order)
 
 
 @monitoring_server.tool(
@@ -61,11 +30,11 @@ async def generate_monitoring_servers_configurations(
 
     # If no ids, generate all configurations
     if monitoring_servers_ids is None:
-        return await MonitoringServerConfiguration.generate()
+        return await MonitoringServer.generate()
 
     # Else, generate configurations concurrently
     tasks = [
-        asyncio.create_task(MonitoringServerConfiguration.generate(monitoring_server_id))
+        asyncio.create_task(MonitoringServer.generate(monitoring_server_id))
         for monitoring_server_id in monitoring_servers_ids
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -92,11 +61,11 @@ async def reload_monitoring_servers_configurations(
 
     # If no ids, reload all configurations
     if monitoring_servers_ids is None:
-        return await MonitoringServerConfiguration.reload()
+        return await MonitoringServer.reload()
 
     # Else, reload configurations concurrently
     tasks = [
-        asyncio.create_task(MonitoringServerConfiguration.reload(monitoring_server_id))
+        asyncio.create_task(MonitoringServer.reload(monitoring_server_id))
         for monitoring_server_id in monitoring_servers_ids
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)

@@ -61,13 +61,13 @@ DESCRIPTION = {
 }
 
 
-class HostConfigurationOrder(BaseOrder):
+class HostOrder(BaseOrder):
     model_type: Literal["host"] = "host"
 
     field: Literal["name", "alias", "address"] = "name"
 
 
-class HostConfigurationFilter(BaseFilter):
+class HostFilter(BaseFilter):
     model_type: Literal["host"] = "host"
 
     host_configuration_id: int | None = Field(default=None, serialization_alias="id $eq")
@@ -82,7 +82,7 @@ class HostConfigurationFilter(BaseFilter):
     is_activated: bool | None = Field(default=None, serialization_alias="is_activated $eq")
 
 
-class HostConfigurationBaseParams(BaseModel):
+class HostBaseParams(BaseModel):
     model_type: Literal["host"] = "host"
 
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
@@ -151,25 +151,25 @@ class HostConfigurationBaseParams(BaseModel):
     templates: list[int] | None = Field(None, description=DESCRIPTION["templates"])
 
 
-class HostConfigurationFullParams(HostConfigurationBaseParams):
+class HostFullParams(HostBaseParams):
     monitoring_server_id: int = Field(description=DESCRIPTION["monitoring_server_id"])
     name: str = Field(description=DESCRIPTION["name"])
     address: str = Field(description=DESCRIPTION["address"])
 
 
-class HostConfigurationPartialParams(HostConfigurationBaseParams):
+class HostPartialParams(HostBaseParams):
     monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
     name: str | None = Field(None, description=DESCRIPTION["name"])
     address: str | None = Field(None, description=DESCRIPTION["address"])
 
 
-class HostConfiguration(
+class Host(
     BaseModel,
-    CreateMixin[HostConfigurationFullParams],
-    PatchMixin[HostConfigurationPartialParams],
+    CreateMixin[HostFullParams],
+    PatchMixin[HostPartialParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin[HostConfigurationFilter, HostConfigurationOrder],
+    ListMixin[HostFilter, HostOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts"
     model_type: ClassVar[str] = "host"
@@ -180,8 +180,8 @@ class HostConfiguration(
     address: str
     monitoring_server: Link
     templates: list[Link]
-    normal_check_interval: int | None
-    retry_check_interval: int | None
+    normal_check_interval: int | None = None
+    retry_check_interval: int | None = None
     categories: list[Link]
     groups: list[Link]
     is_activated: bool

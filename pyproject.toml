@@ -23,7 +23,7 @@ dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "ruff>=0.15.22",
-    "types-requests>=2.33.0.20260518",
+    "types-requests>=2.33.0.20260712",
 ]
 
 [project.scripts]

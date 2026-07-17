@@ -60,7 +60,7 @@ async def list_configurations(
     """
     logger.info("Executing tool list_configurations")
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return [cast(Configuration, model) for model in models]
+    return cast(list[Configuration], models)
 
 
 @configuration.tool(

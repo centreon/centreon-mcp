@@ -42,4 +42,4 @@ async def list_monitoring_entities(
     """
     logger.info("Executing tool list_monitoring")
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return [cast(Monitoring, model) for model in models]
+    return cast(list[Monitoring], models)

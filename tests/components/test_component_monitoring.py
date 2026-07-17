@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from centreon_mcp.components.monitoring import list_monitoring
+from centreon_mcp.components.monitoring import list_monitoring_entities
 
 MODULE = "centreon_mcp.components.monitoring"
 
@@ -18,7 +18,7 @@ MODULE = "centreon_mcp.components.monitoring"
 )
 @patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_list_monitoring(
+async def test_list_monitoring_entities(
     logger: MagicMock,
     list_mixin: AsyncMock,
     model_type: Literal[
@@ -41,7 +41,7 @@ async def test_list_monitoring(
     list_mixin.return_value = [model]
 
     # Call test function
-    results = await list_monitoring(model_type, filters, limit, page, order)
+    results = await list_monitoring_entities(model_type, filters, limit, page, order)
 
     # Assert ListMixin.list called with right args
     list_mixin.assert_awaited_once_with(filters, limit, page, order)

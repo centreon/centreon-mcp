@@ -38,7 +38,7 @@ A dedicated tool lets the assistant refresh state on demand:
 
 A generic tool lets AI assistants explore your monitoring topology:
 
-- **list_monitoring** — List host groups, service groups, or monitoring servers (pollers) by selecting the entity via `model_type`. Host groups and service groups are filterable by host, service, host group, or poller attributes; monitoring servers by name, ID, or running status.
+- **list_monitoring_entities** — List host groups, service groups, or monitoring servers (pollers) by selecting the entity via `model_type`. Host groups and service groups are filterable by host, service, host group, or poller attributes; monitoring servers by name, ID, or running status.
 
 This tool serves as a natural building block: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
 

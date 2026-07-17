@@ -13,14 +13,14 @@ monitoring = FastMCP()
 
 @monitoring.tool(
     annotations={
-        "title": "List monitoring",
+        "title": "List monitoring entities",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
 )
-async def list_monitoring(
+async def list_monitoring_entities(
     model_type: Literal[
         "host_group",
         "service_group",
@@ -32,12 +32,13 @@ async def list_monitoring(
     order: MonitoringOrder | None = None,
 ) -> list[Monitoring]:
     """
-    List monitoring matching the given filters for following entities:
+    List real-time monitoring entities matching the given filters.
+    The entities kind is selected via model_type:
         - Host Groups
         - Service Groups
         - Monitoring Servers
-    If no filters are provided, ask users to provide at least one filter
-    to avoid retrieving all entities except if explicitly intended.
+    If no filters are provided, ask users to provide at least one filter,
+    unless retrieving all entities is explicitly intended.
     """
     logger.info("Executing tool list_monitoring")
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)

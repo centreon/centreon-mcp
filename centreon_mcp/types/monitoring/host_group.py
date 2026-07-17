@@ -7,10 +7,14 @@ from centreon_mcp.utils.mixins import ListMixin
 
 
 class HostGroupOrder(BaseOrder):
+    model_type: Literal["host_group"] = "host_group"
+
     field: Literal["name", "host.name", "host.alias", "host.address", "host.state"] = "host.name"
 
 
 class HostGroupFilter(BaseFilter):
+    model_type: Literal["host_group"] = "host_group"
+
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
     host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
@@ -23,6 +27,7 @@ class HostGroupFilter(BaseFilter):
 
 class HostGroup(BaseModel, ListMixin[HostGroupFilter, HostGroupOrder]):
     endpoint: ClassVar[str] = "monitoring/hostgroups"
+    model_type: ClassVar[str] = "host_group"
 
     id: int
     name: str

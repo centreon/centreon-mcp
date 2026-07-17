@@ -7,10 +7,14 @@ from centreon_mcp.utils.mixins import ListMixin
 
 
 class MonitoringServerOrder(BaseOrder):
+    model_type: Literal["monitoring_server"] = "monitoring_server"
+
     field: Literal["id", "name", "running"] = "name"
 
 
 class MonitoringServerFilter(BaseFilter):
+    model_type: Literal["monitoring_server"] = "monitoring_server"
+
     monitoring_server_id: int | None = Field(default=None, serialization_alias="id $eq")
     monitoring_server_name: str | None = Field(default=None, serialization_alias="name $eq")
     monitoring_server_running: bool | None = Field(default=None, serialization_alias="running $eq")
@@ -18,6 +22,7 @@ class MonitoringServerFilter(BaseFilter):
 
 class MonitoringServer(BaseModel, ListMixin[MonitoringServerFilter, MonitoringServerOrder]):
     endpoint: ClassVar[str] = "monitoring/servers"
+    model_type: ClassVar[str] = "monitoring_server"
 
     id: int
     name: str

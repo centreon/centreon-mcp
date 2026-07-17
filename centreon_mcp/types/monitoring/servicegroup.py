@@ -7,6 +7,8 @@ from centreon_mcp.utils.mixins import ListMixin
 
 
 class ServiceGroupOrder(BaseOrder):
+    model_type: Literal["service_group"] = "service_group"
+
     field: Literal[
         "name",
         "host.name",
@@ -19,6 +21,8 @@ class ServiceGroupOrder(BaseOrder):
 
 
 class ServiceGroupFilter(BaseFilter):
+    model_type: Literal["service_group"] = "service_group"
+
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
     host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
@@ -37,6 +41,7 @@ class ServiceGroupFilter(BaseFilter):
 
 class ServiceGroup(BaseModel, ListMixin[ServiceGroupFilter, ServiceGroupOrder]):
     endpoint: ClassVar[str] = "monitoring/servicegroups"
+    model_type: ClassVar[str] = "service_group"
 
     id: int
     name: str

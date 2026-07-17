@@ -4,18 +4,18 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types import (
-    MODELS_MIXIN_CREATE,
-    MODELS_MIXIN_DELETE,
-    MODELS_MIXIN_LIST,
-    MODELS_MIXIN_UPDATE,
-)
 from centreon_mcp.types.configuration import (
     Configuration,
     ConfigurationFilter,
     ConfigurationFullParams,
     ConfigurationOrder,
     ConfigurationPartialParams,
+)
+from centreon_mcp.types.configuration.mapping import (
+    MODELS_MIXIN_CREATE,
+    MODELS_MIXIN_DELETE,
+    MODELS_MIXIN_LIST,
+    MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.utils import logger
 
@@ -60,7 +60,7 @@ async def list_configurations(
     """
     logger.info("Executing tool list_configurations")
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return [cast(Configuration, model) for model in models]
+    return cast(list[Configuration], models)
 
 
 @configuration.tool(

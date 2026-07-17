@@ -13,13 +13,13 @@ DESCRIPTION = {
 }
 
 
-class HostCategoryConfigurationOrder(BaseOrder):
+class HostCategoryOrder(BaseOrder):
     model_type: Literal["host_category"] = "host_category"
 
     field: Literal["id", "name", "alias", "is_activated"] = "name"
 
 
-class HostCategoryConfigurationFilter(BaseFilter):
+class HostCategoryFilter(BaseFilter):
     model_type: Literal["host_category"] = "host_category"
 
     host_category_id: int | None = Field(default=None, serialization_alias="id $eq")
@@ -30,36 +30,34 @@ class HostCategoryConfigurationFilter(BaseFilter):
     )
 
 
-class HostCategoryConfigurationBaseParams(BaseModel):
+class HostCategoryBaseParams(BaseModel):
     model_type: Literal["host_category"] = "host_category"
 
     is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])
     comment: str | None = Field(default=None, description=DESCRIPTION["comment"])
 
 
-class HostCategoryConfigurationPartialParams(HostCategoryConfigurationBaseParams):
+class HostCategoryPartialParams(HostCategoryBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
 
 
-class HostCategoryConfigurationFullParams(HostCategoryConfigurationBaseParams):
+class HostCategoryFullParams(HostCategoryBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
 
 
-class HostCategoryConfiguration(
+class HostCategory(
     BaseModel,
-    CreateMixin[HostCategoryConfigurationFullParams],
-    PutMixin[HostCategoryConfigurationPartialParams, HostCategoryConfigurationFullParams],
+    CreateMixin[HostCategoryFullParams],
+    PutMixin[HostCategoryPartialParams, HostCategoryFullParams],
     DeleteMixin,
     ReadMixin,
-    ListMixin[HostCategoryConfigurationFilter, HostCategoryConfigurationOrder],
+    ListMixin[HostCategoryFilter, HostCategoryOrder],
 ):
     endpoint: ClassVar[str] = "configuration/hosts/categories"
     model_type: ClassVar[str] = "host_category"
-    full_params_cls: ClassVar[type[HostCategoryConfigurationFullParams]] = (
-        HostCategoryConfigurationFullParams
-    )
+    full_params_cls: ClassVar[type[HostCategoryFullParams]] = HostCategoryFullParams
 
     id: int
     name: str

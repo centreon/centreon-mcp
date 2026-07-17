@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from centreon_mcp.types.configuration.monitoring_server import MonitoringServerConfiguration
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
 
 MODULE = "centreon_mcp.types.configuration.monitoring_server"
 
@@ -23,7 +23,7 @@ async def test_monitoring_server_configuration_generate(
     request.return_value = None
 
     # Call test function
-    await MonitoringServerConfiguration.generate(monitoring_server_id)
+    await MonitoringServer.generate(monitoring_server_id)
 
     # Assert request called with right args
     request.assert_awaited_once_with("GET", endpoint)
@@ -45,7 +45,7 @@ async def test_monitoring_server_configuration_reaload(
     request.return_value = None
 
     # Call test function
-    await MonitoringServerConfiguration.reload(monitoring_server_id)
+    await MonitoringServer.reload(monitoring_server_id)
 
     # Assert request called with right args
     request.assert_awaited_once_with("GET", endpoint)

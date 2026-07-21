@@ -8,9 +8,9 @@ from centreon_mcp.types.monitoring.downtime import (
     DowntimeFilter,
     DowntimeOrder,
     DowntimeParams,
-    DowntimeResource,
 )
 from centreon_mcp.utils import logger
+from centreon_mcp.utils.base import BaseResource
 
 downtime = FastMCP()
 
@@ -48,7 +48,7 @@ async def list_downtimes(
         "openWorldHint": True,
     }
 )
-async def set_downtimes(params: DowntimeParams, resources: list[DowntimeResource]) -> bool:
+async def set_downtimes(params: DowntimeParams, resources: list[BaseResource]) -> bool:
     """
     Add a downtime for multiple resources (host and services) in real-time monitoring.
     Use tool `list_resources` first to get resources IDs.

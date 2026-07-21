@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from centreon_mcp.types.monitoring.acknowledgement import (
@@ -6,7 +8,12 @@ from centreon_mcp.types.monitoring.acknowledgement import (
     AcknowledgementOrder,
 )
 from centreon_mcp.types.monitoring.check import Check, CheckParams
-from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeFilter, DowntimeOrder
+from centreon_mcp.types.monitoring.downtime import (
+    Downtime,
+    DowntimeFilter,
+    DowntimeOrder,
+    DowntimeParams,
+)
 from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter, HostGroupOrder
 from centreon_mcp.types.monitoring.monitoring_server import (
     MonitoringServer,
@@ -143,6 +150,28 @@ class TestListMixinMonitoring(TestListMixinBase):
 @pytest.mark.parametrize(
     "model,params,endpoint,payload",
     [
+        (
+            Downtime,
+            DowntimeParams(
+                start_time=datetime(2026, 7, 21),
+                end_time=datetime(2026, 7, 21),
+                is_fixed=True,
+                duration=3600,
+                comment="comment",
+                with_services=True,
+            ),
+            "monitoring/downtimes",
+            {
+                "downtime": {
+                    "start_time": "2026-07-21T00:00:00",
+                    "end_time": "2026-07-21T00:00:00",
+                    "is_fixed": True,
+                    "duration": 3600,
+                    "comment": "comment",
+                    "with_services": True,
+                },
+            },
+        ),
         (
             Check,
             CheckParams(is_forced=True),

@@ -6,8 +6,8 @@ from centreon_mcp.types.monitoring.downtime import (
     DowntimeFilter,
     DowntimeOrder,
     DowntimeParams,
-    DowntimeResource,
 )
+from centreon_mcp.utils.base import BaseResource
 
 MODULE = "centreon_mcp.components.downtime"
 
@@ -45,7 +45,7 @@ async def test_set_downtime(logger: MagicMock, downtime_set: AsyncMock):
 
     # Setup args
     params = DowntimeParams.model_construct()
-    resources = [DowntimeResource.model_construct()]
+    resources = [BaseResource.model_construct()]
 
     # Mock logger
     logger.info.return_value = None

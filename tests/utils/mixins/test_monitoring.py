@@ -5,6 +5,7 @@ from centreon_mcp.types.monitoring.acknowledgement import (
     AcknowledgementFilter,
     AcknowledgementOrder,
 )
+from centreon_mcp.types.monitoring.check import Check, CheckParams
 from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeFilter, DowntimeOrder
 from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter, HostGroupOrder
 from centreon_mcp.types.monitoring.monitoring_server import (
@@ -19,7 +20,7 @@ from centreon_mcp.types.monitoring.servicegroup import (
     ServiceGroupOrder,
 )
 
-from .base import TestDeleteMixinBase, TestListMixinBase
+from .base import TestDeleteMixinBase, TestListMixinBase, TestSetMixinBase
 
 MODULE = "centreon_mcp.utils.mixins"
 
@@ -136,4 +137,21 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
     ],
 )
 class TestListMixinMonitoring(TestListMixinBase):
+    __test__ = True
+
+
+@pytest.mark.parametrize(
+    "model,params,endpoint,payload",
+    [
+        (
+            Check,
+            CheckParams(is_forced=True),
+            "monitoring/resources/check",
+            {
+                "check": {"is_forced": True},
+            },
+        ),
+    ],
+)
+class TestSetMixinMonitoring(TestSetMixinBase):
     __test__ = True

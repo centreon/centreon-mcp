@@ -8,9 +8,9 @@ from centreon_mcp.types.monitoring.acknowledgement import (
     AcknowledgementFilter,
     AcknowledgementOrder,
     AcknowledgementParams,
-    AcknowledgementResource,
 )
 from centreon_mcp.utils import logger
+from centreon_mcp.utils.base import BaseResource
 
 acknowledgement = FastMCP()
 
@@ -39,23 +39,23 @@ async def list_acknowledgements(
 
 @acknowledgement.tool(
     annotations={
-        "title": "Add acknowledgement on multiple resources in real-time monitoring",
+        "title": "Set acknowledgement on multiple resources in real-time monitoring",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }
 )
-async def add_acknowledgements(
+async def set_acknowledgements(
     params: AcknowledgementParams,
-    resources: list[AcknowledgementResource],
+    resources: list[BaseResource],
 ) -> bool:
     """
-    Add an acknowledgement on multiple resources in real-time monitoring.
+    Create an acknowledgement on multiple resources in real-time monitoring.
     Use tool `list_resources` first to get resources IDs.
     """
-    logger.info("Executing tool add_acknowledgements")
-    return await Acknowledgement.add(params, resources)
+    logger.info("Executing tool set_acknowledgements")
+    return await Acknowledgement.set(params, resources)
 
 
 @acknowledgement.tool(
@@ -71,7 +71,7 @@ async def cancel_acknowledgements(
     with_services: Annotated[
         bool, "Whether to cancel services acknowledgements if host is acknowledged"
     ],
-    resources: list[AcknowledgementResource],
+    resources: list[BaseResource],
 ) -> bool:
     """
     Cancel acknowledgements on multiple resources in real-time monitoring.

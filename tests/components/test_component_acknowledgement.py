@@ -1,17 +1,17 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.acknowledgement import (
-    add_acknowledgements,
     cancel_acknowledgements,
     list_acknowledgements,
+    set_acknowledgements,
 )
 from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,
     AcknowledgementParams,
-    AcknowledgementResource,
 )
+from centreon_mcp.utils.base import BaseResource
 
 MODULE = "centreon_mcp.components.acknowledgement"
 
@@ -43,25 +43,25 @@ async def test_list_acknowledgements(logger: MagicMock, list_mixin: AsyncMock):
     assert results[0] == acknowledgement
 
 
-@patch(f"{MODULE}.Acknowledgement.add", new_callable=AsyncMock)
+@patch(f"{MODULE}.Acknowledgement.set", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_add_acknowledgements(logger: MagicMock, add: AsyncMock):
+async def test_add_acknowledgements(logger: MagicMock, acknowledgement_set: AsyncMock):
 
     # Setup args
     params = AcknowledgementParams.model_construct()
-    resources = [AcknowledgementResource.model_construct()]
+    resources = [BaseResource.model_construct()]
 
     # Mock logger
     logger.info.return_value = None
 
-    # Mock Acknowledgement.add
-    add.return_value = True
+    # Mock Acknowledgement.set
+    acknowledgement_set.return_value = True
 
     # Call test function
-    result = await add_acknowledgements(params, resources)
+    result = await set_acknowledgements(params, resources)
 
-    # Assert Acknowledgement.add called with right args
-    add.assert_awaited_once_with(params, resources)
+    # Assert Acknowledgement.set called with right args
+    acknowledgement_set.assert_awaited_once_with(params, resources)
 
     # Assert result
     assert result
@@ -73,7 +73,7 @@ async def test_cancel_acknowledgements(logger: MagicMock, cancel: AsyncMock):
 
     # Setup args
     with_services = True
-    resources = [AcknowledgementResource.model_construct()]
+    resources = [BaseResource.model_construct()]
 
     # Mock logger
     logger.info.return_value = None

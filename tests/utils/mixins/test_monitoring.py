@@ -6,6 +6,7 @@ from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,
+    AcknowledgementParams,
 )
 from centreon_mcp.types.monitoring.check import Check, CheckParams
 from centreon_mcp.types.monitoring.downtime import (
@@ -150,6 +151,21 @@ class TestListMixinMonitoring(TestListMixinBase):
 @pytest.mark.parametrize(
     "model,params,endpoint,payload",
     [
+        (
+            Acknowledgement,
+            AcknowledgementParams(comment="comment"),
+            "monitoring/acknowledgements",
+            {
+                "acknowledgement": {
+                    "comment": "comment",
+                    "with_services": True,
+                    "is_notify_contacts": True,
+                    "is_persistent_comment": True,
+                    "is_sticky": True,
+                    "force_active_checks": True,
+                },
+            },
+        ),
         (
             Downtime,
             DowntimeParams(

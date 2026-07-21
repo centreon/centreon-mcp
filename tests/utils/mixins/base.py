@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, call, patch
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
 from centreon_mcp.utils.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -11,6 +11,7 @@ from centreon_mcp.utils.mixins import (
     PatchMixin,
     PutMixin,
     ReadMixin,
+    SetMixin,
 )
 from centreon_mcp.utils.request import CentreonAPIError
 
@@ -229,3 +230,26 @@ class TestListMixinBase:
 
         # Assert result
         assert results == [model(**payload)]
+
+
+class TestSetMixinBase:
+    __test__ = False
+
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_set_(
+        self,
+        request: AsyncMock,
+        model: type[SetMixin],
+        params: BaseModel,
+        endpoint: str,
+        payload: dict,
+    ):
+        # Setup args
+        resources = [BaseResource(type="host", resource_id=20, host_id=20)]
+
+        # Call the test function
+        _ = await model._set(endpoint, params, resources)
+
+        # Assert request called with right args
+        payload["resources"] = [{"type": "host", "id": 20, "parent": {"id": 20}}]
+        request.assert_awaited_once_with("POST", endpoint, payload)

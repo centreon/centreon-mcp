@@ -6,7 +6,7 @@ from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
 from centreon_mcp.utils.request import request
 
 
@@ -159,3 +159,34 @@ class ListMixin[Filter: BaseFilter, Order: BaseOrder](BaseMixin):
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by, **extras}
         content = await request("GET", cls.endpoint, params=params)
         return [cls(**item) for item in content["result"]]
+
+
+class SetMixin[
+    Params: BaseModel,
+](BaseMixin):
+    """
+    Mixin to add to a Centreon Model a set method via heritage
+    """
+
+    @classmethod
+    async def _set(cls, endpoint: str, params: Params, resources: list[BaseResource]) -> bool:
+        """
+        Set an action on resources using the model's endpoint.
+        Return True if successful; otherwise, raise an exception.
+        """
+        payload = {
+            cls.model_type: params.model_dump(
+                mode="json", exclude_none=True, exclude={"model_type"}
+            ),
+            "resources": [resource.dump() for resource in resources],
+        }
+        await request("POST", endpoint, payload)
+        return True
+
+    @classmethod
+    async def set(cls, params: Params, resources: list[BaseResource]) -> bool:
+        """
+        Set an action on resources using the model's endpoint.
+        Return True if successful; otherwise, raise an exception.
+        """
+        return await cls._set(cls.endpoint, params, resources)

@@ -1,11 +1,20 @@
+from datetime import datetime
+
 import pytest
 
 from centreon_mcp.types.monitoring.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,
+    AcknowledgementParams,
 )
-from centreon_mcp.types.monitoring.downtime import Downtime, DowntimeFilter, DowntimeOrder
+from centreon_mcp.types.monitoring.check import Check, CheckParams
+from centreon_mcp.types.monitoring.downtime import (
+    Downtime,
+    DowntimeFilter,
+    DowntimeOrder,
+    DowntimeParams,
+)
 from centreon_mcp.types.monitoring.host_group import HostGroup, HostGroupFilter, HostGroupOrder
 from centreon_mcp.types.monitoring.monitoring_server import (
     MonitoringServer,
@@ -19,7 +28,7 @@ from centreon_mcp.types.monitoring.servicegroup import (
     ServiceGroupOrder,
 )
 
-from .base import TestDeleteMixinBase, TestListMixinBase
+from .base import TestDeleteMixinBase, TestListMixinBase, TestSetMixinBase
 
 MODULE = "centreon_mcp.utils.mixins"
 
@@ -136,4 +145,58 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
     ],
 )
 class TestListMixinMonitoring(TestListMixinBase):
+    __test__ = True
+
+
+@pytest.mark.parametrize(
+    "model,params,endpoint,payload",
+    [
+        (
+            Acknowledgement,
+            AcknowledgementParams(comment="comment"),
+            "monitoring/resources/acknowledge",
+            {
+                "acknowledgement": {
+                    "comment": "comment",
+                    "with_services": True,
+                    "is_notify_contacts": True,
+                    "is_persistent_comment": True,
+                    "is_sticky": True,
+                    "force_active_checks": True,
+                },
+            },
+        ),
+        (
+            Downtime,
+            DowntimeParams(
+                start_time=datetime(2026, 7, 21),
+                end_time=datetime(2026, 7, 21),
+                is_fixed=True,
+                duration=3600,
+                comment="comment",
+                with_services=True,
+            ),
+            "monitoring/resources/downtime",
+            {
+                "downtime": {
+                    "start_time": "2026-07-21T00:00:00",
+                    "end_time": "2026-07-21T00:00:00",
+                    "is_fixed": True,
+                    "duration": 3600,
+                    "comment": "comment",
+                    "with_services": True,
+                },
+            },
+        ),
+        (
+            Check,
+            CheckParams(is_forced=True),
+            "monitoring/resources/check",
+            {
+                "check": {"is_forced": True},
+            },
+        ),
+    ],
+)
+class TestSetMixinMonitoring(TestSetMixinBase):
     __test__ = True

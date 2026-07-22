@@ -1,31 +1,33 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.comment import (
-    add_comments,
+    set_comments,
 )
-from centreon_mcp.types.monitoring.comment import CommentResource
+from centreon_mcp.types.monitoring.comment import CommentParams
+from centreon_mcp.utils.base import BaseResource
 
 MODULE = "centreon_mcp.components.comment"
 
 
-@patch(f"{MODULE}.Comment.add", new_callable=AsyncMock)
+@patch(f"{MODULE}.Comment.set", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_add_comments(logger: MagicMock, add: AsyncMock):
+async def test_set_comments(logger: MagicMock, comment_set: AsyncMock):
 
     # Setup args
-    resources = [CommentResource.model_construct()]
+    params = CommentParams(comment="comment")
+    resources = [BaseResource.model_construct()]
 
     # Mock logger
     logger.info.return_value = None
 
-    # Mock Comment.add
-    add.return_value = True
+    # Mock Comment.set
+    comment_set.return_value = True
 
     # Call test function
-    result = await add_comments(resources)
+    result = await set_comments(params, resources)
 
-    # Assert Comment.add called with right args
-    add.assert_awaited_once_with(resources)
+    # Assert Comment.set called with right args
+    comment_set.assert_awaited_once_with(params, resources)
 
     # Assert result
     assert result

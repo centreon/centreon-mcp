@@ -4,7 +4,7 @@ from typing import ClassVar, Literal
 from pydantic import BaseModel
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
-from centreon_mcp.utils.mixins import ListMixin
+from centreon_mcp.utils.mixins import ListMixin, SetMixin
 from centreon_mcp.utils.request import request
 
 
@@ -37,12 +37,14 @@ class AcknowledgementParams(BaseModel):
     force_active_checks: bool = True
 
 
-class AcknowledgementResource(BaseResource):
-    pass
-
-
-class Acknowledgement(BaseModel, ListMixin[AcknowledgementFilter, AcknowledgementOrder]):
+class Acknowledgement(
+    BaseModel,
+    ListMixin[AcknowledgementFilter, AcknowledgementOrder],
+    SetMixin[AcknowledgementParams],
+):
     endpoint: ClassVar[str] = "monitoring/acknowledgements"
+    set_endpoint: ClassVar[str] = "monitoring/resources/acknowledge"
+    model_type: ClassVar[str] = "acknowledgement"
 
     id: int
     host_id: int
@@ -58,20 +60,7 @@ class Acknowledgement(BaseModel, ListMixin[AcknowledgementFilter, Acknowledgemen
     type: int
 
     @staticmethod
-    async def add(params: AcknowledgementParams, resources: list[AcknowledgementResource]) -> bool:
-        """
-        Add an acknowledgement on multiple resources.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = {
-            "acknowledgement": params.model_dump(mode="json"),
-            "resources": [resource.dump() for resource in resources],
-        }
-        await request("POST", "monitoring/resources/acknowledge", payload=payload)
-        return True
-
-    @staticmethod
-    async def cancel(with_services: bool, resources: list[AcknowledgementResource]) -> bool:
+    async def cancel(with_services: bool, resources: list[BaseResource]) -> bool:
         """
         Cancel acknowledgements on multiple resources.
         Return True if successful; otherwise, raise an exception.

@@ -67,7 +67,7 @@ Each entity type carries its own set of parameters passed alongside `model_type`
 Acknowledge alerts without ever leaving your conversation:
 
 - **list_acknowledgements** — List current acknowledgements, with pagination and sorting (by ID, host, start time, entry time, etc.)
-- **add_acknowledgements** — Acknowledge one or more resources at once, applying a message and configuring options such as sticky acknowledgement and notifications
+- **set_acknowledgements** — Acknowledge one or more resources at once, applying a message and configuring options such as sticky acknowledgement and notifications
 - **cancel_acknowledgements** — Remove acknowledgements from one or more resources, with the option to also cancel service acknowledgements when a host is unacknowledged
 
 ### Downtimes
@@ -80,7 +80,7 @@ Full downtime lifecycle management through conversation:
 
 ### Comments
 
-- **add_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
+- **set_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
 
 ### Metrics
 

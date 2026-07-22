@@ -3,9 +3,8 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, HostState
-from centreon_mcp.utils.mixins import DeleteMixin, ListMixin
-from centreon_mcp.utils.request import request
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, HostState
+from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, SetMixin
 
 
 class DowntimeOrder(BaseOrder):
@@ -43,12 +42,15 @@ class DowntimeParams(BaseModel):
     with_services: bool
 
 
-class DowntimeResource(BaseResource):
-    pass
-
-
-class Downtime(BaseModel, ListMixin[DowntimeFilter, DowntimeOrder], DeleteMixin):
+class Downtime(
+    BaseModel,
+    ListMixin[DowntimeFilter, DowntimeOrder],
+    SetMixin[DowntimeParams],
+    DeleteMixin,
+):
     endpoint: ClassVar[str] = "monitoring/downtimes"
+    set_endpoint: ClassVar[str] = "monitoring/resources/downtime"
+    model_type: ClassVar[str] = "downtime"
 
     id: int
     author_id: int
@@ -67,16 +69,3 @@ class Downtime(BaseModel, ListMixin[DowntimeFilter, DowntimeOrder], DeleteMixin)
     is_started: bool
     is_fixed: bool
     is_cancelled: bool
-
-    @classmethod
-    async def set(cls, params: DowntimeParams, resources: list[DowntimeResource]) -> bool:
-        """
-        Set a downtime on multiple resources.
-        Return True if successful; otherwise, raise an exception.
-        """
-        payload = {
-            "downtime": params.model_dump(mode="json"),
-            "resources": [resource.dump() for resource in resources],
-        }
-        await request("POST", "monitoring/resources/downtime", payload=payload)
-        return True

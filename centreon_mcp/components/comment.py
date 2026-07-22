@@ -9,7 +9,7 @@ comment = FastMCP()
 
 @comment.tool(
     annotations={
-        "title": "Add comments on resources (hosts and services) in real-time monitoring",
+        "title": "Set comments on resources (hosts and services) in real-time monitoring",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,

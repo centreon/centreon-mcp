@@ -15,6 +15,7 @@ class CommentParams(BaseModel):
 
 class Comment(BaseModel, SetMixin[CommentParams]):
     endpoint: ClassVar[str] = "monitoring/resources/comments"
+    set_endpoint: ClassVar[str] = "monitoring/resources/comments"
     model_type: ClassVar[str] = "comment"
 
     @classmethod
@@ -32,5 +33,5 @@ class Comment(BaseModel, SetMixin[CommentParams]):
                 for resource in resources
             ]
         }
-        await request("POST", cls.endpoint, payload=payload)
+        await request("POST", cls.set_endpoint, payload=payload)
         return True

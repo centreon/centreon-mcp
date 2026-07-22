@@ -154,7 +154,7 @@ class TestListMixinMonitoring(TestListMixinBase):
         (
             Acknowledgement,
             AcknowledgementParams(comment="comment"),
-            "monitoring/acknowledgements",
+            "monitoring/resources/acknowledge",
             {
                 "acknowledgement": {
                     "comment": "comment",
@@ -176,7 +176,7 @@ class TestListMixinMonitoring(TestListMixinBase):
                 comment="comment",
                 with_services=True,
             ),
-            "monitoring/downtimes",
+            "monitoring/resources/downtime",
             {
                 "downtime": {
                     "start_time": "2026-07-21T00:00:00",

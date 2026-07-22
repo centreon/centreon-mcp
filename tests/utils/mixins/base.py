@@ -236,7 +236,7 @@ class TestSetMixinBase:
     __test__ = False
 
     @patch(f"{MODULE}.request", new_callable=AsyncMock)
-    async def test_set_(
+    async def test_set(
         self,
         request: AsyncMock,
         model: type[SetMixin],
@@ -248,7 +248,7 @@ class TestSetMixinBase:
         resources = [BaseResource(type="host", resource_id=20, host_id=20)]
 
         # Call the test function
-        _ = await model._set(endpoint, params, resources)
+        _ = await model.set(params, resources)
 
         # Assert request called with right args
         payload["resources"] = [{"type": "host", "id": 20, "parent": {"id": 20}}]

@@ -43,6 +43,7 @@ class Acknowledgement(
     SetMixin[AcknowledgementParams],
 ):
     endpoint: ClassVar[str] = "monitoring/acknowledgements"
+    set_endpoint: ClassVar[str] = "monitoring/resources/acknowledge"
     model_type: ClassVar[str] = "acknowledgement"
 
     id: int
@@ -57,14 +58,6 @@ class Acknowledgement(
     is_persistent_comment: bool
     is_sticky: bool
     type: int
-
-    @classmethod
-    async def set(cls, params: AcknowledgementParams, resources: list[BaseResource]) -> bool:
-        """
-        Create an acknowledgement on multiple resources.
-        Return True if successful; otherwise, raise an exception.
-        """
-        return await cls._set("monitoring/resources/acknowledge", params, resources)
 
     @staticmethod
     async def cancel(with_services: bool, resources: list[BaseResource]) -> bool:

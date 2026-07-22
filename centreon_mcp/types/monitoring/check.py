@@ -17,4 +17,5 @@ class CheckParams(BaseModel):
 
 class Check(BaseModel, SetMixin[CheckParams]):
     endpoint: ClassVar[str] = "monitoring/resources/check"
+    set_endpoint: ClassVar[str] = "monitoring/resources/check"
     model_type: ClassVar[str] = "check"

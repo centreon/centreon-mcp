@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, HostState
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, HostState
 from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, SetMixin
 
 
@@ -49,6 +49,7 @@ class Downtime(
     DeleteMixin,
 ):
     endpoint: ClassVar[str] = "monitoring/downtimes"
+    set_endpoint: ClassVar[str] = "monitoring/resources/downtime"
     model_type: ClassVar[str] = "downtime"
 
     id: int
@@ -68,11 +69,3 @@ class Downtime(
     is_started: bool
     is_fixed: bool
     is_cancelled: bool
-
-    @classmethod
-    async def set(cls, params: DowntimeParams, resources: list[BaseResource]) -> bool:
-        """
-        Set a downtime on multiple resources.
-        Return True if successful; otherwise, raise an exception.
-        """
-        return await cls._set("monitoring/resources/downtime", params, resources)

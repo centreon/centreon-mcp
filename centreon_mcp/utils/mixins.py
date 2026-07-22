@@ -168,8 +168,10 @@ class SetMixin[
     Mixin to add to a Centreon Model a set method via heritage
     """
 
+    set_endpoint: ClassVar[str]
+
     @classmethod
-    async def _set(cls, endpoint: str, params: Params, resources: list[BaseResource]) -> bool:
+    async def set(cls, params: Params, resources: list[BaseResource]) -> bool:
         """
         Set an action on resources using the model's endpoint.
         Return True if successful; otherwise, raise an exception.
@@ -180,13 +182,5 @@ class SetMixin[
             ),
             "resources": [resource.dump() for resource in resources],
         }
-        await request("POST", endpoint, payload)
+        await request("POST", cls.set_endpoint, payload)
         return True
-
-    @classmethod
-    async def set(cls, params: Params, resources: list[BaseResource]) -> bool:
-        """
-        Set an action on resources using the model's endpoint.
-        Return True if successful; otherwise, raise an exception.
-        """
-        return await cls._set(cls.endpoint, params, resources)

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from centreon_mcp.components.monitoring import list_monitoring_entities
+from centreon_mcp.components.monitoring import list_monitoring_actions, list_monitoring_entities
 
 MODULE = "centreon_mcp.components.monitoring"
 
@@ -42,6 +42,40 @@ async def test_list_monitoring_entities(
 
     # Call test function
     results = await list_monitoring_entities(model_type, filters, limit, page, order)
+
+    # Assert ListMixin.list called with right args
+    list_mixin.assert_awaited_once_with(filters, limit, page, order)
+
+    # Assert result
+    assert results == [model]
+
+
+@pytest.mark.parametrize(
+    "model_type",
+    ["acknowledgement", "downtime"],
+)
+@patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_list_monitoring_actions(
+    logger: MagicMock,
+    list_mixin: AsyncMock,
+    model_type: Literal["acknowledgement", "downtime"],
+):
+
+    # Setup args
+    filters = [MagicMock()]
+    limit = 50
+    page = 1
+    order = MagicMock()
+
+    # Mock logger
+    logger.debug.return_value = None
+
+    model = MagicMock()
+    list_mixin.return_value = [model]
+
+    # Call test function
+    results = await list_monitoring_actions(model_type, filters, limit, page, order)
 
     # Assert ListMixin.list called with right args
     list_mixin.assert_awaited_once_with(filters, limit, page, order)

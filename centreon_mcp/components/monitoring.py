@@ -5,6 +5,11 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp.types.monitoring import Monitoring, MonitoringFilter, MonitoringOrder
+from centreon_mcp.types.monitoring.actions import (
+    MonitoringAction,
+    MonitoringActionFilter,
+    MonitoringActionOrder,
+)
 from centreon_mcp.types.monitoring.mapping import MODELS_MIXIN_LIST
 from centreon_mcp.utils import logger
 
@@ -43,3 +48,32 @@ async def list_monitoring_entities(
     logger.info("Executing tool list_monitoring")
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
     return cast(list[Monitoring], models)
+
+
+@monitoring.tool(
+    annotations={
+        "title": "List monitoring actions",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def list_monitoring_actions(
+    model_type: Literal["acknowledgement", "downtime"],
+    filters: Sequence[MonitoringActionFilter] | None = None,
+    limit: Annotated[int, Field(ge=1)] = 50,
+    page: Annotated[int, Field(ge=1)] = 1,
+    order: MonitoringActionOrder | None = None,
+) -> list[MonitoringAction]:
+    """
+    List real-time monitoring actions matching the given filters.
+    The action kind is selected via model_type:
+        - Acknowledgements
+        - Downtimes
+    If no filters are provided, ask users to provide at least one filter,
+    unless retrieving all entities is explicitly intended.
+    """
+    logger.info("Executing tool list_monitoring_actions")
+    models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
+    return cast(list[MonitoringAction], models)

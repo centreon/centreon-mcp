@@ -8,6 +8,8 @@ from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, SetMixin
 
 
 class DowntimeOrder(BaseOrder):
+    model_type: Literal["downtime"] = "downtime"
+
     field: Literal[
         "id",
         "host.id",
@@ -23,6 +25,8 @@ class DowntimeOrder(BaseOrder):
 
 
 class DowntimeFilter(BaseFilter):
+    model_type: Literal["downtime"] = "downtime"
+
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
     host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")

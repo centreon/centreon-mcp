@@ -9,6 +9,8 @@ from centreon_mcp.utils.request import request
 
 
 class AcknowledgementOrder(BaseOrder):
+    model_type: Literal["acknowledgement"] = "acknowledgement"
+
     field: Literal[
         "id",
         "host.id",
@@ -24,6 +26,8 @@ class AcknowledgementOrder(BaseOrder):
 
 
 class AcknowledgementFilter(BaseFilter):
+    model_type: Literal["acknowledgement"] = "acknowledgement"
+
     # Fields available for filtering in Centreon API
     pass
 

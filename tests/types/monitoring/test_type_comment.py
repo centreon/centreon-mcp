@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.monitoring.comment import Comment, CommentParams
+from centreon_mcp.types.monitoring.actions.comment import Comment, CommentParams
 from centreon_mcp.utils.base import BaseResource
 
-MODULE = "centreon_mcp.types.monitoring.comment"
+MODULE = "centreon_mcp.types.monitoring.actions.comment"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

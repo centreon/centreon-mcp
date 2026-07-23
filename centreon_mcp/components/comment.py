@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from centreon_mcp.types.monitoring.comment import Comment, CommentParams
+from centreon_mcp.types.monitoring.actions.comment import Comment, CommentParams
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseResource
 

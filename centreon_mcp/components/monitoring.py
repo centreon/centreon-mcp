@@ -11,7 +11,11 @@ from centreon_mcp.types.monitoring.actions import (
     MonitoringActionOrder,
     MonitoringActionParams,
 )
-from centreon_mcp.types.monitoring.mapping import MODELS_MIXIN_LIST, MODELS_MIXIN_SET
+from centreon_mcp.types.monitoring.mapping import (
+    MODELS_MIXIN_DELETE,
+    MODELS_MIXIN_LIST,
+    MODELS_MIXIN_SET,
+)
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseResource
 
@@ -105,3 +109,26 @@ async def set_monitoring_actions(
     """
     logger.info("Executing tool set_monitoring_actions")
     return await MODELS_MIXIN_SET[model_type].set(params, resources)
+
+
+@monitoring.tool(
+    annotations={
+        "title": "Cancel monitoring actions",
+        "readOnlyHint": False,
+        "destructiveHint": True,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def cancel_monitoring_actions(
+    model_type: Literal["acknowledgement", "downtime"],
+    model_ids: list[int],
+) -> dict[int, bool | BaseException]:
+    """
+    Cancel real-time monitoring actions  from their ids.
+    The action kind is selected via model_type:
+        - Acknowledgement
+        - Downtime
+    """
+    logger.info("Executing tool cancel_monitoring_actions")
+    return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)

@@ -4,7 +4,7 @@ from typing import ClassVar, Literal
 from pydantic import BaseModel
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
-from centreon_mcp.utils.mixins import ListMixin, SetMixin
+from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, ReadMixin, SetMixin
 from centreon_mcp.utils.request import request
 
 
@@ -45,6 +45,8 @@ class AcknowledgementParams(BaseModel):
 
 class Acknowledgement(
     BaseModel,
+    ReadMixin,
+    DeleteMixin,
     ListMixin[AcknowledgementFilter, AcknowledgementOrder],
     SetMixin[AcknowledgementParams],
 ):
@@ -58,22 +60,34 @@ class Acknowledgement(
     author_id: int
     author_name: str
     comment: str
-    deletion_time: datetime | None
-    entry_time: datetime | None
-    is_notify_contacts: bool
-    is_persistent_comment: bool
-    is_sticky: bool
-    type: int
+    deletion_time: datetime | None = None
+    entry_time: datetime | None = None
+    is_notify_contacts: bool = True
+    is_persistent_comment: bool = True
+    is_sticky: bool = True
 
-    @staticmethod
-    async def cancel(with_services: bool, resources: list[BaseResource]) -> bool:
+    @classmethod
+    async def _delete(cls, model_id: int) -> bool:
         """
-        Cancel acknowledgements on multiple resources.
+        Delete (disacknowledge) an acknowledgement by id.
+
+        No "monitoring/acknowledgements/{id}" delete endpoint exists, so the
+        acknowledgement is fetched first to build the resource payload
+        expected by "monitoring/resources/acknowledgements". This mirrors
+        the other actions' delete behavior, allowing them to share the same
+        cancellation tools.
+
         Return True if successful; otherwise, raise an exception.
         """
+        acknowledgement = await cls.get(model_id)
+        resource = BaseResource(
+            type="service" if acknowledgement.service_id else "host",
+            resource_id=acknowledgement.service_id or acknowledgement.host_id,
+            host_id=acknowledgement.host_id,
+        )
         payload = {
-            "disacknowledgement": {"with_services": with_services},
-            "resources": [resource.dump() for resource in resources],
+            "disacknowledgement": {"with_services": False},
+            "resources": [resource.dump()],
         }
         await request("DELETE", "monitoring/resources/acknowledgements", payload=payload)
         return True

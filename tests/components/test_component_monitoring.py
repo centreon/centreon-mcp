@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from centreon_mcp.components.monitoring import (
+    cancel_monitoring_actions,
     list_monitoring_actions,
     list_monitoring_entities,
     set_monitoring_actions,
@@ -122,3 +123,34 @@ async def test_set_monitoring_action(
 
     # Assert result
     assert result
+
+
+@pytest.mark.parametrize(
+    "model_type",
+    ["acknowledgement", "downtime"],
+)
+@patch("centreon_mcp.utils.mixins.DeleteMixin.delete", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_cancel_monitoring_actions(
+    logger: MagicMock,
+    delete: AsyncMock,
+    model_type: Literal["acknowledgement", "downtime"],
+):
+
+    # Setup args
+    model_id = 10
+
+    # Mock logger
+    logger.info.return_value = None
+
+    # Mock DeleteMixin.delete
+    delete.return_value = {model_id: True}
+
+    # Call test function
+    result = await cancel_monitoring_actions(model_type, [model_id])
+
+    # Assert DeleteMixin.delete called with right args
+    delete.assert_awaited_once_with([model_id])
+
+    # Assert result
+    assert result == {model_id: True}

@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 21 tools organized across six functional areas.
+The MCP server currently exposes 16 tools organized across five functional areas.
 
 ### Resource Monitoring
 
@@ -29,10 +29,6 @@ Both tools accept multiple filter sets combined with OR logic, making it straigh
 A dedicated tool lets the assistant inspect what happened on a single resource:
 
 - **get_host_timeline / get_service_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
-
-A dedicated tool lets the assistant refresh state on demand:
-
-- **request_check** — Trigger a check on one or more resources (hosts and services) without waiting for the next polling cycle. Useful right after a remediation action to confirm recovery in conversation. The `is_forced` flag (default `true`) controls whether the configured check interval is bypassed.
 
 ### Infrastructure Inventory
 
@@ -62,25 +58,13 @@ Four generic tools cover the full configuration lifecycle for hosts, host groups
 
 Each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations.
 
-### Acknowledgements
+### Monitoring Actions
 
-Acknowledge alerts without ever leaving your conversation:
+Acknowledge alerts, schedule downtimes, leave comments, and trigger checks without ever leaving your conversation. Three generic tools cover the full lifecycle, each accepting a `model_type` parameter to select the action kind.
 
-- **list_acknowledgements** — List current acknowledgements, with pagination and sorting (by ID, host, start time, entry time, etc.)
-- **set_acknowledgements** — Acknowledge one or more resources at once, applying a message and configuring options such as sticky acknowledgement and notifications
-- **cancel_acknowledgements** — Remove acknowledgements from one or more resources, with the option to also cancel service acknowledgements when a host is unacknowledged
-
-### Downtimes
-
-Full downtime lifecycle management through conversation:
-
-- **list_downtimes** — Query scheduled or active downtimes, filterable by host name, alias, address, state, poller, and downtime properties (fixed, cancelled)
-- **set_downtimes** — Schedule a downtime on one or more hosts or services, specifying start and end times, a comment, and whether the downtime is fixed or flexible
-- **cancel_downtimes** — Cancel one or more downtimes by their IDs
-
-### Comments
-
-- **set_comments** — Attach a comment to any host or service in real-time monitoring, useful for leaving context notes on an ongoing incident directly from the AI assistant
+- **list_monitoring_actions** — List current acknowledgements or downtimes, with pagination and sorting (by ID, host, start time, entry time, etc.). Supported entity types: `acknowledgement`, `downtime`.
+- **set_monitoring_actions** — Apply an action to one or more resources: acknowledge (with options such as sticky acknowledgement and notifications), schedule a downtime (start/end times, fixed or flexible), attach a comment, or trigger a check without waiting for the next polling cycle (the `is_forced` flag, default `true`, controls whether the configured check interval is bypassed). Supported entity types: `acknowledgement`, `downtime`, `comment`, `check`.
+- **cancel_monitoring_actions** — Cancel one or more acknowledgements or downtimes by their IDs. Supported entity types: `acknowledgement`, `downtime`.
 
 ### Metrics
 

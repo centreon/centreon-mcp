@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
@@ -6,6 +6,8 @@ from centreon_mcp.utils.mixins import SetMixin
 
 
 class CheckParams(BaseModel):
+    model_type: Literal["check"] = "check"
+
     is_forced: bool = Field(
         True,
         description=(

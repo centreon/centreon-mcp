@@ -1,6 +1,4 @@
 from centreon_mcp.components.acknowledgement import acknowledgement
-from centreon_mcp.components.check import check
-from centreon_mcp.components.comment import comment
 from centreon_mcp.components.configuration import configuration
 from centreon_mcp.components.downtime import downtime
 from centreon_mcp.components.host import host
@@ -18,10 +16,8 @@ components = [
     monitoring_server,
     downtime,
     acknowledgement,
-    comment,
     service,
     metric,
-    check,
     timeline,
     configuration,
 ]

@@ -33,6 +33,8 @@ class AcknowledgementFilter(BaseFilter):
 
 
 class AcknowledgementParams(BaseModel):
+    model_type: Literal["acknowledgement"] = "acknowledgement"
+
     comment: str
     with_services: bool = True
     is_notify_contacts: bool = True

@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
@@ -9,6 +9,8 @@ from centreon_mcp.utils.request import request
 
 
 class CommentParams(BaseModel):
+    model_type: Literal["comment"] = "comment"
+
     comment: str
     date: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
 

@@ -6,11 +6,15 @@ from centreon_mcp.types.monitoring.actions.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,
+    AcknowledgementParams,
 )
+from centreon_mcp.types.monitoring.actions.check import CheckParams
+from centreon_mcp.types.monitoring.actions.comment import CommentParams
 from centreon_mcp.types.monitoring.actions.downtime import (
     Downtime,
     DowntimeFilter,
     DowntimeOrder,
+    DowntimeParams,
 )
 
 MonitoringActionFilter = Annotated[
@@ -21,6 +25,11 @@ MonitoringActionFilter = Annotated[
 
 MonitoringActionOrder = Annotated[
     AcknowledgementOrder | DowntimeOrder,
+    Field(discriminator="model_type"),
+]
+
+MonitoringActionParams = Annotated[
+    AcknowledgementParams | DowntimeParams | CheckParams | CommentParams,
     Field(discriminator="model_type"),
 ]
 

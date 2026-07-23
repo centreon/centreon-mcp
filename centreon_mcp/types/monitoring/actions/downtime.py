@@ -38,6 +38,8 @@ class DowntimeFilter(BaseFilter):
 
 
 class DowntimeParams(BaseModel):
+    model_type: Literal["downtime"] = "downtime"
+
     start_time: datetime
     end_time: datetime
     is_fixed: bool

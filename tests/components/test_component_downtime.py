@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from centreon_mcp.components.downtime import cancel_downtimes, list_downtimes, set_downtimes
-from centreon_mcp.types.monitoring.downtime import (
+from centreon_mcp.types.monitoring.actions.downtime import (
     Downtime,
     DowntimeFilter,
     DowntimeOrder,

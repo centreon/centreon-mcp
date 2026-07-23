@@ -3,7 +3,7 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
-from centreon_mcp.types.monitoring.downtime import (
+from centreon_mcp.types.monitoring.actions.downtime import (
     Downtime,
     DowntimeFilter,
     DowntimeOrder,

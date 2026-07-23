@@ -2,14 +2,14 @@ from datetime import datetime
 
 import pytest
 
-from centreon_mcp.types.monitoring.acknowledgement import (
+from centreon_mcp.types.monitoring.actions.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,
     AcknowledgementParams,
 )
-from centreon_mcp.types.monitoring.check import Check, CheckParams
-from centreon_mcp.types.monitoring.downtime import (
+from centreon_mcp.types.monitoring.actions.check import Check, CheckParams
+from centreon_mcp.types.monitoring.actions.downtime import (
     Downtime,
     DowntimeFilter,
     DowntimeOrder,

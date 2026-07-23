@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, patch
 
-from centreon_mcp.types.monitoring.acknowledgement import Acknowledgement
+from centreon_mcp.types.monitoring.actions.acknowledgement import Acknowledgement
 from centreon_mcp.utils.base import BaseResource
 
-MODULE = "centreon_mcp.types.monitoring.acknowledgement"
+MODULE = "centreon_mcp.types.monitoring.actions.acknowledgement"
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)

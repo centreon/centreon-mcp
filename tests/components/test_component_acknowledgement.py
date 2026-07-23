@@ -5,7 +5,7 @@ from centreon_mcp.components.acknowledgement import (
     list_acknowledgements,
     set_acknowledgements,
 )
-from centreon_mcp.types.monitoring.acknowledgement import (
+from centreon_mcp.types.monitoring.actions.acknowledgement import (
     Acknowledgement,
     AcknowledgementFilter,
     AcknowledgementOrder,

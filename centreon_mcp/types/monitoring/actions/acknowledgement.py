@@ -56,7 +56,7 @@ class Acknowledgement(
 
     id: int
     host_id: int
-    service_id: int | None
+    service_id: int | None = None
     author_id: int
     author_name: str
     comment: str

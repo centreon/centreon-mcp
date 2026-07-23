@@ -6,7 +6,7 @@ from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, BaseResource
 from centreon_mcp.utils.request import request
 
 
@@ -15,7 +15,7 @@ class BaseMixin:
     endpoint: ClassVar[str]
 
 
-class CreateMixin[Params: BaseModel](BaseMixin):
+class CreateMixin[Params: BaseParams](BaseMixin):
     """
     Mixin to add to a Centreon Model a creation method via heritage
     """
@@ -71,7 +71,7 @@ class DeleteMixin(BaseMixin):
         return dict(zip(model_ids, results, strict=True))
 
 
-class UpdateMixin[PartialParams: BaseModel](BaseMixin, ABC):
+class UpdateMixin[PartialParams: BaseParams](BaseMixin, ABC):
     """
     Mixin to add to a Centreon Model a update method via heritage
     """
@@ -81,7 +81,7 @@ class UpdateMixin[PartialParams: BaseModel](BaseMixin, ABC):
     async def update(cls, model_id: int, params: PartialParams) -> bool: ...
 
 
-class PutMixin[PartialParams: BaseModel, FullParams: BaseModel](
+class PutMixin[PartialParams: BaseParams, FullParams: BaseParams](
     UpdateMixin[PartialParams], ReadMixin
 ):
     """
@@ -112,7 +112,7 @@ class PutMixin[PartialParams: BaseModel, FullParams: BaseModel](
         return await cls.put(model_id, cls.full_params_cls(**data))
 
 
-class PatchMixin[PartialParams: BaseModel](UpdateMixin[PartialParams]):
+class PatchMixin[PartialParams: BaseParams](UpdateMixin[PartialParams]):
     """
     Mixin to add to a Centreon Model a patch method via heritage
     """

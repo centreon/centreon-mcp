@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, BaseResource
 from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, ReadMixin, SetMixin
 from centreon_mcp.utils.request import request
 
@@ -32,7 +32,7 @@ class AcknowledgementFilter(BaseFilter):
     pass
 
 
-class AcknowledgementParams(BaseModel):
+class AcknowledgementParams(BaseParams):
     model_type: Literal["acknowledgement"] = "acknowledgement"
 
     comment: str

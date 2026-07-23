@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
 
 DESCRIPTION = {
@@ -34,7 +34,7 @@ class HostSeverityFilter(BaseFilter):
     )
 
 
-class HostSeverityBaseParams(BaseModel):
+class HostSeverityBaseParams(BaseParams):
     model_type: Literal["host_severity"] = "host_severity"
 
     comment: str | None = Field(default=None, description=DESCRIPTION["comment"])

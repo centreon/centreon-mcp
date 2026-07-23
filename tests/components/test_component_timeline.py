@@ -40,7 +40,7 @@ async def test_get_host_timeline(
         search=json.dumps(conditions),
         limit=limit,
         page=page,
-        sort_by=order.model_dump_json(),
+        sort_by=order.model_dump_json(exclude={"model_type"}),
     )
 
     # Asser result
@@ -76,13 +76,15 @@ async def test_get_service_timeline(
     events = await get_service_timeline(host_id, service_id, filters, limit, page, order)
 
     # Assert TimelineEvent.list_for_service called with right args
-    timeline_list_for_service.assert_awaited_once_with(
-        host_id,
-        service_id,
-        search=json.dumps(conditions),
-        limit=limit,
-        page=page,
-        sort_by=order.model_dump_json(),
+    (
+        timeline_list_for_service.assert_awaited_once_with(
+            host_id,
+            service_id,
+            search=json.dumps(conditions),
+            limit=limit,
+            page=page,
+            sort_by=order.model_dump_json(exclude={"model_type"}),
+        )
     )
 
     # Assert result

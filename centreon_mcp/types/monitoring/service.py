@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from centreon_mcp.utils.base import BaseFilter, StatusCount
@@ -5,6 +7,8 @@ from centreon_mcp.utils.request import request
 
 
 class ServiceFilter(BaseFilter):
+    model_type: Literal["service"] = "service"
+
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
     host_group_id: int | None = Field(default=None, serialization_alias="host_group.id $eq")
     host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $eq")

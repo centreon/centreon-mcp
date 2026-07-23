@@ -3,12 +3,12 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseResource
+from centreon_mcp.utils.base import BaseParams, BaseResource
 from centreon_mcp.utils.mixins import SetMixin
 from centreon_mcp.utils.request import request
 
 
-class CommentParams(BaseModel):
+class CommentParams(BaseParams):
     model_type: Literal["comment"] = "comment"
 
     comment: str

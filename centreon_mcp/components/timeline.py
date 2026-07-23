@@ -41,7 +41,7 @@ async def get_host_timeline(
         search=json.dumps(TimelineFilter.join(filters)),
         limit=limit,
         page=page,
-        sort_by=order.model_dump_json(),
+        sort_by=order.model_dump_json(exclude={"model_type"}),
     )
 
 
@@ -78,5 +78,5 @@ async def get_service_timeline(
         search=json.dumps(TimelineFilter.join(filters)),
         limit=limit,
         page=page,
-        sort_by=order.model_dump_json(),
+        sort_by=order.model_dump_json(exclude={"model_type"}),
     )

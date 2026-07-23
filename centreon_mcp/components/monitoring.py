@@ -52,6 +52,15 @@ async def list_monitoring_entities(
     unless retrieving all entities is explicitly intended.
     """
     logger.info("Executing tool list_monitoring")
+
+    # Check compatibility between model and order types
+    if order is not None:
+        order.check(model_type)
+
+    # Check compatibility between model and filters types
+    if filters is not None:
+        [f.check(model_type) for f in filters]
+
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
     return cast(list[Monitoring], models)
 
@@ -81,6 +90,15 @@ async def list_monitoring_actions(
     unless retrieving all entities is explicitly intended.
     """
     logger.info("Executing tool list_monitoring_actions")
+
+    # Check compatibility between model and order types
+    if order is not None:
+        order.check(model_type)
+
+    # Check compatibility between model and filters types
+    if filters is not None:
+        [f.check(model_type) for f in filters]
+
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
     return cast(list[MonitoringAction], models)
 
@@ -108,6 +126,10 @@ async def set_monitoring_actions(
         - Comment
     """
     logger.info("Executing tool set_monitoring_actions")
+
+    # Check compatibility between model and params types
+    params.check(model_type)
+
     return await MODELS_MIXIN_SET[model_type].set(params, resources)
 
 

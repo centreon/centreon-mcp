@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, HostState
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, HostState
 from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, SetMixin
 
 
@@ -37,7 +37,7 @@ class DowntimeFilter(BaseFilter):
     poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
 
 
-class DowntimeParams(BaseModel):
+class DowntimeParams(BaseParams):
     model_type: Literal["downtime"] = "downtime"
 
     start_time: datetime

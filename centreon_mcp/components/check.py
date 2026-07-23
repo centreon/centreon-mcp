@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from centreon_mcp.types.monitoring.check import Check, CheckParams
+from centreon_mcp.types.monitoring.actions.check import Check, CheckParams
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseResource
 

@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, EnablementStatus
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 DESCRIPTION = {
@@ -79,7 +79,7 @@ class HostTemplateFilter(BaseFilter):
     host_template_is_locked: bool | None = Field(default=None, serialization_alias="is_locked $eq")
 
 
-class HostTemplateBaseParams(BaseModel):
+class HostTemplateBaseParams(BaseParams):
     model_type: Literal["host_template"] = "host_template"
 
     snmp_community: str | None = Field(None, description=DESCRIPTION["snmp_community"])

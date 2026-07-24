@@ -3,7 +3,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams
 from centreon_mcp.utils.mixins import CreateMixin, ListMixin
 
 
@@ -45,7 +45,7 @@ class CommandMacro(BaseModel):
     description: str
 
 
-class CommandParams(BaseModel):
+class CommandParams(BaseParams):
     model_type: Literal["command"] = "command"
 
     name: str

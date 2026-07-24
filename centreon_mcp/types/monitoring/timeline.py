@@ -10,11 +10,15 @@ TimelineEventType = Literal["event", "notification", "downtime", "acknowledgemen
 
 
 class TimelineOrder(BaseOrder):
+    model_type: Literal["timeline"] = "timeline"
+
     field: Literal["date", "type", "content"] = "date"
     order: Literal["ASC", "DESC"] = "DESC"
 
 
 class TimelineFilter(BaseFilter):
+    model_type: Literal["timeline"] = "timeline"
+
     event_type: TimelineEventType | None = Field(
         default=None,
         serialization_alias="type $eq",

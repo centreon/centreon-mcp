@@ -59,6 +59,15 @@ async def list_configurations(
     to avoid retrieving all entities except if explicitly intended.
     """
     logger.info("Executing tool list_configurations")
+
+    # Check compatibility between model and order types
+    if order is not None:
+        order.check(model_type)
+
+    # Check compatibility between model and filters types
+    if filters is not None:
+        [f.check(model_type) for f in filters]
+
     models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
     return cast(list[Configuration], models)
 
@@ -88,6 +97,10 @@ async def create_configuration(
         - Host Templates
     """
     logger.info("Executing tool create_configuration")
+
+    # Check compatibility between model and params types
+    params.check(model_type)
+
     return await MODELS_MIXIN_CREATE[model_type].create(params)
 
 
@@ -114,6 +127,10 @@ async def update_configuration(
         - Host Templates
     """
     logger.info("Executing tool update_configuration")
+
+    # Check compatibility between model and params types
+    params.check(model_type)
+
     return await MODELS_MIXIN_UPDATE[model_type].update(model_id, params)
 
 

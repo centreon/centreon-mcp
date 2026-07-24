@@ -8,10 +8,14 @@ from centreon_mcp.utils.mixins import ListMixin
 
 
 class ResourceOrder(BaseOrder):
+    model_type: Literal["resource"] = "resource"
+
     field: Literal["host.name", "host.alias", "host.address", "host.state"] = "host.name"
 
 
 class ResourceFilter(BaseFilter):
+    model_type: Literal["resource"] = "resource"
+
     # Fields available for filtering in Centreon API
     name: str | None = Field(
         default=None,

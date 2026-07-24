@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import AliasPath, BaseModel, Field, field_validator
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
 
 DESCRIPTION = {
@@ -32,7 +32,7 @@ class HostGroupFilter(BaseFilter):
     )
 
 
-class HostGroupBaseParams(BaseModel):
+class HostGroupBaseParams(BaseParams):
     model_type: Literal["host_group"] = "host_group"
 
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])

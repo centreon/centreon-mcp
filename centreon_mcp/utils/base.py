@@ -77,10 +77,23 @@ class Link(BaseModel):
 
 
 class BaseOrder(BaseModel):
+    model_type: str
+
     order: Literal["ASC", "DESC"] = "ASC"
+
+    def check(self, model_type: str):
+        """
+        Raise ValueError if model_type does not match the order expected model_type.
+        """
+        if self.model_type != model_type:
+            raise ValueError(
+                f"model_type {model_type!r} does not match order.model_type {self.model_type!r}"
+            )
 
 
 class BaseFilter(BaseModel):
+    model_type: str
+
     @staticmethod
     def join(filters: Sequence["BaseFilter"] | None) -> dict:
         """
@@ -103,3 +116,25 @@ class BaseFilter(BaseModel):
                 if value is not None
             }.items()
         ]
+
+    def check(self, model_type: str):
+        """
+        Raise ValueError if model_type does not match the filter expected model_type.
+        """
+        if self.model_type != model_type:
+            raise ValueError(
+                f"model_type {model_type!r} does not match filter.model_type {self.model_type!r}"
+            )
+
+
+class BaseParams(BaseModel):
+    model_type: str
+
+    def check(self, model_type: str):
+        """
+        Raise ValueError if model_type does not match the params' expected model_type.
+        """
+        if self.model_type != model_type:
+            raise ValueError(
+                f"model_type {model_type!r} does not match params.model_type {self.model_type!r}"
+            )

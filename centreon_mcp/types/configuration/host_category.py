@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
 
 DESCRIPTION = {
@@ -30,7 +30,7 @@ class HostCategoryFilter(BaseFilter):
     )
 
 
-class HostCategoryBaseParams(BaseModel):
+class HostCategoryBaseParams(BaseParams):
     model_type: Literal["host_category"] = "host_category"
 
     is_activated: bool | None = Field(default=None, description=DESCRIPTION["is_activated"])

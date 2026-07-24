@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, EnablementStatus, Link
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus, Link
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 
 DESCRIPTION = {
@@ -82,7 +82,7 @@ class HostFilter(BaseFilter):
     is_activated: bool | None = Field(default=None, serialization_alias="is_activated $eq")
 
 
-class HostBaseParams(BaseModel):
+class HostBaseParams(BaseParams):
     model_type: Literal["host"] = "host"
 
     alias: str | None = Field(None, description=DESCRIPTION["alias"])

@@ -50,9 +50,9 @@ async def list_monitoring_resources(
     """
     List resources (hosts and services) in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter,
-        unless retrieving all entities is explicitly intended.
+    unless retrieving all resources is explicitly intended.
     """
-    logger.info("Executing tool list__monitoring_resources")
+    logger.info("Executing tool list_monitoring_resources")
     fields = {
         "types": types,
         "statuses": statuses,

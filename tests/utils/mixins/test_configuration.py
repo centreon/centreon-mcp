@@ -46,6 +46,13 @@ from centreon_mcp.types.configuration.monitoring_server import (
     MonitoringServerFilter,
     MonitoringServerOrder,
 )
+from centreon_mcp.types.configuration.service import (
+    Service,
+    ServiceFilter,
+    ServiceFullParams,
+    ServiceOrder,
+    ServicePartialParams,
+)
 
 from .base import (
     TestCreateMixinBase,
@@ -87,6 +94,7 @@ MODULE = "centreon_mcp.utils.mixins"
             HostTemplateFullParams.model_construct(),
             "configuration/hosts/templates",
         ),
+        (Service, ServiceFullParams.model_construct(), "configuration/services"),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
@@ -102,6 +110,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (HostCategory, "configuration/hosts/categories"),
         (HostSeverity, "configuration/hosts/severities"),
         (HostTemplate, "configuration/hosts/templates"),
+        (Service, "configuration/services"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -188,6 +197,7 @@ class TestPutMixinConfiguration(TestPutMixinBase):
             HostTemplatePartialParams.model_construct(),
             "configuration/hosts/templates",
         ),
+        (Service, ServicePartialParams.model_construct(), "configuration/services"),
     ],
 )
 class TestPatchMixinConfiguration(TestPatchMixinBase):
@@ -360,6 +370,21 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "remote_server_use_as_proxy": True,
                 "is_updated": True,
                 "is_activate": True,
+            },
+        ),
+        (
+            Service,
+            [ServiceFilter(name="service_name", severity_id=10)],
+            ServiceOrder(order="DESC", field="name"),
+            '{"$or": [{"$and": [{"name": {"$eq": "service_name"}}, {"severity.id": {"$eq": 10}}]}]}',
+            '{"order":"DESC","field":"name"}',
+            "configuration/services",
+            {
+                "id": 10,
+                "name": "service_name",
+                "categories": [],
+                "groups": [],
+                "is_activated": True,
             },
         ),
     ],

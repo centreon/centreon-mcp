@@ -39,6 +39,7 @@ async def list_configurations(
         "host_severity",
         "host_template",
         "host",
+        "service",
         "monitoring_server",
     ],
     filters: Sequence[ConfigurationFilter] | None = None,
@@ -49,7 +50,7 @@ async def list_configurations(
     """
     List configurations matching the given filters for following entities:
         - Commands
-        - Hosts
+        - Hosts / Services
         - Host Categories
         - Host Groups
         - Host Severities
@@ -83,14 +84,20 @@ async def list_configurations(
 )
 async def create_configuration(
     model_type: Literal[
-        "command", "host_category", "host_group", "host_severity", "host_template", "host"
+        "command",
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
     ],
     params: ConfigurationFullParams,
 ) -> bool:
     """
     Create a configuration for following entities:
         - Commands
-        - Hosts
+        - Hosts / Services
         - Host Categories
         - Host Groups
         - Host Severities
@@ -114,13 +121,15 @@ async def create_configuration(
     }
 )
 async def update_configuration(
-    model_type: Literal["host_category", "host_group", "host_severity", "host_template", "host"],
+    model_type: Literal[
+        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+    ],
     model_id: int,
     params: ConfigurationPartialParams,
 ) -> bool:
     """
     Update a configuration from partial params for following entities:
-        - Hosts
+        - Hosts / Services
         - Host Categories
         - Host Groups
         - Host Severities
@@ -144,12 +153,14 @@ async def update_configuration(
     }
 )
 async def delete_configurations(
-    model_type: Literal["host_category", "host_group", "host_severity", "host_template", "host"],
+    model_type: Literal[
+        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+    ],
     model_ids: list[int],
 ) -> dict[int, bool | BaseException]:
     """
     Delete multiple configurations from their ids for following entities:
-        - Hosts
+        - Hosts / Services
         - Host Categories
         - Host Groups
         - Host Severities

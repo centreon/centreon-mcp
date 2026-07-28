@@ -23,6 +23,7 @@ MODULE = "centreon_mcp.components.configuration"
         "host_template",
         "host_severity",
         "monitoring_server",
+        "service",
     ],
 )
 @patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
@@ -38,6 +39,7 @@ async def test_list_configurations(
         "host_template",
         "host_severity",
         "monitoring_server",
+        "service",
     ],
 ):
 
@@ -65,7 +67,7 @@ async def test_list_configurations(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["command", "host_category", "host_group", "host_severity", "host_template", "host"],
+    ["command", "host_category", "host_group", "host_severity", "host_template", "host", "service"],
 )
 @patch("centreon_mcp.utils.mixins.CreateMixin.create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
@@ -73,7 +75,13 @@ async def test_create_configuration(
     logger: MagicMock,
     create: AsyncMock,
     model_type: Literal[
-        "command", "host_category", "host_group", "host_severity", "host_template", "host"
+        "command",
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
     ],
 ):
 
@@ -130,14 +138,14 @@ async def test_put_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_template", "host"],
+    ["host_template", "host", "service"],
 )
 @patch("centreon_mcp.utils.mixins.PatchMixin.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_patch_configuration(
     logger: MagicMock,
     update_mixin: AsyncMock,
-    model_type: Literal["host", "host_template"],
+    model_type: Literal["host", "host_template", "service"],
 ):
 
     # Setup args
@@ -162,14 +170,16 @@ async def test_patch_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity", "host_template", "host"],
+    ["host_category", "host_group", "host_severity", "host_template", "host", "service"],
 )
 @patch("centreon_mcp.utils.mixins.DeleteMixin.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_delete_configurations(
     logger: MagicMock,
     delete: AsyncMock,
-    model_type: Literal["host_category", "host_group", "host_severity", "host_template", "host"],
+    model_type: Literal[
+        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+    ],
 ):
 
     # Setup args

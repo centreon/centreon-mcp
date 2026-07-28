@@ -26,7 +26,7 @@ async def count_services_by_status(
     Each filter object narrows results by host group, host category, service group, service category or host.
     Fields within a single filter are ANDed together, multiple filter objects are ORed.
     Omit filters to count all services.
-    Use this tool instead of list_resources when only aggregate counts are needed
+    Use this tool instead of list_monitoring_resources when only aggregate counts are needed
     """
     logger.info("Executing tool count_services_by_status")
     search = json.dumps(ServiceFilter.join(filters))

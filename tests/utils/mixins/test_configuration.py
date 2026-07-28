@@ -381,7 +381,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             "configuration/services",
             {
                 "id": 10,
-                "name": "monitoring_server_name",
+                "name": "service_name",
                 "categories": [],
                 "groups": [],
                 "is_activated": True,

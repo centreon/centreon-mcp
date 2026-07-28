@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus, Link
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus, Link, Macro
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin
 
 DESCRIPTION = {
@@ -194,6 +194,7 @@ class ServiceBaseParams(BaseParams):
         None, description=DESCRIPTION["service_categories"]
     )
     service_groups: list[int] | None = Field(None, description=DESCRIPTION["service_groups"])
+    macros: list[Macro] | None = Field(None, description=DESCRIPTION["macros"])
 
 
 class ServiceFullParams(ServiceBaseParams):

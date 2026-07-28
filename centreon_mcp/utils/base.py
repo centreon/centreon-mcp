@@ -138,3 +138,12 @@ class BaseParams(BaseModel):
             raise ValueError(
                 f"model_type {model_type!r} does not match params.model_type {self.model_type!r}"
             )
+
+
+class Macro(BaseModel):
+    name: str = Field(description="Name of the macro")
+    value: str | None = Field(None, description="Value of the macro")
+    is_password: bool = Field(
+        False, description="Indicates whether the macro value is a password or not"
+    )
+    description: str | None = Field(None, description="Macro description")

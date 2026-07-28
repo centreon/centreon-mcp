@@ -148,7 +148,9 @@ class ServiceBaseParams(BaseParams):
     notification_timeperiod_id: int | None = Field(
         None, description=DESCRIPTION["notification_timeperiod_id"]
     )
-    notification_type: int | None = Field(None, description=DESCRIPTION["notification_type"])
+    notification_type: int | None = Field(
+        None, ge=0, le=63, description=DESCRIPTION["notification_type"]
+    )
     first_notification_delay: int | None = Field(
         None, description=DESCRIPTION["first_notification_delay"]
     )

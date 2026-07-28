@@ -31,7 +31,7 @@ async def get_host_timeline(
     Events include state changes, notifications, downtimes, acknowledgements and comments,
     each with a timestamp and content. Useful to answer "what happened recently on this
     resource ?" without leaving the conversation.
-    Use tool `list_resources` first to get the host_id
+    Use tool `list_monitoring_resources` first to get the host_id
     Results are sorted by date descending by default (most recent first).
     """
     logger.info("Executing tool get_host_timeline")
@@ -67,7 +67,7 @@ async def get_service_timeline(
     Events include state changes, notifications, downtimes, acknowledgements and comments,
     each with a timestamp and content. Useful to answer "what happened recently on this
     resource ?" without leaving the conversation.
-    Use tool `list_resources` first to get the host_id and service_id.
+    Use tool `list_monitoring_resources` first to get the host_id and service_id.
     Results are sorted by date descending by default (most recent first).
     """
     logger.info("Executing tool get_service_timeline")

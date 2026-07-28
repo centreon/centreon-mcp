@@ -25,7 +25,7 @@ async def count_hosts_by_status(
     Each filter object narrows results by host group or host category.
     Fields within a single filter are ANDed together, multiple filter objects are ORed.
     Omit filters to count all hosts.
-    Use this tool instead of list_resources when only aggregate counts are needed
+    Use this tool instead of list_monitoring_resources when only aggregate counts are needed
     """
     logger.info("Executing tool count_hosts_by_status")
     search = json.dumps(HostFilter.join(filters))

@@ -8,7 +8,7 @@ The MCP server currently exposes 16 tools organized across five functional areas
 
 ### Resource Monitoring
 
-- **list_resources** is the central tool for querying your real-time monitoring data. It supports rich filtering across multiple dimensions simultaneously:
+- **list_monitoring_resources** is the central tool for querying your real-time monitoring data. It supports rich filtering across multiple dimensions simultaneously:
 - **By resource type**: filter on hosts only, services only, or both
 - **By status**: filter on OK, WARNING, CRITICAL, UNKNOWN, or PENDING states
 - **By status type**: distinguish between HARD and SOFT states

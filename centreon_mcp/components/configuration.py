@@ -40,6 +40,7 @@ async def list_configurations(
         "host_template",
         "host",
         "service",
+        "service_group",
         "monitoring_server",
     ],
     filters: Sequence[ConfigurationFilter] | None = None,
@@ -52,7 +53,7 @@ async def list_configurations(
         - Commands
         - Hosts / Services
         - Host Categories
-        - Host Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
         - Monitoring Servers
@@ -91,6 +92,7 @@ async def create_configuration(
         "host_template",
         "host",
         "service",
+        "service_group",
     ],
     params: ConfigurationFullParams,
 ) -> bool:
@@ -99,7 +101,7 @@ async def create_configuration(
         - Commands
         - Hosts / Services
         - Host Categories
-        - Host Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
     """
@@ -154,7 +156,13 @@ async def update_configuration(
 )
 async def delete_configurations(
     model_type: Literal[
-        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
+        "service_group",
     ],
     model_ids: list[int],
 ) -> dict[int, bool | BaseException]:
@@ -162,7 +170,7 @@ async def delete_configurations(
     Delete multiple configurations from their ids for following entities:
         - Hosts / Services
         - Host Categories
-        - Host Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
     """

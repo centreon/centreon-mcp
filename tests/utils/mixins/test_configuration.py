@@ -53,6 +53,12 @@ from centreon_mcp.types.configuration.service import (
     ServiceOrder,
     ServicePartialParams,
 )
+from centreon_mcp.types.configuration.service_group import (
+    ServiceGroup,
+    ServiceGroupFilter,
+    ServiceGroupFullParams,
+    ServiceGroupOrder,
+)
 
 from .base import (
     TestCreateMixinBase,
@@ -95,6 +101,7 @@ MODULE = "centreon_mcp.utils.mixins"
             "configuration/hosts/templates",
         ),
         (Service, ServiceFullParams.model_construct(), "configuration/services"),
+        (ServiceGroup, ServiceGroupFullParams.model_construct(), "configuration/services/groups"),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
@@ -111,6 +118,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (HostSeverity, "configuration/hosts/severities"),
         (HostTemplate, "configuration/hosts/templates"),
         (Service, "configuration/services"),
+        (ServiceGroup, "configuration/services/groups"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -384,6 +392,20 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "name": "service_name",
                 "categories": [],
                 "groups": [],
+                "is_activated": True,
+            },
+        ),
+        (
+            ServiceGroup,
+            [ServiceGroupFilter(service_group_name="service_group_name", host_group_id=10)],
+            ServiceGroupOrder(field="name"),
+            '{"$or": [{"$and": [{"name": {"$eq": "service_group_name"}}, {"hostgroup.id": {"$eq": 10}}]}]}',
+            '{"order":"ASC","field":"name"}',
+            "configuration/services/groups",
+            {
+                "id": 10,
+                "name": "service_group_name",
+                "alias": "service_group_alias",
                 "is_activated": True,
             },
         ),

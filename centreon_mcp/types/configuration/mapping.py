@@ -6,6 +6,7 @@ from centreon_mcp.types.configuration.host_severity import HostSeverity
 from centreon_mcp.types.configuration.host_template import HostTemplate
 from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
 from centreon_mcp.types.configuration.service import Service
+from centreon_mcp.types.configuration.service_group import ServiceGroup
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, UpdateMixin
 
 _list_models: list[type[ListMixin]] = [
@@ -15,6 +16,7 @@ _list_models: list[type[ListMixin]] = [
     HostSeverity,
     HostTemplate,
     Service,
+    ServiceGroup,
     Command,
     MonitoringServer,
 ]
@@ -27,6 +29,7 @@ _create_models: list[type[CreateMixin]] = [
     HostSeverity,
     HostTemplate,
     Service,
+    ServiceGroup,
     Command,
 ]
 MODELS_MIXIN_CREATE: dict[str, type[CreateMixin]] = {
@@ -53,6 +56,7 @@ _delete_models: list[type[DeleteMixin]] = [
     HostSeverity,
     HostTemplate,
     Service,
+    ServiceGroup,
 ]
 MODELS_MIXIN_DELETE: dict[str, type[DeleteMixin]] = {
     model.model_type: model for model in _delete_models

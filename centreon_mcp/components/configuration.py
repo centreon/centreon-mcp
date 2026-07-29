@@ -53,7 +53,7 @@ async def list_configurations(
         - Commands
         - Hosts / Services
         - Host Categories
-        - Host / Services Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
         - Monitoring Servers
@@ -101,7 +101,7 @@ async def create_configuration(
         - Commands
         - Hosts / Services
         - Host Categories
-        - Host / Services Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
     """
@@ -170,7 +170,7 @@ async def delete_configurations(
     Delete multiple configurations from their ids for following entities:
         - Hosts / Services
         - Host Categories
-        - Host / Services Groups
+        - Host / Service Groups
         - Host Severities
         - Host Templates
     """

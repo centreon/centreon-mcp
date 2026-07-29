@@ -24,6 +24,7 @@ MODULE = "centreon_mcp.components.configuration"
         "host_severity",
         "monitoring_server",
         "service",
+        "service_group",
     ],
 )
 @patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
@@ -40,6 +41,7 @@ async def test_list_configurations(
         "host_severity",
         "monitoring_server",
         "service",
+        "service_group",
     ],
 ):
 
@@ -67,7 +69,16 @@ async def test_list_configurations(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["command", "host_category", "host_group", "host_severity", "host_template", "host", "service"],
+    [
+        "command",
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
+        "service_group",
+    ],
 )
 @patch("centreon_mcp.utils.mixins.CreateMixin.create", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
@@ -82,6 +93,7 @@ async def test_create_configuration(
         "host_template",
         "host",
         "service",
+        "service_group",
     ],
 ):
 
@@ -170,7 +182,15 @@ async def test_patch_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity", "host_template", "host", "service"],
+    [
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
+        "service_group",
+    ],
 )
 @patch("centreon_mcp.utils.mixins.DeleteMixin.delete", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
@@ -178,7 +198,13 @@ async def test_delete_configurations(
     logger: MagicMock,
     delete: AsyncMock,
     model_type: Literal[
-        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
+        "service_group",
     ],
 ):
 

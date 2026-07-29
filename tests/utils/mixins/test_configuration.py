@@ -397,7 +397,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
         ),
         (
             ServiceGroup,
-            [ServiceGroupFilter(name="service_group_name", host_group_id=10)],
+            [ServiceGroupFilter(service_group_name="service_group_name", host_group_id=10)],
             ServiceGroupOrder(field="name"),
             '{"$or": [{"$and": [{"name": {"$eq": "service_group_name"}}, {"hostgroup.id": {"$eq": 10}}]}]}',
             '{"order":"ASC","field":"name"}',

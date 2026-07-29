@@ -17,29 +17,18 @@ DESCRIPTION = {
 class ServiceGroupOrder(BaseOrder):
     model_type: Literal["service_group"] = "service_group"
 
-    field: Literal[
-        "id",
-        "name",
-        "alias",
-        "is_activated",
-        "host.id",
-        "host.name",
-        "hostgroup.id",
-        "hostgroup.name",
-        "hostcategory.id",
-        "hostcategory.name",
-        "servicecategory.id",
-        "servicecategory.name",
-    ] = "name"
+    field: Literal["id", "name", "alias", "is_activated"] = "name"
 
 
 class ServiceGroupFilter(BaseFilter):
     model_type: Literal["service_group"] = "service_group"
 
-    id: int | None = Field(default=None, serialization_alias="id $eq")
-    name: str | None = Field(default=None, serialization_alias="name $eq")
-    alias: str | None = Field(default=None, serialization_alias="alias $eq")
-    is_activated: bool | None = Field(default=None, serialization_alias="is_activated $eq")
+    service_group_id: int | None = Field(default=None, serialization_alias="id $eq")
+    service_group_name: str | None = Field(default=None, serialization_alias="name $eq")
+    service_group_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    service_group_is_activated: bool | None = Field(
+        default=None, serialization_alias="is_activated $eq"
+    )
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
     host_group_id: int | None = Field(default=None, serialization_alias="hostgroup.id $eq")

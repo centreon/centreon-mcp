@@ -40,6 +40,7 @@ async def list_configurations(
         "host_template",
         "host",
         "service",
+        "service_category",
         "service_group",
         "monitoring_server",
     ],
@@ -52,7 +53,7 @@ async def list_configurations(
     List configurations matching the given filters for following entities:
         - Commands
         - Hosts / Services
-        - Host Categories
+        - Host / Service Categories
         - Host / Service Groups
         - Host Severities
         - Host Templates
@@ -92,6 +93,7 @@ async def create_configuration(
         "host_template",
         "host",
         "service",
+        "service_category",
         "service_group",
     ],
     params: ConfigurationFullParams,
@@ -100,7 +102,7 @@ async def create_configuration(
     Create a configuration for following entities:
         - Commands
         - Hosts / Services
-        - Host Categories
+        - Host / Service Categories
         - Host / Service Groups
         - Host Severities
         - Host Templates
@@ -124,7 +126,12 @@ async def create_configuration(
 )
 async def update_configuration(
     model_type: Literal[
-        "host_category", "host_group", "host_severity", "host_template", "host", "service"
+        "host_category",
+        "host_group",
+        "host_severity",
+        "host_template",
+        "host",
+        "service",
     ],
     model_id: int,
     params: ConfigurationPartialParams,
@@ -162,6 +169,7 @@ async def delete_configurations(
         "host_template",
         "host",
         "service",
+        "service_category",
         "service_group",
     ],
     model_ids: list[int],
@@ -169,7 +177,7 @@ async def delete_configurations(
     """
     Delete multiple configurations from their ids for following entities:
         - Hosts / Services
-        - Host Categories
+        - Host / Service Categories
         - Host / Service Groups
         - Host Severities
         - Host Templates

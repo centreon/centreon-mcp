@@ -53,6 +53,12 @@ from centreon_mcp.types.configuration.service import (
     ServiceOrder,
     ServicePartialParams,
 )
+from centreon_mcp.types.configuration.service_category import (
+    ServiceCategory,
+    ServiceCategoryFilter,
+    ServiceCategoryFullParams,
+    ServiceCategoryOrder,
+)
 from centreon_mcp.types.configuration.service_group import (
     ServiceGroup,
     ServiceGroupFilter,
@@ -102,6 +108,11 @@ MODULE = "centreon_mcp.utils.mixins"
         ),
         (Service, ServiceFullParams.model_construct(), "configuration/services"),
         (ServiceGroup, ServiceGroupFullParams.model_construct(), "configuration/services/groups"),
+        (
+            ServiceCategory,
+            ServiceCategoryFullParams.model_construct(),
+            "configuration/services/categories",
+        ),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
@@ -119,6 +130,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (HostTemplate, "configuration/hosts/templates"),
         (Service, "configuration/services"),
         (ServiceGroup, "configuration/services/groups"),
+        (ServiceCategory, "configuration/services/categories"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -406,6 +418,20 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "id": 10,
                 "name": "service_group_name",
                 "alias": "service_group_alias",
+                "is_activated": True,
+            },
+        ),
+        (
+            ServiceCategory,
+            [ServiceCategoryFilter(service_category_alias="service_category_alias", host_id=10)],
+            ServiceCategoryOrder(field="alias"),
+            '{"$or": [{"$and": [{"alias": {"$eq": "service_category_alias"}}, {"host.id": {"$eq": 10}}]}]}',
+            '{"order":"ASC","field":"alias"}',
+            "configuration/services/categories",
+            {
+                "id": 10,
+                "name": "service_category_name",
+                "alias": "service_category_alias",
                 "is_activated": True,
             },
         ),

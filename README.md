@@ -49,12 +49,12 @@ These tools are typically chained: after modifying host or service configuration
 
 ### Configuration
 
-Four generic tools cover the full configuration lifecycle for hosts, services, host groups, service groups, host categories, host severities, host templates, and commands. Each tool accepts a `model_type` parameter to select the entity to operate on.
+Four generic tools cover the full configuration lifecycle for hosts, services, host groups, service groups, host categories, service categories, host severities, host templates, and commands. Each tool accepts a `model_type` parameter to select the entity to operate on.
 
-- **list_configurations** — List configurations, filterable by entity-specific fields (ID, name, alias, address, activation status, etc.). Results are paginated and sortable. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_group`, `host_severity`, `host_template`, `monitoring_server`.
-- **create_configuration** — Create a new configuration by providing the required and optional parameters for the chosen entity type. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_group`, `host_severity`, `host_template`.
+- **list_configurations** — List configurations, filterable by entity-specific fields (ID, name, alias, address, activation status, etc.). Results are paginated and sortable. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`, `monitoring_server`.
+- **create_configuration** — Create a new configuration by providing the required and optional parameters for the chosen entity type. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`.
 - **update_configuration** — Partially update an existing configuration by ID, using only the fields that need to change. Supported entity types: `host`, `service`, `host_category`, `host_group`, `host_severity`, `host_template`.
-- **delete_configurations** — Delete one or more configurations by their IDs. Supported entity types: `host`, `service`, `host_category`, `host_group`, `service_group`, `host_severity`, `host_template`.
+- **delete_configurations** — Delete one or more configurations by their IDs. Supported entity types: `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`.
 
 Each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations. Creating a service requires specifying the linked host and a name, and accepts optional parameters such as the service template, check and event handler commands, notification options, flap detection thresholds, and service category/group associations.
 

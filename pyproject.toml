@@ -40,8 +40,6 @@ line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4", "ISC", "RUF", "ASYNC", "A"]
-
 ignore = [
   "E501",   # handled by formatter
   "RUF001", # ambiguous unicode in strings — too noisy for French/typographic prompts

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
@@ -169,8 +169,8 @@ class TestListMixinMonitoring(TestListMixinBase):
         (
             Downtime,
             DowntimeParams(
-                start_time=datetime(2026, 7, 21, tzinfo=datetime.UTC),
-                end_time=datetime(2026, 7, 21, tzinfo=datetime.UTC),
+                start_time=datetime(2026, 7, 21, tzinfo=UTC),
+                end_time=datetime(2026, 7, 21, tzinfo=UTC),
                 is_fixed=True,
                 duration=3600,
                 comment="comment",

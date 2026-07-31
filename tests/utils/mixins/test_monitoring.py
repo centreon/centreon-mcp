@@ -179,8 +179,8 @@ class TestListMixinMonitoring(TestListMixinBase):
             "monitoring/resources/downtime",
             {
                 "downtime": {
-                    "start_time": "2026-07-21T00:00:00",
-                    "end_time": "2026-07-21T00:00:00",
+                    "start_time": "2026-07-21T00:00:00Z",
+                    "end_time": "2026-07-21T00:00:00Z",
                     "is_fixed": True,
                     "duration": 3600,
                     "comment": "comment",

@@ -29,7 +29,6 @@ class AcknowledgementFilter(BaseFilter):
     model_type: Literal["acknowledgement"] = "acknowledgement"
 
     # Fields available for filtering in Centreon API
-    pass
 
 
 class AcknowledgementParams(BaseParams):

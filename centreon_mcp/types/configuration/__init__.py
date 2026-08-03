@@ -67,6 +67,13 @@ from centreon_mcp.types.configuration.service_group import (
     ServiceGroupFullParams,
     ServiceGroupOrder,
 )
+from centreon_mcp.types.configuration.service_template import (
+    ServiceTemplate,
+    ServiceTemplateFilter,
+    ServiceTemplateFullParams,
+    ServiceTemplateOrder,
+    ServiceTemplatePartialParams,
+)
 
 ConfigurationFilter = Annotated[
     CommandFilter
@@ -78,6 +85,7 @@ ConfigurationFilter = Annotated[
     | ServiceFilter
     | ServiceCategoryFilter
     | ServiceGroupFilter
+    | ServiceTemplateFilter
     | MonitoringServerFilter,
     Field(discriminator="model_type"),
 ]
@@ -92,6 +100,7 @@ ConfigurationOrder = Annotated[
     | ServiceOrder
     | ServiceCategoryOrder
     | ServiceGroupOrder
+    | ServiceTemplateOrder
     | MonitoringServerOrder,
     Field(discriminator="model_type"),
 ]
@@ -105,6 +114,7 @@ ConfigurationFullParams = Annotated[
     | ServiceFullParams
     | ServiceCategoryFullParams
     | ServiceGroupFullParams
+    | ServiceTemplateFullParams
     | CommandParams,
     Field(discriminator="model_type"),
 ]
@@ -115,7 +125,8 @@ ConfigurationPartialParams = Annotated[
     | HostSeverityPartialParams
     | HostTemplatePartialParams
     | HostPartialParams
-    | ServicePartialParams,
+    | ServicePartialParams
+    | ServiceTemplatePartialParams,
     Field(discriminator="model_type"),
 ]
 
@@ -130,4 +141,5 @@ Configuration = (
     | Service
     | ServiceCategory
     | ServiceGroup
+    | ServiceTemplate
 )

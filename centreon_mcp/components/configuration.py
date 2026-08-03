@@ -42,6 +42,7 @@ async def list_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_template",
         "monitoring_server",
     ],
     filters: Sequence[ConfigurationFilter] | None = None,
@@ -52,11 +53,11 @@ async def list_configurations(
     """
     List configurations matching the given filters for following entities:
         - Commands
-        - Hosts / Services
-        - Host / Service Categories
-        - Host / Service Groups
-        - Host Severities
-        - Host Templates
+        - Host / Service
+        - Host / Service Category
+        - Host / Service Group
+        - Host Severity
+        - Host / Service Template
         - Monitoring Servers
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all entities except if explicitly intended.
@@ -95,17 +96,18 @@ async def create_configuration(
         "service",
         "service_category",
         "service_group",
+        "service_template",
     ],
     params: ConfigurationFullParams,
 ) -> bool:
     """
     Create a configuration for following entities:
         - Commands
-        - Hosts / Services
-        - Host / Service Categories
-        - Host / Service Groups
-        - Host Severities
-        - Host Templates
+        - Host / Service
+        - Host / Service Category
+        - Host / Service Group
+        - Host Severity
+        - Host / Service Template
     """
     logger.info("Executing tool create_configuration")
 
@@ -132,17 +134,18 @@ async def update_configuration(
         "host_template",
         "host",
         "service",
+        "service_template",
     ],
     model_id: int,
     params: ConfigurationPartialParams,
 ) -> bool:
     """
     Update a configuration from partial params for following entities:
-        - Hosts / Services
-        - Host Categories
-        - Host Groups
-        - Host Severities
-        - Host Templates
+        - Host / Service
+        - Host Category
+        - Host Group
+        - Host Severity
+        - Host / Service Template
     """
     logger.info("Executing tool update_configuration")
 
@@ -171,16 +174,17 @@ async def delete_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_template",
     ],
     model_ids: list[int],
 ) -> dict[int, bool | BaseException]:
     """
     Delete multiple configurations from their ids for following entities:
-        - Hosts / Services
-        - Host / Service Categories
-        - Host / Service Groups
-        - Host Severities
-        - Host Templates
+        - Host / Service
+        - Host / Service Category
+        - Host / Service Group
+        - Host Severity
+        - Host / Service Template
     """
     logger.info("Executing tool delete_configurations")
     return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)

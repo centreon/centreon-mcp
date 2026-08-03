@@ -65,6 +65,13 @@ from centreon_mcp.types.configuration.service_group import (
     ServiceGroupFullParams,
     ServiceGroupOrder,
 )
+from centreon_mcp.types.configuration.service_template import (
+    ServiceTemplate,
+    ServiceTemplateFilter,
+    ServiceTemplateFullParams,
+    ServiceTemplateOrder,
+    ServiceTemplatePartialParams,
+)
 
 from .base import (
     TestCreateMixinBase,
@@ -113,6 +120,11 @@ MODULE = "centreon_mcp.utils.mixins"
             ServiceCategoryFullParams.model_construct(),
             "configuration/services/categories",
         ),
+        (
+            ServiceTemplate,
+            ServiceTemplateFullParams.model_construct(),
+            "configuration/services/templates",
+        ),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
@@ -131,6 +143,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (Service, "configuration/services"),
         (ServiceGroup, "configuration/services/groups"),
         (ServiceCategory, "configuration/services/categories"),
+        (ServiceTemplate, "configuration/services/templates"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -218,6 +231,11 @@ class TestPutMixinConfiguration(TestPutMixinBase):
             "configuration/hosts/templates",
         ),
         (Service, ServicePartialParams.model_construct(), "configuration/services"),
+        (
+            ServiceTemplate,
+            ServiceTemplatePartialParams.model_construct(),
+            "configuration/services/templates",
+        ),
     ],
 )
 class TestPatchMixinConfiguration(TestPatchMixinBase):
@@ -433,6 +451,20 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "name": "service_category_name",
                 "alias": "service_category_alias",
                 "is_activated": True,
+            },
+        ),
+        (
+            ServiceTemplate,
+            [ServiceTemplateFilter(service_template_name="service_template_name")],
+            ServiceTemplateOrder(field="alias"),
+            '{"$or": [{"$and": [{"name": {"$eq": "service_template_name"}}]}]}',
+            '{"order":"ASC","field":"alias"}',
+            "configuration/services/templates",
+            {
+                "id": 10,
+                "name": "service_template_name",
+                "alias": "service_template_alias",
+                "is_locked": False,
             },
         ),
     ],

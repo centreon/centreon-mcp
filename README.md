@@ -8,67 +8,52 @@ The MCP server currently exposes 16 tools organized across five functional areas
 
 ### Resource Monitoring
 
-- **list_monitoring_resources** is the central tool for querying your real-time monitoring data. It supports rich filtering across multiple dimensions simultaneously:
-- **By resource type**: filter on hosts only, services only, or both
-- **By status**: filter on OK, WARNING, CRITICAL, UNKNOWN, or PENDING states
-- **By status type**: distinguish between HARD and SOFT states
-- **By name, alias, or parent name**: substring matching on resource identifiers
-- **By output/information content**: find resources whose check output contains (or does not contain) a given string — ideal for surfacing specific error messages across your infrastructure
-- **By scope**: filter by host group, service group, host category, service category, or monitoring server (poller)
-- **Pagination and sorting**: results are paginated and sortable by host name, alias, address, or state
+| Tool                        | Types             | Description                                                                                                                                           |
+| --------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_monitoring_resources` | `host` `service` | Query real-time monitoring data with rich filtering (status, status type, name/alias, output content, scope), paginated and sortable.                 |
+| `count_hosts_by_status`     | `host`            | Return the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped by host group or host category.                    |
+| `count_services_by_status`  | `service`         | Return the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host, host group, or service group. |
+| `get_host_timeline`         | `host`            | Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                    |
+| `get_service_timeline`      | `service`         | Fetch a service's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                 |
 
-This combination of filters makes it possible to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'" and get precise, actionable results directly in the conversation.
-
-Two dedicated counting tools provide a fast status summary without retrieving individual resources:
-
-- **count_hosts_by_status** — returns the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped to one or more host groups or host categories
-- **count_services_by_status** — returns the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host name, host group, host category, service group, or service category
-
-Both tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
-
-A dedicated tool lets the assistant inspect what happened on a single resource:
-
-- **get_host_timeline / get_service_timeline**: fetch the event history of one host or service in real-time monitoring (state changes, notifications, downtimes, acknowledgements, comments). Filterable by event type, content substring and date range. Sorted by date descending by default. Useful to answer "what happened on this resource recently ?" without leaving the conversation.
+`list_monitoring_resources` filters can be combined to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'". The two counting tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
 
 ### Infrastructure Inventory
 
-A generic tool lets AI assistants explore your monitoring topology:
+| Tool                                         | Types                                              | Description                                                                                        |
+| -------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `list_monitoring_entities`                   | `host_group` `service_group` `monitoring_server` | List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. |
+| `generate_monitoring_servers_configurations` | `monitoring_server`                                | Generate the configuration files for one or more pollers (or all pollers if none specified).       |
+| `reload_monitoring_servers_configurations`   | `monitoring_server`                                | Reload poller configuration, pushing the generated files to the monitoring engines.                |
 
-- **list_monitoring_entities** — List host groups, service groups, or monitoring servers (pollers) by selecting the entity via `model_type`. Host groups and service groups are filterable by host, service, host group, or poller attributes; monitoring servers by name, ID, or running status.
-
-This tool serves as a natural building block: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely.
-
-Two additional tools manage the configuration lifecycle of monitoring servers (pollers):
-
-- **generate_monitoring_servers_configurations** — Generate the configuration files for one or more pollers by their IDs. If no IDs are provided, generates configurations for all pollers. Runs concurrently when multiple IDs are given.
-- **reload_monitoring_servers_configurations** — Reload the configuration of one or more pollers by their IDs, pushing the generated files to the monitoring engines. If no IDs are provided, reloads all pollers. Runs concurrently when multiple IDs are given.
-
-Poller configurations can be listed using **list_configurations** with `model_type` set to `monitoring_server` (see [Configuration](#configuration) below).
-
-These tools are typically chained: after modifying host or service configurations, an AI assistant can generate then reload the affected pollers to apply changes without leaving the conversation.
+`list_monitoring_entities` is a natural building block: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely. Poller configurations can also be listed using `list_configurations` with `model_type` set to `monitoring_server` (see [Configuration](#configuration) below). The generate and reload tools are typically chained: after modifying host or service configurations, an AI assistant can generate then reload the affected pollers to apply changes without leaving the conversation.
 
 ### Configuration
 
-Four generic tools cover the full configuration lifecycle for hosts, services, host groups, service groups, host categories, service categories, host severities, host templates, and commands. Each tool accepts a `model_type` parameter to select the entity to operate on.
+| Tool                    | Types                                                                                                                                                                       | Description                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `list_configurations`   | `command` `host` `service` `host_category` `host_group` `service_category` `service_group` `host_severity` `host_template` `monitoring_server` | List configurations, filterable by entity-specific fields, paginated and sortable.   |
+| `create_configuration`  | `command` `host` `service` `host_category` `host_group` `service_category` `service_group` `host_severity` `host_template`                      | Create a new configuration for the chosen entity type.                               |
+| `update_configuration`  | `host` `service` `host_category` `host_group` `host_severity` `host_template`                                                                      | Partially update an existing configuration by ID, using only the fields that change. |
+| `delete_configurations` | `host` `service` `host_category` `host_group` `service_category` `service_group` `host_severity` `host_template`                                 | Delete one or more configurations by their IDs.                                      |
 
-- **list_configurations** — List configurations, filterable by entity-specific fields (ID, name, alias, address, activation status, etc.). Results are paginated and sortable. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`, `monitoring_server`.
-- **create_configuration** — Create a new configuration by providing the required and optional parameters for the chosen entity type. Supported entity types: `command`, `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`.
-- **update_configuration** — Partially update an existing configuration by ID, using only the fields that need to change. Supported entity types: `host`, `service`, `host_category`, `host_group`, `host_severity`, `host_template`.
-- **delete_configurations** — Delete one or more configurations by their IDs. Supported entity types: `host`, `service`, `host_category`, `host_group`, `service_category`, `service_group`, `host_severity`, `host_template`.
-
-Each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations. Creating a service requires specifying the linked host and a name, and accepts optional parameters such as the service template, check and event handler commands, notification options, flap detection thresholds, and service category/group associations.
+Each tool accepts a `model_type` parameter to select the entity to operate on, and each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations. Creating a service requires specifying the linked host and a name, and accepts optional parameters such as the service template, check and event handler commands, notification options, flap detection thresholds, and service category/group associations.
 
 ### Monitoring Actions
 
-Acknowledge alerts, schedule downtimes, leave comments, and trigger checks without ever leaving your conversation. Three generic tools cover the full lifecycle, each accepting a `model_type` parameter to select the action kind.
+| Tool                        | Types                                             | Description                                                                                                        |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `list_monitoring_actions`   | `acknowledgement` `downtime`                     | List current acknowledgements or downtimes, with pagination and sorting.                                           |
+| `set_monitoring_actions`    | `acknowledgement` `downtime` `comment` `check` | Acknowledge, schedule a downtime, attach a comment, or trigger a check without waiting for the next polling cycle. |
+| `cancel_monitoring_actions` | `acknowledgement` `downtime`                     | Cancel one or more acknowledgements or downtimes by their IDs.                                                     |
 
-- **list_monitoring_actions** — List current acknowledgements or downtimes, with pagination and sorting (by ID, host, start time, entry time, etc.). Supported entity types: `acknowledgement`, `downtime`.
-- **set_monitoring_actions** — Apply an action to one or more resources: acknowledge (with options such as sticky acknowledgement and notifications), schedule a downtime (start/end times, fixed or flexible), attach a comment, or trigger a check without waiting for the next polling cycle (the `is_forced` flag, default `true`, controls whether the configured check interval is bypassed). Supported entity types: `acknowledgement`, `downtime`, `comment`, `check`.
-- **cancel_monitoring_actions** — Cancel one or more acknowledgements or downtimes by their IDs. Supported entity types: `acknowledgement`, `downtime`.
+Each tool accepts a `model_type` parameter to select the action kind. Acknowledge alerts, schedule downtimes, leave comments, and trigger checks without ever leaving your conversation.
 
 ### Metrics
 
-- **get_service_metrics** — Retrieve all metrics of a service with their current values, units, and warning/critical thresholds. Useful for answering questions like "what is the current CPU usage?" or "how close is disk usage to the critical threshold?" without leaving the conversation.
+| Tool                  | Types     | Description                                                                                          |
+| --------------------- | --------- | ---------------------------------------------------------------------------------------------------- |
+| `get_service_metrics` | `service` | Retrieve all metrics of a service with their current values, units, and warning/critical thresholds. |
 
 ## Quick Start
 

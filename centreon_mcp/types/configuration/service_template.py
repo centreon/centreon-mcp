@@ -29,11 +29,11 @@ DESCRIPTION = {
     "notification_enabled": "Specify whether notifications are enabled or not",
     "is_contact_additive_inheritance": (
         "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-        "When enabled, the contactgroup definition will not override the definitions on template levels, it will be appended instead."
+        "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
     ),
     "is_contact_group_additive_inheritance": (
         "Only used when notification inheritance for hosts and services is set to vertical inheritance only."
-        "When enabled, the contact definition will not override the definitions on template levels, it will be appended instead."
+        "When enabled, the contact group definition will not override the definitions on template levels, it will be appended instead."
     ),
     "notification_interval": (
         "Define the number of 'time units' to wait before re-notifying a contact that this service is still down or unreachable."

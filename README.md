@@ -12,7 +12,7 @@ The MCP server currently exposes 16 tools organized across four functional areas
 - `list_monitoring_entities`: `host_group` `service_group` `monitoring_server`: List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. 
 - `count_hosts_by_status`: `host`: Return the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped by host group or host category.                    
 - `count_services_by_status`: `service`: Return the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host, host group, or service group. 
-- `get_host_timeline`: `host`: Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                    
+- `get_host_timeline`: `host`: Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.
 - `get_service_timeline`: `service`: Fetch a service's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                 
 
 ### Configuration

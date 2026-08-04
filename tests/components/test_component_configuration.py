@@ -130,14 +130,14 @@ async def test_create_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity"],
+    ["host_category", "host_group", "host_severity", "service_severity"],
 )
 @patch("centreon_mcp.utils.mixins.PutMixin.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_put_configuration(
     logger: MagicMock,
     update_mixin: AsyncMock,
-    model_type: Literal["host_category", "host_group", "host_severity"],
+    model_type: Literal["host_category", "host_group", "host_severity", "service_severity"],
 ):
 
     # Setup args

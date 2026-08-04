@@ -26,6 +26,7 @@ MODULE = "centreon_mcp.components.configuration"
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -45,6 +46,7 @@ async def test_list_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):
@@ -83,6 +85,7 @@ async def test_list_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -101,6 +104,7 @@ async def test_create_configuration(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):
@@ -126,14 +130,14 @@ async def test_create_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity"],
+    ["host_category", "host_group", "host_severity", "service_severity"],
 )
 @patch("centreon_mcp.utils.mixins.PutMixin.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_put_configuration(
     logger: MagicMock,
     update_mixin: AsyncMock,
-    model_type: Literal["host_category", "host_group", "host_severity"],
+    model_type: Literal["host_category", "host_group", "host_severity", "service_severity"],
 ):
 
     # Setup args
@@ -199,6 +203,7 @@ async def test_patch_configuration(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -216,6 +221,7 @@ async def test_delete_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):

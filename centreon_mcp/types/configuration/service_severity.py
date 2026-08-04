@@ -28,7 +28,7 @@ class ServiceSeverityFilter(BaseFilter):
     service_severity_alias: str | None = Field(default=None, serialization_alias="alias $eq")
     min_service_severity_level: int | None = Field(default=None, serialization_alias="level $ge")
     max_service_severity_level: int | None = Field(default=None, serialization_alias="level $le")
-    service_service_is_activated: bool | None = Field(
+    service_severity_is_activated: bool | None = Field(
         default=None, serialization_alias="is_activated $eq"
     )
 

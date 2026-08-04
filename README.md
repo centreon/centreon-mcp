@@ -6,7 +6,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 The MCP server currently exposes 16 tools organized across four functional areas.
 
-### Resource Moniroting
+### Resource Monitoring
 
 - `list_monitoring_resources`: `host` `service`: Query real-time monitoring data with rich filtering (status, status type, name/alias, output content, scope), paginated and sortable. 
 - `list_monitoring_entities`: `host_group` `service_group` `monitoring_server`: List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. 

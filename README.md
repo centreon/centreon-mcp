@@ -4,56 +4,35 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 16 tools organized across five functional areas.
+The MCP server currently exposes 16 tools organized across four functional areas.
 
-### Resource Monitoring
+### Resource Moniroting
 
-| Tool                        | Types             | Description                                                                                                                                           |
-| --------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `list_monitoring_resources` | `host` `service` | Query real-time monitoring data with rich filtering (status, status type, name/alias, output content, scope), paginated and sortable.                 |
-| `count_hosts_by_status`     | `host`            | Return the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped by host group or host category.                    |
-| `count_services_by_status`  | `service`         | Return the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host, host group, or service group. |
-| `get_host_timeline`         | `host`            | Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                    |
-| `get_service_timeline`      | `service`         | Fetch a service's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                 |
-
-`list_monitoring_resources` filters can be combined to ask highly specific questions such as "Show me all CRITICAL services on hosts in the 'production' host group whose output mentions 'disk full'". The two counting tools accept multiple filter sets combined with OR logic, making it straightforward to answer questions like "How many hosts are DOWN across the 'production' and 'staging' groups?" in a single call.
-
-### Infrastructure Inventory
-
-| Tool                                         | Types                                              | Description                                                                                        |
-| -------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `list_monitoring_entities`                   | `host_group` `service_group` `monitoring_server` | List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. |
-| `generate_monitoring_servers_configurations` | `monitoring_server`                                | Generate the configuration files for one or more pollers (or all pollers if none specified).       |
-| `reload_monitoring_servers_configurations`   | `monitoring_server`                                | Reload poller configuration, pushing the generated files to the monitoring engines.                |
-
-`list_monitoring_entities` is a natural building block: an AI assistant can look up the relevant groups and pollers first, then use those identifiers to scope its subsequent queries precisely. Poller configurations can also be listed using `list_configurations` with `model_type` set to `monitoring_server` (see [Configuration](#configuration) below). The generate and reload tools are typically chained: after modifying host or service configurations, an AI assistant can generate then reload the affected pollers to apply changes without leaving the conversation.
+- `list_monitoring_resources`: `host` `service`: Query real-time monitoring data with rich filtering (status, status type, name/alias, output content, scope), paginated and sortable. 
+- `list_monitoring_entities`: `host_group` `service_group` `monitoring_server`: List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. 
+- `count_hosts_by_status`: `host`: Return the total number of hosts in each state (UP, DOWN, UNREACHABLE, PENDING), optionally scoped by host group or host category.                    
+- `count_services_by_status`: `service`: Return the total number of services in each state (OK, WARNING, CRITICAL, UNKNOWN, PENDING), optionally scoped by host, host group, or service group. 
+- `get_host_timeline`: `host`: Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                    
+- `get_service_timeline`: `service`: Fetch a service's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                 
 
 ### Configuration
 
-| Tool                    | Types                                                                                                                                                                       | Description                                                                          |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `list_configurations`   | `command` `host` `service` `host_category` `host_group` `service_category` `service_group` `service_template` `host_severity` `host_template` `monitoring_server` | List configurations, filterable by entity-specific fields, paginated and sortable.   |
-| `create_configuration`  | `command` `host` `service` `host_category` `host_group` `service_category` `service_group` `service_template` `host_severity` `host_template`                      | Create a new configuration for the chosen entity type.                               |
-| `update_configuration`  | `host` `service` `service_template` `host_category` `host_group` `host_severity` `host_template`                                                                      | Partially update an existing configuration by ID, using only the fields that change. |
-| `delete_configurations` | `host` `service` `host_category` `host_group` `service_category` `service_group` `service_template` `host_severity` `host_template`                                 | Delete one or more configurations by their IDs.                                      |
-
-Each tool accepts a `model_type` parameter to select the entity to operate on, and each entity type carries its own set of parameters passed alongside `model_type`. For example, creating a host requires specifying the monitoring server, name, and IP address, and accepts optional parameters such as SNMP community and version, geographic coordinates, severity, check and event handler commands, notification options, flap detection thresholds, and host group/category/template associations. Creating a service requires specifying the linked host and a name, and accepts optional parameters such as the service template, check and event handler commands, notification options, flap detection thresholds, and service category/group associations. Creating a service template requires specifying a name and alias, and accepts optional parameters such as the check and event handler commands, notification options, flap detection thresholds, and host template/service category associations.
+- `list_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command` `monitoring_server`: List configurations, filterable by entity-specific fields, paginated and sortable.   
+- `create_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command`: Create a new configuration for the chosen entity type.                               
+- `update_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `servive_severity` `service_template`: Partially update an existing configuration by ID, using only the fields that change. 
+- `delete_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template`: Delete one or more configurations by their IDs.                                     
+- `generate_monitoring_servers_configurations`: `monitoring_server`: Generate the configuration files for one or more pollers (or all pollers if none specified).       
+- `reload_monitoring_servers_configurations`: `monitoring_server`: Reload poller configuration, pushing the generated files to the monitoring engines. 
 
 ### Monitoring Actions
 
-| Tool                        | Types                                             | Description                                                                                                        |
-| --------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `list_monitoring_actions`   | `acknowledgement` `downtime`                     | List current acknowledgements or downtimes, with pagination and sorting.                                           |
-| `set_monitoring_actions`    | `acknowledgement` `downtime` `comment` `check` | Acknowledge, schedule a downtime, attach a comment, or trigger a check without waiting for the next polling cycle. |
-| `cancel_monitoring_actions` | `acknowledgement` `downtime`                     | Cancel one or more acknowledgements or downtimes by their IDs.                                                     |
-
-Each tool accepts a `model_type` parameter to select the action kind. Acknowledge alerts, schedule downtimes, leave comments, and trigger checks without ever leaving your conversation.
+- `list_monitoring_actions`: `acknowledgement` `downtime`: List current acknowledgements or downtimes, with pagination and sorting.                                           
+- `set_monitoring_actions`: `acknowledgement` `downtime` `comment` `check`: Acknowledge, schedule a downtime, attach a comment, or trigger a check without waiting for the next polling cycle. 
+- `cancel_monitoring_actions`: `acknowledgement` `downtime`: Cancel one or more acknowledgements or downtimes by their IDs.      
 
 ### Metrics
 
-| Tool                  | Types     | Description                                                                                          |
-| --------------------- | --------- | ---------------------------------------------------------------------------------------------------- |
-| `get_service_metrics` | `service` | Retrieve all metrics of a service with their current values, units, and warning/critical thresholds. |
+- `get_service_metrics`: `service`: Retrieve all metrics of a service with their current values, units, and warning/critical thresholds.
 
 ## Quick Start
 

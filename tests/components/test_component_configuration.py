@@ -26,6 +26,7 @@ MODULE = "centreon_mcp.components.configuration"
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -45,6 +46,7 @@ async def test_list_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):
@@ -83,6 +85,7 @@ async def test_list_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -101,6 +104,7 @@ async def test_create_configuration(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):
@@ -199,6 +203,7 @@ async def test_patch_configuration(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 )
@@ -216,6 +221,7 @@ async def test_delete_configurations(
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
 ):

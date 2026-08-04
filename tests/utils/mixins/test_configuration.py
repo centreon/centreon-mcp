@@ -65,6 +65,13 @@ from centreon_mcp.types.configuration.service_group import (
     ServiceGroupFullParams,
     ServiceGroupOrder,
 )
+from centreon_mcp.types.configuration.service_severity import (
+    ServiceSeverity,
+    ServiceSeverityFilter,
+    ServiceSeverityFullParams,
+    ServiceSeverityOrder,
+    ServiceSeverityPartialParams,
+)
 from centreon_mcp.types.configuration.service_template import (
     ServiceTemplate,
     ServiceTemplateFilter,
@@ -125,6 +132,11 @@ MODULE = "centreon_mcp.utils.mixins"
             ServiceTemplateFullParams.model_construct(),
             "configuration/services/templates",
         ),
+        (
+            ServiceSeverity,
+            ServiceSeverityFullParams.model_construct(),
+            "configuration/services/severities",
+        ),
         (Command, CommandParams.model_construct(), "configuration/commands"),
     ],
 )
@@ -144,6 +156,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (ServiceGroup, "configuration/services/groups"),
         (ServiceCategory, "configuration/services/categories"),
         (ServiceTemplate, "configuration/services/templates"),
+        (ServiceSeverity, "configuration/services/severities"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -211,6 +224,17 @@ class TestDeleteMixinConfiguration(TestDeleteMixinBase):
                 comment=None,
             ),
         ),
+        (
+            "configuration/services/severities",
+            ServiceSeverity,
+            ServiceSeverity(
+                id=10, name="name", alias="alias", level=10, icon_id=5, is_activated=True
+            ),
+            ServiceSeverityPartialParams(alias="new_alias", level=20),
+            ServiceSeverityFullParams(
+                name="name", alias="new_alias", level=20, icon_id=5, is_activated=True
+            ),
+        ),
     ],
 )
 class TestPutMixinConfiguration(TestPutMixinBase):
@@ -273,6 +297,18 @@ class TestPatchMixinConfiguration(TestPatchMixinBase):
                 "id": 10,
                 "name": "host_severity_name",
                 "alias": "host_severity_alias",
+                "level": 10,
+                "icon_id": 1,
+                "is_activated": True,
+            },
+        ),
+        (
+            ServiceSeverity,
+            "configuration/services/severities",
+            {
+                "id": 10,
+                "name": "name",
+                "alias": "alias",
                 "level": 10,
                 "icon_id": 1,
                 "is_activated": True,
@@ -465,6 +501,22 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "name": "service_template_name",
                 "alias": "service_template_alias",
                 "is_locked": False,
+            },
+        ),
+        (
+            ServiceSeverity,
+            [ServiceSeverityFilter(service_severity_name="name")],
+            ServiceSeverityOrder(field="alias"),
+            '{"$or": [{"$and": [{"name": {"$eq": "name"}}]}]}',
+            '{"order":"ASC","field":"alias"}',
+            "configuration/services/severities",
+            {
+                "id": 10,
+                "name": "name",
+                "alias": "alias",
+                "level": 10,
+                "icon_id": 1,
+                "is_activated": False,
             },
         ),
     ],

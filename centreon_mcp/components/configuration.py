@@ -34,16 +34,17 @@ configuration = FastMCP()
 async def list_configurations(
     model_type: Literal[
         "command",
+        "host",
         "host_category",
         "host_group",
         "host_severity",
         "host_template",
-        "host",
+        "monitoring_server",
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
-        "monitoring_server",
     ],
     filters: Sequence[ConfigurationFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
@@ -52,12 +53,12 @@ async def list_configurations(
 ) -> list[Configuration]:
     """
     List configurations matching the given filters for following entities:
-        - Commands
         - Host / Service
         - Host / Service Category
         - Host / Service Group
-        - Host Severity
+        - Host / Service Severity
         - Host / Service Template
+        - Commands
         - Monitoring Servers
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all entities except if explicitly intended.
@@ -88,26 +89,27 @@ async def list_configurations(
 async def create_configuration(
     model_type: Literal[
         "command",
+        "host",
         "host_category",
         "host_group",
         "host_severity",
         "host_template",
-        "host",
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
     params: ConfigurationFullParams,
 ) -> bool:
     """
     Create a configuration for following entities:
-        - Commands
         - Host / Service
         - Host / Service Category
         - Host / Service Group
-        - Host Severity
+        - Host / Service Severity
         - Host / Service Template
+        - Commands
     """
     logger.info("Executing tool create_configuration")
 
@@ -128,12 +130,13 @@ async def create_configuration(
 )
 async def update_configuration(
     model_type: Literal[
+        "host",
         "host_category",
         "host_group",
         "host_severity",
         "host_template",
-        "host",
         "service",
+        "service_severity",
         "service_template",
     ],
     model_id: int,
@@ -144,7 +147,7 @@ async def update_configuration(
         - Host / Service
         - Host Category
         - Host Group
-        - Host Severity
+        - Host / Service Severity
         - Host / Service Template
     """
     logger.info("Executing tool update_configuration")
@@ -166,14 +169,15 @@ async def update_configuration(
 )
 async def delete_configurations(
     model_type: Literal[
+        "host",
         "host_category",
         "host_group",
         "host_severity",
         "host_template",
-        "host",
         "service",
         "service_category",
         "service_group",
+        "service_severity",
         "service_template",
     ],
     model_ids: list[int],
@@ -183,7 +187,7 @@ async def delete_configurations(
         - Host / Service
         - Host / Service Category
         - Host / Service Group
-        - Host Severity
+        - Host / Service Severity
         - Host / Service Template
     """
     logger.info("Executing tool delete_configurations")

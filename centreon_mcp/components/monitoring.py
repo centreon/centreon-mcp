@@ -13,11 +13,13 @@ from centreon_mcp.types.monitoring.actions import (
     MonitoringActionParams,
 )
 from centreon_mcp.types.monitoring.mapping import (
+    MODELS_MIXIN_COUNT,
     MODELS_MIXIN_DELETE,
     MODELS_MIXIN_LIST,
     MODELS_MIXIN_SET,
 )
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
+from centreon_mcp.types.monitoring.status import ResourceStatusCount, ResourceStatusCountFilter
 from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseResource, ResourceStatus, ResourceType, StatusType
 
@@ -199,3 +201,31 @@ async def cancel_monitoring_actions(
     """
     logger.info("Executing tool cancel_monitoring_actions")
     return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)
+
+
+@monitoring.tool(
+    annotations={
+        "title": "Count resources by status in real-time monitoring",
+        "readOnlyHint": True,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def count_monitoring_resources_by_status(
+    model_type: Literal["host", "service"],
+    filters: Sequence[ResourceStatusCountFilter] | None = None,
+) -> ResourceStatusCount:
+    """
+    Count resources (host/service) by status in real-time monitoring matching given filters.
+    If no filters are provided, ask users to provide at least one filter,
+    unless counting all resources statuses is explicitly intended.
+    Use this tool instead of list_monitoring_resources when only aggregate counts are needed.
+    """
+    logger.info("Executing tool count_monitoring_resources_by_status")
+
+    # Check compatibility between model and filters types
+    if filters is not None:
+        [f.check(model_type) for f in filters]
+
+    count = await MODELS_MIXIN_COUNT[model_type].count(filters)
+    return cast(ResourceStatusCount, count)

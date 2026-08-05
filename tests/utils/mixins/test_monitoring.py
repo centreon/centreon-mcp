@@ -27,8 +27,13 @@ from centreon_mcp.types.monitoring.servicegroup import (
     ServiceGroupFilter,
     ServiceGroupOrder,
 )
+from centreon_mcp.types.monitoring.status.host import HostStatusCount, HostStatusCountFilter
+from centreon_mcp.types.monitoring.status.service import (
+    ServiceStatusCount,
+    ServiceStatusCountFilter,
+)
 
-from .base import TestDeleteMixinBase, TestListMixinBase, TestSetMixinBase
+from .base import TestCountMixinBase, TestDeleteMixinBase, TestListMixinBase, TestSetMixinBase
 
 MODULE = "centreon_mcp.utils.mixins"
 
@@ -199,4 +204,40 @@ class TestListMixinMonitoring(TestListMixinBase):
     ],
 )
 class TestSetMixinMonitoring(TestSetMixinBase):
+    __test__ = True
+
+
+@pytest.mark.parametrize(
+    "model,filters,search,endpoint,payload",
+    [
+        (
+            HostStatusCount,
+            [HostStatusCountFilter(host_group_name="host_group_name")],
+            '{"$or": [{"$and": [{"host_group.name": {"$eq": "host_group_name"}}]}]}',
+            "monitoring/hosts/status",
+            {
+                "total": 10,
+                "pending": {"total": 1},
+                "down": {"total": 2},
+                "up": {"total": 5},
+                "unreachable": {"total": 2},
+            },
+        ),
+        (
+            ServiceStatusCount,
+            [ServiceStatusCountFilter(service_category_name="service_category_name")],
+            '{"$or": [{"$and": [{"service_category.name": {"$eq": "service_category_name"}}]}]}',
+            "monitoring/services/status",
+            {
+                "total": 10,
+                "pending": {"total": 1},
+                "unknown": {"total": 1},
+                "critical": {"total": 1},
+                "warning": {"total": 2},
+                "ok": {"total": 5},
+            },
+        ),
+    ],
+)
+class TestCountMixinMonitoring(TestCountMixinBase):
     __test__ = True

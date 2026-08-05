@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
 from centreon_mcp.utils.mixins import (
+    CountMixin,
     CreateMixin,
     DeleteMixin,
     ListMixin,
@@ -253,3 +254,30 @@ class TestSetMixinBase:
         # Assert request called with right args
         payload["resources"] = [{"type": "host", "id": 20, "parent": {"id": 20}}]
         request.assert_awaited_once_with("POST", endpoint, payload)
+
+
+class TestCountMixinBase:
+    __test__ = False
+
+    @patch(f"{MODULE}.request", new_callable=AsyncMock)
+    async def test_count(
+        self,
+        request: AsyncMock,
+        model: type[CountMixin],
+        filters: Sequence[BaseFilter],
+        search: str,
+        endpoint: str,
+        payload: dict,
+    ):
+
+        # Mock request
+        request.return_value = payload
+        # Call test function
+        result = await model.count(filters)
+
+        # Assert request called with right args
+        params = {"search": search}
+        request.assert_awaited_once_with("GET", endpoint, params=params)
+
+        # Assert result
+        assert result == model(**payload)

@@ -5,7 +5,9 @@ from centreon_mcp.types.monitoring.actions.downtime import Downtime
 from centreon_mcp.types.monitoring.host_group import HostGroup
 from centreon_mcp.types.monitoring.monitoring_server import MonitoringServer
 from centreon_mcp.types.monitoring.servicegroup import ServiceGroup
-from centreon_mcp.utils.mixins import DeleteMixin, ListMixin, SetMixin
+from centreon_mcp.types.monitoring.status.host import HostStatusCount
+from centreon_mcp.types.monitoring.status.service import ServiceStatusCount
+from centreon_mcp.utils.mixins import CountMixin, DeleteMixin, ListMixin, SetMixin
 
 _list_models: list[type[ListMixin]] = [
     HostGroup,
@@ -24,4 +26,9 @@ MODELS_MIXIN_SET: dict[str, type[SetMixin]] = {model.model_type: model for model
 _delete_models: list[type[DeleteMixin]] = [Downtime, Acknowledgement]
 MODELS_MIXIN_DELETE: dict[str, type[DeleteMixin]] = {
     model.model_type: model for model in _delete_models
+}
+
+_count_models: list[type[CountMixin]] = [HostStatusCount, ServiceStatusCount]
+MODELS_MIXIN_COUNT: dict[str, type[CountMixin]] = {
+    model.model_type: model for model in _count_models
 }

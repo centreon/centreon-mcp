@@ -184,3 +184,18 @@ class SetMixin[
         }
         await request("POST", cls.set_endpoint, payload)
         return True
+
+
+class CountMixin[Filter: BaseFilter](BaseMixin):
+    """
+    Mixin to add to a Centreon Model a count method via heritage
+    """
+
+    @classmethod
+    async def count(cls: type[Self], filters: Sequence[Filter] | None = None) -> Self:
+        """
+        Count resources by status matching the provided filters using the model's endpoint.
+        """
+        params = {"search": json.dumps(BaseFilter.join(filters))}
+        content = await request("GET", cls.endpoint, params=params)
+        return cls(**content)

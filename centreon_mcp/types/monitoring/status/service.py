@@ -1,12 +1,13 @@
-from typing import Literal
+from typing import ClassVar, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from centreon_mcp.utils.base import BaseFilter, StatusCount
-from centreon_mcp.utils.request import request
+from centreon_mcp.types.monitoring.status.base import BaseStatusCount
+from centreon_mcp.utils.base import BaseFilter
+from centreon_mcp.utils.mixins import CountMixin
 
 
-class ServiceFilter(BaseFilter):
+class ServiceStatusCountFilter(BaseFilter):
     model_type: Literal["service"] = "service"
 
     host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
@@ -28,19 +29,13 @@ class ServiceFilter(BaseFilter):
     )
 
 
-class ServiceStatusCount(StatusCount):
+class ServiceStatusCount(BaseStatusCount, CountMixin[ServiceStatusCountFilter]):
+    endpoint: ClassVar[str] = "monitoring/services/status"
+    model_type: ClassVar[str] = "service"
+
+    total: int
+    pending: int
     critical: int
     unknown: int
     ok: int
     warning: int
-
-
-class Service(BaseModel):
-    @staticmethod
-    async def count_by_status(search: str | None) -> ServiceStatusCount:
-        """
-        Count services by status.
-        """
-        params = {"search": search}
-        content = await request("GET", "monitoring/services/status", params=params)
-        return ServiceStatusCount(**content)

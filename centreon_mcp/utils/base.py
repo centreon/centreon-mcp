@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from enum import IntEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 ResourceType = Literal["host", "service"]
 StatusType = Literal["soft", "hard"]
@@ -36,19 +36,6 @@ class EnablementStatus(IntEnum):
     STATUS_DISABLED = 0
     STATUS_ENABLED = 1
     STATUS_DEFAULT = 2
-
-
-class StatusCount(BaseModel):
-    pending: int
-    total: int
-
-    @model_validator(mode="before")
-    @classmethod
-    def flatten(cls, data: dict[str, Any]):
-        return {
-            "total": data.pop("total"),
-            **{status: count["total"] for status, count in data.items()},
-        }
 
 
 class BaseResource(BaseModel):

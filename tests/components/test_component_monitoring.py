@@ -6,6 +6,7 @@ import pytest
 
 from centreon_mcp.components.monitoring import (
     cancel_monitoring_actions,
+    count_monitoring_resources_by_status,
     list_monitoring_actions,
     list_monitoring_entities,
     list_monitoring_resources,
@@ -198,3 +199,35 @@ async def test_cancel_monitoring_actions(
 
     # Assert result
     assert result == {model_id: True}
+
+
+@pytest.mark.parametrize(
+    "model_type",
+    ["host", "service"],
+)
+@patch("centreon_mcp.utils.mixins.CountMixin.count", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_count_monitoring_resource_by_status(
+    logger: MagicMock,
+    count_mixin: AsyncMock,
+    model_type: Literal["host", "service"],
+):
+
+    # Setup args
+    filters = [MagicMock()]
+
+    # Mock logger
+    logger.debug.return_value = None
+
+    # Mock CountMixin.count
+    count = MagicMock()
+    count_mixin.return_value = count
+
+    # Call test function
+    result = await count_monitoring_resources_by_status(model_type, filters)
+
+    # Assert CountMixin.count called with correct args
+    count_mixin.assert_awaited_once_with(filters)
+
+    # Assert result
+    assert result == count

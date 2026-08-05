@@ -207,6 +207,7 @@ async def cancel_monitoring_actions(
     annotations={
         "title": "Count resources by status in real-time monitoring",
         "readOnlyHint": True,
+        "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     }

@@ -1,5 +1,5 @@
 from typing import Literal
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
@@ -7,6 +7,7 @@ from centreon_mcp.components.configuration import (
     create_configuration,
     delete_configurations,
     list_configurations,
+    manage_monitoring_server_configurations,
     update_configuration,
 )
 
@@ -243,3 +244,63 @@ async def test_delete_configurations(
 
     # Assert result
     assert result == {model_id: True}
+
+
+@pytest.mark.parametrize(
+    "action",
+    ["generate", "reload"],
+)
+@patch(f"{MODULE}.MonitoringServer.manage", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_manage_several_monitoring_server_configurations(
+    logger: MagicMock, monitoring_server_manage: AsyncMock, action: Literal["generate", "reload"]
+):
+
+    # Setup args
+    monitoring_server_ids = [1, 2, 3]
+
+    # Mock logger
+    logger.debug.return_value = None
+
+    # Mock MonitoringServer.manage
+    output = [True, True, True]
+    monitoring_server_manage.side_effect = output
+
+    # Call the test function
+    results = await manage_monitoring_server_configurations(action, monitoring_server_ids)
+
+    # Check MonitoringServer.manage was called with right args
+    monitoring_server_manage.assert_has_awaits(
+        [call(action, monitoring_server_id) for monitoring_server_id in monitoring_server_ids]
+    )
+
+    # Check results
+    assert results == dict(zip(monitoring_server_ids, output, strict=True))
+
+
+@pytest.mark.parametrize(
+    "action",
+    ["generate", "reload"],
+)
+@patch(f"{MODULE}.MonitoringServer.manage", new_callable=AsyncMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_manage_all_monitoring_servers_configurations(
+    logger: MagicMock,
+    monitoring_server_manage: AsyncMock,
+    action: Literal["generate", "reload"],
+):
+
+    # Mock logger
+    logger.debug.return_value = None
+
+    # Mock MonitoringServer.manage
+    monitoring_server_manage.return_value = True
+
+    # Call the test function
+    result = await manage_monitoring_server_configurations(action)
+
+    # Check MonitoringServer.manage was called with right args
+    monitoring_server_manage.assert_awaited_once_with(action)
+
+    # Check result
+    assert result

@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Sequence
 from typing import Annotated, Literal, cast
 
@@ -17,6 +18,7 @@ from centreon_mcp.types.configuration.mapping import (
     MODELS_MIXIN_LIST,
     MODELS_MIXIN_UPDATE,
 )
+from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
 from centreon_mcp.utils import logger
 
 configuration = FastMCP()
@@ -192,3 +194,35 @@ async def delete_configurations(
     """
     logger.info("Executing tool delete_configurations")
     return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)
+
+
+@configuration.tool(
+    annotations={
+        "title": "Generate/Reload monitoring server configurations",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    }
+)
+async def manage_monitoring_server_configurations(
+    action: Literal["generate", "reload"],
+    monitoring_server_ids: list[int] | None = None,
+) -> bool | dict[int, bool | BaseException]:
+    """
+    Generate/Reload configurations of monitoring servers based on their ids.
+    If no ids provided, generate/reload configurations of all monitoring servers.
+    """
+    logger.info("Executing tool manage_monitoring_server_configurations")
+
+    # If no ids, generate/reload all configurations
+    if monitoring_server_ids is None:
+        return await MonitoringServer.manage(action)
+
+    # Else, generate/reload configurations concurrently
+    tasks = [
+        asyncio.create_task(MonitoringServer.manage(action, monitoring_server_id))
+        for monitoring_server_id in monitoring_server_ids
+    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    return dict(zip(monitoring_server_ids, results, strict=True))

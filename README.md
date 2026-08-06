@@ -4,7 +4,7 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 15 tools organized across four functional areas.
+The MCP server currently exposes 14 tools organized across four functional areas.
 
 ### Resource Monitoring
 
@@ -20,8 +20,7 @@ The MCP server currently exposes 15 tools organized across four functional areas
 - `create_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command`: Create a new configuration for the chosen entity type.                               
 - `update_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `servive_severity` `service_template`: Partially update an existing configuration by ID, using only the fields that change. 
 - `delete_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template`: Delete one or more configurations by their IDs.                                     
-- `generate_monitoring_servers_configurations`: `monitoring_server`: Generate the configuration files for one or more pollers (or all pollers if none specified).       
-- `reload_monitoring_servers_configurations`: `monitoring_server`: Reload poller configuration, pushing the generated files to the monitoring engines. 
+- `manage_monitoring_server_configurations`: `monitoring_server`: Generate or reload the configuration files for one or more pollers (or all pollers if none specified).
 
 ### Monitoring Actions
 

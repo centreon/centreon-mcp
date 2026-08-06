@@ -51,31 +51,18 @@ class MonitoringServer(BaseModel, ListMixin[MonitoringServerFilter, MonitoringSe
     is_activate: bool
 
     @classmethod
-    async def generate(cls, monitoring_server_id: int | None = None) -> bool:
+    async def manage(
+        cls, action: Literal["generate", "reload"], monitoring_server_id: int | None = None
+    ) -> bool:
         """
-        Generate the configuration of a monitoring server based on its id if provided.
-        Else, generate configuration of all monitoring servers.
+        Generate/Reload the configuration of a monitoring server based on its id if provided.
+        Else, generate/reload configuration of all monitoring servers.
         Return True if successful; otherwise, raise an exception.
         """
         endpoint = (
-            f"{cls.endpoint}/{monitoring_server_id}/generate"
+            f"{cls.endpoint}/{monitoring_server_id}/{action}"
             if monitoring_server_id is not None
-            else f"{cls.endpoint}/generate"
-        )
-        await request("GET", endpoint)
-        return True
-
-    @classmethod
-    async def reload(cls, monitoring_server_id: int | None = None) -> bool:
-        """
-        Reload the configuration of a monitoring server based on its id if provided.
-        Else, reload configuration of all monitoring servers.
-        Return True if successful; otherwise, raise an exception.
-        """
-        endpoint = (
-            f"{cls.endpoint}/{monitoring_server_id}/reload"
-            if monitoring_server_id is not None
-            else f"{cls.endpoint}/reload"
+            else f"{cls.endpoint}/{action}"
         )
         await request("GET", endpoint)
         return True

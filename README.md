@@ -20,7 +20,7 @@ The MCP server currently exposes 14 tools organized across four functional areas
 - `create_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command`: Create a new configuration for the chosen entity type.                               
 - `update_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `servive_severity` `service_template`: Partially update an existing configuration by ID, using only the fields that change. 
 - `delete_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template`: Delete one or more configurations by their IDs.                                     
-- `manage_monitoring_server_configurations`: `monitoring_server`: Generate or reload the configuration files for one or more pollers (or all pollers if none specified).       . 
+- `manage_monitoring_server_configurations`: `monitoring_server`: Generate or reload the configuration files for one or more pollers (or all pollers if none specified).
 
 ### Monitoring Actions
 

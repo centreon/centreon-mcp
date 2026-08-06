@@ -198,7 +198,7 @@ async def delete_configurations(
 
 @configuration.tool(
     annotations={
-        "title": "Generate/Reload monitoring servers configurations",
+        "title": "Generate/Reload monitoring server configurations",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
@@ -215,7 +215,7 @@ async def manage_monitoring_server_configurations(
     """
     logger.info("Executing tool manage_monitoring_server_configurations")
 
-    # If no ids, generate/reaload all configurations
+    # If no ids, generate/reload all configurations
     if monitoring_server_ids is None:
         return await MonitoringServer.manage(action)
 

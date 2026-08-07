@@ -48,19 +48,13 @@ cd centreon-mcp
 
 ### Using UV
 
-3. Install dependencies and synchronize
-
-```shell
-uv sync
-```
-
-4. Start the MCP server
+3. Start the MCP server
 
 ```shell
 uv run centreon-mcp-server
 ```
 
-5. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
+4. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
 
 ```shell
 ngrok http 8000

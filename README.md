@@ -40,11 +40,11 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                     | Default | Description                                           |
-| ------------------------ | ------- | ----------------------------------------------------- |
-| `CENTREON_BASE_URL`      |         | Base URL of the Centreon instance.                    |
-| `CENTREON_MCP_PORT`      | `8000`  | Port used to start the Centreon MCP service.          |
-| `CENTREON_MCP_LOG_LEVEL` | `INFO`  | Minimal severity level for Centreon MCP service logs. |
+| Name                     | Required | Default | Description                                           |
+| ------------------------ | -------- | ------- | ----------------------------------------------------- |
+| `CENTREON_BASE_URL`      | `True`   |         | Base URL of the Centreon instance.                    |
+| `CENTREON_MCP_PORT`      | `False`  | `8000`  | Port used to start the Centreon MCP service.          |
+| `CENTREON_MCP_LOG_LEVEL` | `False`  | `INFO`  | Minimal severity level for Centreon MCP service logs. |
 
 ### Using UV
 

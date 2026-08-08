@@ -4,33 +4,30 @@ This project offers an MCP server for Centreon. Built in Python with the [FastMC
 
 ## Features
 
-The MCP server currently exposes 14 tools organized across four functional areas.
+Using natural language, you can ask the Centreon MCP server to:
 
-### Resource Monitoring
+### Keep an eye on your infrastructure
 
-- `list_monitoring_resources`: `host` `service`: Query real-time monitoring data with rich filtering (status, status type, name/alias, output content, scope), paginated and sortable. 
-- `list_monitoring_entities`: `host_group` `service_group` `monitoring_server`: List host groups, service groups, or monitoring servers (pollers), filterable by their attributes. 
-- `count_monitoring_resources_by_status`: `host` `service`: Return the total number of hosts (UP, DOWN, UNREACHABLE, PENDING) or services (OK, WARNING, CRITICAL, UNKNOWN, PENDING) in each state, optionally scoped by host, group, or category.                   
-- `get_host_timeline`: `host`: Fetch a host's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.
-- `get_service_timeline`: `service`: Fetch a service's event history (state changes, notifications, downtimes, acknowledgements, comments), filterable and sorted by date.                 
+- Check the real-time status of your hosts and services, filtering by state, group, category, poller, and more.
+- Get an instant count of how many resources are up, down, or in trouble, without digging through dashboards.
+- Look back at what happened on a host or service recently — outages, notifications, downtimes, acknowledgements, and comments.
 
-### Configuration
+### Manage your monitoring configuration
 
-- `list_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command` `monitoring_server`: List configurations, filterable by entity-specific fields, paginated and sortable.   
-- `create_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template` `command`: Create a new configuration for the chosen entity type.                               
-- `update_configuration`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `servive_severity` `service_template`: Partially update an existing configuration by ID, using only the fields that change. 
-- `delete_configurations`: `host` `host_category` `host_group` `host_severity` `host_template` `service` `service_category` `service_group` `service_severity` `service_template`: Delete one or more configurations by their IDs.                                     
-- `manage_monitoring_server_configurations`: `monitoring_server`: Generate or reload the configuration files for one or more pollers (or all pollers if none specified).
+- Browse, create, update, and delete hosts, services, and their categories, groups, severities, and templates.
+- Manage commands and monitoring servers (pollers).
+- Push configuration changes to your pollers by generating or reloading them on demand.
 
-### Monitoring Actions
+### React to incidents
 
-- `list_monitoring_actions`: `acknowledgement` `downtime`: List current acknowledgements or downtimes, with pagination and sorting.                                           
-- `set_monitoring_actions`: `acknowledgement` `downtime` `comment` `check`: Acknowledge, schedule a downtime, attach a comment, or trigger a check without waiting for the next polling cycle. 
-- `cancel_monitoring_actions`: `acknowledgement` `downtime`: Cancel one or more acknowledgements or downtimes by their IDs.      
+- Acknowledge an alert, schedule a downtime, add a comment, or trigger an immediate check.
+- Review current acknowledgements and downtimes, and cancel them when they're no longer needed.
 
-### Metrics
+### Analyze performance
 
-- `get_service_metrics`: `service`: Retrieve all metrics of a service with their current values, units, and warning/critical thresholds.
+- Retrieve a service's metrics along with their current values and warning/critical thresholds.
+
+> For the exact list of underlying tools, see [TOOLS.md](TOOLS.md).
 
 ## Quick Start
 
@@ -43,27 +40,21 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                     | Default | Description                                           |
-| ------------------------ | ------- | ----------------------------------------------------- |
-| `CENTREON_BASE_URL`      |         | Base URL of the Centreon instance.                    |
-| `CENTREON_MCP_PORT`      | `8000`  | Port used to start the Centreon MCP service.          |
-| `CENTREON_MCP_LOG_LEVEL` | `INFO`  | Minimal severity level for Centreon MCP service logs. |
+| Name                     | Required | Default | Description                                           |
+| ------------------------ | -------- | ------- | ----------------------------------------------------- |
+| `CENTREON_BASE_URL`      | `True`   |         | Base URL of the Centreon instance.                    |
+| `CENTREON_MCP_PORT`      | `False`  | `8000`  | Port used to start the Centreon MCP service.          |
+| `CENTREON_MCP_LOG_LEVEL` | `False`  | `INFO`  | Minimal severity level for Centreon MCP service logs. |
 
 ### Using UV
 
-3. Install dependencies and synchronize
-
-```shell
-uv sync
-```
-
-4. Start the MCP server
+3. Start the MCP server
 
 ```shell
 uv run centreon-mcp-server
 ```
 
-5. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
+4. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
 
 ```shell
 ngrok http 8000

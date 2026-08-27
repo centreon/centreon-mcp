@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # --- Runtime ---
 
-FROM python:3.13-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 # Set working directory:
 WORKDIR /app

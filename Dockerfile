@@ -1,6 +1,6 @@
 # --- Builder ---
 
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 
 # Set working directory:
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # --- Runtime ---
 
-FROM python:3.13-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 # Set working directory:
 WORKDIR /app

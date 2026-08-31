@@ -1,6 +1,6 @@
 # --- Builder ---
 
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 
 # Set working directory:
 WORKDIR /app

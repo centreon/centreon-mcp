@@ -15,7 +15,7 @@ Using natural language, you can ask the Centreon MCP server to:
 ### Manage your monitoring configuration
 
 - Browse, create, update, and delete hosts, services, and their categories, groups, severities, and templates.
-- Manage commands and monitoring servers (pollers).
+- Manage commands, time periods and monitoring servers (pollers).
 - Push configuration changes to your pollers by generating or reloading them on demand.
 
 ### React to incidents

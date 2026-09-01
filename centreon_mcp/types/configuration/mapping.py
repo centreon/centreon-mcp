@@ -10,6 +10,7 @@ from centreon_mcp.types.configuration.service_category import ServiceCategory
 from centreon_mcp.types.configuration.service_group import ServiceGroup
 from centreon_mcp.types.configuration.service_severity import ServiceSeverity
 from centreon_mcp.types.configuration.service_template import ServiceTemplate
+from centreon_mcp.types.configuration.time_period import TimePeriod
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, UpdateMixin
 
 _list_models: list[type[ListMixin]] = [
@@ -25,6 +26,7 @@ _list_models: list[type[ListMixin]] = [
     ServiceSeverity,
     Command,
     MonitoringServer,
+    TimePeriod,
 ]
 MODELS_MIXIN_LIST: dict[str, type[ListMixin]] = {model.model_type: model for model in _list_models}
 
@@ -40,6 +42,7 @@ _create_models: list[type[CreateMixin]] = [
     ServiceTemplate,
     ServiceSeverity,
     Command,
+    TimePeriod,
 ]
 MODELS_MIXIN_CREATE: dict[str, type[CreateMixin]] = {
     model.model_type: model for model in _create_models
@@ -54,6 +57,7 @@ _update_models: list[type[UpdateMixin]] = [
     Service,
     ServiceTemplate,
     ServiceSeverity,
+    TimePeriod,
 ]
 MODELS_MIXIN_UPDATE: dict[str, type[UpdateMixin]] = {
     model.model_type: model for model in _update_models
@@ -71,6 +75,7 @@ _delete_models: list[type[DeleteMixin]] = [
     ServiceGroup,
     ServiceTemplate,
     ServiceSeverity,
+    TimePeriod,
 ]
 MODELS_MIXIN_DELETE: dict[str, type[DeleteMixin]] = {
     model.model_type: model for model in _delete_models

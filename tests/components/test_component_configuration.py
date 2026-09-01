@@ -29,6 +29,7 @@ MODULE = "centreon_mcp.components.configuration"
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 )
 @patch("centreon_mcp.utils.mixins.ListMixin.list", new_callable=AsyncMock)
@@ -49,6 +50,7 @@ async def test_list_configurations(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 ):
 
@@ -88,6 +90,7 @@ async def test_list_configurations(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 )
 @patch("centreon_mcp.utils.mixins.CreateMixin.create", new_callable=AsyncMock)
@@ -107,6 +110,7 @@ async def test_create_configuration(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 ):
 
@@ -131,14 +135,26 @@ async def test_create_configuration(
 
 @pytest.mark.parametrize(
     "model_type",
-    ["host_category", "host_group", "host_severity", "service_severity"],
+    [
+        "host_category",
+        "host_group",
+        "host_severity",
+        "service_severity",
+        "time_period",
+    ],
 )
 @patch("centreon_mcp.utils.mixins.PutMixin.update", new_callable=AsyncMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_put_configuration(
     logger: MagicMock,
     update_mixin: AsyncMock,
-    model_type: Literal["host_category", "host_group", "host_severity", "service_severity"],
+    model_type: Literal[
+        "host_category",
+        "host_group",
+        "host_severity",
+        "service_severity",
+        "time_period",
+    ],
 ):
 
     # Setup args
@@ -206,6 +222,7 @@ async def test_patch_configuration(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 )
 @patch("centreon_mcp.utils.mixins.DeleteMixin.delete", new_callable=AsyncMock)
@@ -224,6 +241,7 @@ async def test_delete_configurations(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
 ):
 

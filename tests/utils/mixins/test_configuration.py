@@ -79,6 +79,15 @@ from centreon_mcp.types.configuration.service_template import (
     ServiceTemplateOrder,
     ServiceTemplatePartialParams,
 )
+from centreon_mcp.types.configuration.time_period import (
+    Day,
+    TimePeriod,
+    TimePeriodFilter,
+    TimePeriodFullParams,
+    TimePeriodOrder,
+    TimePeriodPartialParams,
+    WeekDay,
+)
 
 from .base import (
     TestCreateMixinBase,
@@ -138,6 +147,7 @@ MODULE = "centreon_mcp.utils.mixins"
             "configuration/services/severities",
         ),
         (Command, CommandParams.model_construct(), "configuration/commands"),
+        (TimePeriod, TimePeriodFullParams.model_construct(), "configuration/timeperiods"),
     ],
 )
 class TestCreateMixinConfiguration(TestCreateMixinBase):
@@ -157,6 +167,7 @@ class TestCreateMixinConfiguration(TestCreateMixinBase):
         (ServiceCategory, "configuration/services/categories"),
         (ServiceTemplate, "configuration/services/templates"),
         (ServiceSeverity, "configuration/services/severities"),
+        (TimePeriod, "configuration/timeperiods"),
     ],
 )
 class TestDeleteMixinConfiguration(TestDeleteMixinBase):
@@ -233,6 +244,24 @@ class TestDeleteMixinConfiguration(TestDeleteMixinBase):
             ServiceSeverityPartialParams(alias="new_alias", level=20),
             ServiceSeverityFullParams(
                 name="name", alias="new_alias", level=20, icon_id=5, is_activated=True
+            ),
+        ),
+        (
+            "configuration/timeperiods",
+            TimePeriod,
+            TimePeriod(
+                id=5,
+                name="name",
+                alias="alias",
+                days=[Day(day=WeekDay.MONDAY, time_range="14:00-15:00")],
+                exceptions=[],
+            ),
+            TimePeriodPartialParams(name="new_name"),
+            TimePeriodFullParams(
+                name="new_name",
+                alias="alias",
+                days=[Day(day=WeekDay.MONDAY, time_range="14:00-15:00")],
+                exceptions=[],
             ),
         ),
     ],
@@ -312,6 +341,17 @@ class TestPatchMixinConfiguration(TestPatchMixinBase):
                 "level": 10,
                 "icon_id": 1,
                 "is_activated": True,
+            },
+        ),
+        (
+            TimePeriod,
+            "configuration/timeperiods",
+            {
+                "id": 5,
+                "name": "name",
+                "alias": "alias",
+                "days": [{"day": 1, "time_range": "15:00-16:00"}],
+                "exceptions": [{"day_range": "2026-08-14", "time_range": "10:00-18:00"}],
             },
         ),
     ],
@@ -517,6 +557,21 @@ class TestReadMixinConfiguration(TestReadMixinBase):
                 "level": 10,
                 "icon_id": 1,
                 "is_activated": False,
+            },
+        ),
+        (
+            TimePeriod,
+            [TimePeriodFilter(time_period_alias="alias")],
+            TimePeriodOrder(field="name"),
+            '{"$or": [{"$and": [{"alias": {"$eq": "alias"}}]}]}',
+            '{"order":"ASC","field":"name"}',
+            "configuration/timeperiods",
+            {
+                "id": 5,
+                "name": "name",
+                "alias": "alias",
+                "days": [{"day": 1, "time_range": "15:00-16:00"}],
+                "exceptions": [{"day_range": "2026-08-14", "time_range": "10:00-18:00"}],
             },
         ),
     ],

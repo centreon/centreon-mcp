@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import ClassVar, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PutMixin, ReadMixin
@@ -84,21 +84,23 @@ class TimePeriodFilter(BaseFilter):
 class TimePeriodBaseParams(BaseParams):
     model_type: Literal["time_period"] = "time_period"
 
-    templates: list[int] = Field(default_factory=list)
-
 
 class TimePeriodFullParams(TimePeriodBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
     days: list[Day] = Field(description=DESCRIPTION["days"])
     exceptions: list[TimePeriodException] = Field(description=DESCRIPTION["exceptions"])
+    templates: list[int] = Field(default_factory=list)
 
 
 class TimePeriodPartialParams(TimePeriodBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
     days: list[Day] | None = Field(default=None, description=DESCRIPTION["days"])
-    exceptions: list[TimePeriodException] | None = Field(default=None, description=DESCRIPTION["exceptions"])
+    exceptions: list[TimePeriodException] | None = Field(
+        default=None, description=DESCRIPTION["exceptions"]
+    )
+    templates: list[int] | None = Field(default=None)
 
 
 class TimePeriod(
@@ -116,5 +118,14 @@ class TimePeriod(
     id: int
     name: str
     alias: str
+    templates: list[int]
     days: list[Day]
     exceptions: list[TimePeriodException]
+
+    @field_validator("templates", mode="before")
+    @classmethod
+    def validate_templates(cls, templates: list[dict]) -> list[int]:
+        """
+        Convert list of Link to list of int to be aligned with params.
+        """
+        return [template["id"] for template in templates]

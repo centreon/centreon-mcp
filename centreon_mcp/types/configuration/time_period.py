@@ -37,7 +37,6 @@ DESCRIPTION = {
             * Each date must be written in ISO 8601 date format: `YYYY-MM-DD`.
             * Multiple dates must be separated by commas (`,`).
             * Do not include spaces around the commas.
-            * Each value represents a single calendar date, not a date range.
 
             Examples:
 
@@ -51,7 +50,7 @@ DESCRIPTION = {
 class WeekDay(IntEnum):
     MONDAY = 1
     TUESDAY = 2
-    WENESDAY = 3
+    WEDNESDAY = 3
     THURSDAY = 4
     FRIDAY = 5
     SATURDAY = 6
@@ -63,7 +62,7 @@ class Day(BaseModel):
     time_range: str = Field(description=DESCRIPTION["time_range"])
 
 
-class Exception(BaseModel):
+class TimePeriodException(BaseModel):
     day_range: str = Field(description=DESCRIPTION["day_range"])
     time_range: str = Field(description=DESCRIPTION["time_range"])
 
@@ -92,14 +91,14 @@ class TimePeriodFullParams(TimePeriodBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
     days: list[Day] = Field(description=DESCRIPTION["days"])
-    exceptions: list[Exception] = Field(description=DESCRIPTION["exceptions"])
+    exceptions: list[TimePeriodException] = Field(description=DESCRIPTION["exceptions"])
 
 
 class TimePeriodPartialParams(TimePeriodBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
     days: list[Day] | None = Field(default=None, description=DESCRIPTION["days"])
-    exceptions: list[Exception] | None = Field(default=None, description=DESCRIPTION["exceptions"])
+    exceptions: list[TimePeriodException] | None = Field(default=None, description=DESCRIPTION["exceptions"])
 
 
 class TimePeriod(
@@ -118,4 +117,4 @@ class TimePeriod(
     name: str
     alias: str
     days: list[Day]
-    exceptions: list[Exception]
+    exceptions: list[TimePeriodException]

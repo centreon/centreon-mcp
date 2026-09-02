@@ -10,6 +10,7 @@ DESCRIPTION = {
     "name": "Name for this time period",
     "alias": "Alias for this time period",
     "days": "Days belonging to this time period",
+    "templates": "IDs of the time periods used as a template",
     "exceptions": "List of exceptions to the standard schedule",
     "time_range": """
     
@@ -89,18 +90,20 @@ class TimePeriodFullParams(TimePeriodBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
     days: list[TimePeriodDay] = Field(description=DESCRIPTION["days"])
-    exceptions: list[TimePeriodException] = Field(description=DESCRIPTION["exceptions"])
-    templates: list[int] = Field(default_factory=list)
+    templates: list[int] = Field(default_factory=list, description=DESCRIPTION["templates"])
+    exceptions: list[TimePeriodException] = Field(
+        default_factory=list, description=DESCRIPTION["exceptions"]
+    )
 
 
 class TimePeriodPartialParams(TimePeriodBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
     days: list[TimePeriodDay] | None = Field(default=None, description=DESCRIPTION["days"])
+    templates: list[int] | None = Field(default=None, description=DESCRIPTION["templates"])
     exceptions: list[TimePeriodException] | None = Field(
         default=None, description=DESCRIPTION["exceptions"]
     )
-    templates: list[int] | None = Field(default=None)
 
 
 class TimePeriod(

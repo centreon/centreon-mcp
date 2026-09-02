@@ -47,6 +47,7 @@ async def list_configurations(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
     filters: Sequence[ConfigurationFilter] | None = None,
     limit: Annotated[int, Field(ge=1)] = 50,
@@ -62,6 +63,7 @@ async def list_configurations(
         - Host / Service Template
         - Commands
         - Monitoring Servers
+        - Time Periods
     If no filters are provided, ask users to provide at least one filter
     to avoid retrieving all entities except if explicitly intended.
     """
@@ -101,6 +103,7 @@ async def create_configuration(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
     params: ConfigurationFullParams,
 ) -> bool:
@@ -112,6 +115,7 @@ async def create_configuration(
         - Host / Service Severity
         - Host / Service Template
         - Commands
+        - Time Periods
     """
     logger.info("Executing tool create_configuration")
 
@@ -140,6 +144,7 @@ async def update_configuration(
         "service",
         "service_severity",
         "service_template",
+        "time_period",
     ],
     model_id: int,
     params: ConfigurationPartialParams,
@@ -151,6 +156,7 @@ async def update_configuration(
         - Host Group
         - Host / Service Severity
         - Host / Service Template
+        - Time Periods
     """
     logger.info("Executing tool update_configuration")
 
@@ -181,6 +187,7 @@ async def delete_configurations(
         "service_group",
         "service_severity",
         "service_template",
+        "time_period",
     ],
     model_ids: list[int],
 ) -> dict[int, bool | BaseException]:
@@ -191,6 +198,7 @@ async def delete_configurations(
         - Host / Service Group
         - Host / Service Severity
         - Host / Service Template
+        - Time Periods
     """
     logger.info("Executing tool delete_configurations")
     return await MODELS_MIXIN_DELETE[model_type].delete(model_ids)

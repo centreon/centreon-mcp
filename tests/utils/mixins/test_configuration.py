@@ -80,8 +80,8 @@ from centreon_mcp.types.configuration.service_template import (
     ServiceTemplatePartialParams,
 )
 from centreon_mcp.types.configuration.time_period import (
-    Day,
     TimePeriod,
+    TimePeriodDay,
     TimePeriodFilter,
     TimePeriodFullParams,
     TimePeriodOrder,
@@ -254,7 +254,7 @@ class TestDeleteMixinConfiguration(TestDeleteMixinBase):
                 name="name",
                 alias="alias",
                 templates=[],
-                days=[Day(day=WeekDay.MONDAY, time_range="14:00-15:00")],
+                days=[TimePeriodDay(day=WeekDay.MONDAY, time_range="14:00-15:00")],
                 exceptions=[],
             ),
             TimePeriodPartialParams(name="new_name"),
@@ -262,7 +262,7 @@ class TestDeleteMixinConfiguration(TestDeleteMixinBase):
                 name="new_name",
                 alias="alias",
                 templates=[],
-                days=[Day(day=WeekDay.MONDAY, time_range="14:00-15:00")],
+                days=[TimePeriodDay(day=WeekDay.MONDAY, time_range="14:00-15:00")],
                 exceptions=[],
             ),
         ),

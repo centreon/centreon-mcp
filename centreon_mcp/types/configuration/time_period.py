@@ -57,7 +57,7 @@ class WeekDay(IntEnum):
     SUNDAY = 7
 
 
-class Day(BaseModel):
+class TimePeriodDay(BaseModel):
     day: WeekDay
     time_range: str = Field(description=DESCRIPTION["time_range"])
 
@@ -88,7 +88,7 @@ class TimePeriodBaseParams(BaseParams):
 class TimePeriodFullParams(TimePeriodBaseParams):
     name: str = Field(description=DESCRIPTION["name"])
     alias: str = Field(description=DESCRIPTION["alias"])
-    days: list[Day] = Field(description=DESCRIPTION["days"])
+    days: list[TimePeriodDay] = Field(description=DESCRIPTION["days"])
     exceptions: list[TimePeriodException] = Field(description=DESCRIPTION["exceptions"])
     templates: list[int] = Field(default_factory=list)
 
@@ -96,7 +96,7 @@ class TimePeriodFullParams(TimePeriodBaseParams):
 class TimePeriodPartialParams(TimePeriodBaseParams):
     name: str | None = Field(default=None, description=DESCRIPTION["name"])
     alias: str | None = Field(default=None, description=DESCRIPTION["alias"])
-    days: list[Day] | None = Field(default=None, description=DESCRIPTION["days"])
+    days: list[TimePeriodDay] | None = Field(default=None, description=DESCRIPTION["days"])
     exceptions: list[TimePeriodException] | None = Field(
         default=None, description=DESCRIPTION["exceptions"]
     )
@@ -119,7 +119,7 @@ class TimePeriod(
     name: str
     alias: str
     templates: list[int]
-    days: list[Day]
+    days: list[TimePeriodDay]
     exceptions: list[TimePeriodException]
 
     @field_validator("templates", mode="before")

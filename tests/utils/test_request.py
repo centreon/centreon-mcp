@@ -14,8 +14,8 @@ MODULE = "centreon_mcp.utils.request"
     [
         (None, None),
         (
-            {"X-AUTH-TOKEN": "MsE/3jEL4wwyAvpVEvh1WjORtvSdkMLHfXXnPJiLqXu8UPBEpZb3RaW+d4kDZvWl"},
-            {"X-AUTH-TOKEN": "**********************************************************kDZvWl"},
+            {"X-AUTH-TOKEN": "centreon-api-token"},
+            {"X-AUTH-TOKEN": "************-token"},
         ),
     ],
 )

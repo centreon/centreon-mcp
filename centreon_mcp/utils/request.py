@@ -55,7 +55,7 @@ async def request(
     """
     # Build request arguments
     base = CREDENTIALS["CENTREON_BASE_URL"]
-    token = get_http_headers().get("centreon-api-token")
+    token = get_http_headers().get("centreon-api-token") or CREDENTIALS["CENTREON_API_TOKEN"]
     url = f"{base}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token} if token else None
     params = params or {}

@@ -40,12 +40,13 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                     | Required | Default     | Description                                           |
-| ------------------------ | -------- | -------     | ----------------------------------------------------- |
-| `CENTREON_BASE_URL`      | `True`   |             | Base URL of the Centreon instance.                    |
-| `CENTREON_MCP_HOST`      | `False`  | `localhost` | Host used to start the Centreon MCP service.          |
-| `CENTREON_MCP_PORT`      | `False`  | `8000`      | Port used to start the Centreon MCP service.          |
-| `CENTREON_MCP_LOG_LEVEL` | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs. |
+| Name                     | Required | Default     | Description                                                         |
+| ------------------------ | -------- | -------     | ------------------------------------------------------------------- |
+| `CENTREON_BASE_URL`      | `True`   |             | Base URL of the Centreon instance.                                  |
+| `CENTREON_API_TOKEN`     | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
+| `CENTREON_MCP_HOST`      | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_PORT`      | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_LOG_LEVEL` | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
 
 ### Using UV
 
@@ -96,7 +97,7 @@ docker compose --profile ngrok up
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
-   - **Headers**: Add valid Centreon API token in headers under field `centreon-api-token`
+   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the `CENTREON_API_TOKEN` environment variable.
 5. Click **Save** to register the connector.
 
 Once the connector is added, ChatGPT will automatically discover and use the Centreon MCP tools in your conversations.
@@ -112,7 +113,7 @@ Once the connector is added, ChatGPT will automatically discover and use the Cen
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
-   - **Headers**: Add valid Centreon API token in headers under field `centreon-api-token`
+   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the `CENTREON_API_TOKEN` environment variable.
 5. Click **Save** to register the connector.
 
 Once the connector is added, Le Chat will automatically discover and use the Centreon MCP tools in your conversations.
@@ -129,6 +130,8 @@ claude mcp add -t http centreon http://localhost:8000/mcp -H "centreon-api-token
 ```
 
 > Replace `8000` with the value of `CENTREON_MCP_PORT` if you changed the default.
+
+> Don't set `-H "centreon-api-token: <token>"` to use token specified through the `CENTREON_API_TOKEN` environment variable instead.
 
 List configured MCP servers and confirm `centreon` is present:
 

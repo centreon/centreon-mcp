@@ -97,7 +97,7 @@ docker compose --profile ngrok up
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
-   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the  `CENTREON_API_TOKEN` environment variable.
+   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the `CENTREON_API_TOKEN` environment variable.
 5. Click **Save** to register the connector.
 
 Once the connector is added, ChatGPT will automatically discover and use the Centreon MCP tools in your conversations.
@@ -113,7 +113,7 @@ Once the connector is added, ChatGPT will automatically discover and use the Cen
 4. Fill in the form:
    - **Name**: `Centreon` (or any name you prefer)
    - **URL**: the address of your running MCP server, e.g. `https://<ngrok-subdomain>.ngrok-free.app/mcp`
-   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the  `CENTREON_API_TOKEN` environment variable.
+   - **Headers**: Optionally, provide a valid Centreon API token in the `centreon-api-token` header. This token takes precedence over the token specified through the `CENTREON_API_TOKEN` environment variable.
 5. Click **Save** to register the connector.
 
 Once the connector is added, Le Chat will automatically discover and use the Centreon MCP tools in your conversations.
@@ -131,7 +131,7 @@ claude mcp add -t http centreon http://localhost:8000/mcp -H "centreon-api-token
 
 > Replace `8000` with the value of `CENTREON_MCP_PORT` if you changed the default.
 
-> Don't set `-H "centreon-api-token: <token>"` to use token specified through the  `CENTREON_API_TOKEN` environment variable instead.
+> Don't set `-H "centreon-api-token: <token>"` to use token specified through the `CENTREON_API_TOKEN` environment variable instead.
 
 List configured MCP servers and confirm `centreon` is present:
 

@@ -10,6 +10,7 @@ services:
       - mcp
     environment:
       CENTREON_BASE_URL: ${CENTREON_BASE_URL}
+      CENTREON_API_TOKEN: ${CENTREON_API_TOKEN}
       CENTREON_MCP_LOG_LEVEL: ${CENTREON_MCP_LOG_LEVEL:-INFO}
       CENTREON_MCP_HOST: "0.0.0.0"
     extra_hosts: 

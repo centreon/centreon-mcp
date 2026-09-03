@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import MagicMock, patch
 
 from centreon_mcp import CREDENTIALS
@@ -17,5 +18,5 @@ def test_main(mcp: MagicMock):
 
     # Assert mcp.run called with rigt args
     host = CREDENTIALS["CENTREON_MCP_HOST"]
-    port = int(CREDENTIALS["CENTREON_MCP_PORT"])
+    port = cast(int, CREDENTIALS["CENTREON_MCP_PORT"])
     mcp.run.assert_called_once_with(transport="http", host=host, port=port)

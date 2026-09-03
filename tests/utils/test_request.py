@@ -9,10 +9,16 @@ from centreon_mcp.utils.request import CentreonAPIError, request
 MODULE = "centreon_mcp.utils.request"
 
 
+@pytest.mark.parametrize(
+    "token",
+    [("header-token"), (None)],
+)
 @patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
 @patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_request(logger: MagicMock, get_http_headers: MagicMock, client_cls: MagicMock):
+async def test_request(
+    logger: MagicMock, get_http_headers: MagicMock, client_cls: MagicMock, token: str | None
+):
 
     # Setup args
     method = "GET"
@@ -24,8 +30,7 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, client_cl
     logger.debug.return_value = None
 
     # Mock get_http_hearders
-    token = "token"
-    get_http_headers.return_value = {"centreon-api-token": token}
+    get_http_headers.return_value = {"centreon-api-token": token} if token else {}
 
     # Mock AsyncClient.request
     content: dict = {}
@@ -46,7 +51,7 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, client_cl
     # Assert request was called with good args
     base = CREDENTIALS["CENTREON_BASE_URL"]
     url = f"{base}/api/latest/{endpoint}"
-    headers = {"X-AUTH-TOKEN": token}
+    headers = {"X-AUTH-TOKEN": token or CREDENTIALS["CENTREON_API_TOKEN"]}
     client.request.assert_awaited_once_with(
         method, url, headers=headers, json=payload, params=params
     )

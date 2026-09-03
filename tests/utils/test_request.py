@@ -4,9 +4,25 @@ import pytest
 from httpx import HTTPStatusError, Request, Response
 
 from centreon_mcp import CREDENTIALS
-from centreon_mcp.utils.request import CentreonAPIError, request
+from centreon_mcp.utils.request import CentreonAPIError, hide, request
 
 MODULE = "centreon_mcp.utils.request"
+
+
+@pytest.mark.parametrize(
+    "headers,result",
+    [
+        (None, None),
+        (
+            {"X-AUTH-TOKEN": "MsE/3jEL4wwyAvpVEvh1WjORtvSdkMLHfXXnPJiLqXu8UPBEpZb3RaW+d4kDZvWl"},
+            {"X-AUTH-TOKEN": "**********************************************************kDZvWl"},
+        ),
+    ],
+)
+async def test_hide(headers: dict | None, result: dict | None):
+
+    # Call test function
+    assert hide(headers) == result
 
 
 @pytest.mark.parametrize(

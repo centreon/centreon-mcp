@@ -11,7 +11,7 @@ MODULE = "centreon_mcp.utils.request"
 
 @pytest.mark.parametrize(
     "token",
-    [("header-token"), (None)],
+    ["header-token", None],
 )
 @patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
 @patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)

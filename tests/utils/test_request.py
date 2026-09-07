@@ -119,27 +119,22 @@ async def test_request_centreon_api_error(
 
 
 @patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
-async def test_get_client(async_client_cls: MagicMock):
+async def test_get_close_client(async_client_cls: MagicMock):
 
     # Mock AsyncClient
-    client = MagicMock()
+    client = AsyncMock()
+    client.is_closed = False
     async_client_cls.return_value = client
 
-    # Call the test function
+    # Test getting client
+    assert get_client() == client
     assert get_client() == client
 
     # Assert AsyncClient called with correct args
     async_client_cls.assert_called_once_with()
 
-
-async def test_close_client():
-
-    # Setup a shared client
-    client = get_client()
-
-    # Call test function
+    # Test closing client
     await close_client()
 
-    # Assert the client was closed and a new one is created on next use
-    assert client.is_closed
-    assert get_client() is not client
+    # Assert client.aclose awaited once
+    client.aclose.assert_awaited_once()

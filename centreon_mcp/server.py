@@ -6,6 +6,7 @@ from centreon_mcp import CREDENTIALS
 from centreon_mcp.components import components
 from centreon_mcp.types.platform import Platform
 from centreon_mcp.utils import logger
+from centreon_mcp.utils.request import close_client
 
 
 @asynccontextmanager
@@ -28,6 +29,9 @@ async def lifespan(app: FastMCP):
         app.mount(server)
 
     yield
+
+    # Close HTTP connection to Centreon API
+    await close_client()
 
 
 mcp = FastMCP(name="Centreon MCP Server", lifespan=lifespan)

@@ -4,7 +4,13 @@ import pytest
 from httpx import HTTPStatusError, Request, Response
 
 from centreon_mcp import CREDENTIALS
-from centreon_mcp.utils.request import CentreonAPIError, hide, request
+from centreon_mcp.utils.request import (
+    CentreonAPIError,
+    close_client,
+    get_client,
+    hide,
+    request,
+)
 
 MODULE = "centreon_mcp.utils.request"
 
@@ -29,11 +35,11 @@ async def test_hide(headers: dict | None, result: dict | None):
     "token",
     ["header-token", None],
 )
-@patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
+@patch(f"{MODULE}.get_client", new_callable=MagicMock)
 @patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_request(
-    logger: MagicMock, get_http_headers: MagicMock, client_cls: MagicMock, token: str | None
+    logger: MagicMock, get_http_headers: MagicMock, get_client: MagicMock, token: str | None
 ):
 
     # Setup args
@@ -48,15 +54,12 @@ async def test_request(
     # Mock get_http_hearders
     get_http_headers.return_value = {"centreon-api-token": token} if token else {}
 
-    # Mock AsyncClient.request
+    # Mock get_client
     content: dict = {}
     client, response = AsyncMock(), MagicMock()
     response.json.return_value = content
     client.request.return_value = response
-    context_manager = AsyncMock()
-    context_manager.__aenter__.return_value = client
-    context_manager.__aexit__.return_value = None
-    client_cls.return_value = context_manager
+    get_client.return_value = client
 
     # Call test function
     result = await request(method, endpoint, payload, params)
@@ -76,11 +79,11 @@ async def test_request(
     assert result == content
 
 
-@patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
+@patch(f"{MODULE}.get_client", new_callable=MagicMock)
 @patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
 async def test_request_centreon_api_error(
-    logger: MagicMock, get_http_headers: MagicMock, client_cls: MagicMock
+    logger: MagicMock, get_http_headers: MagicMock, get_client: MagicMock
 ):
 
     # Setup args
@@ -96,15 +99,12 @@ async def test_request_centreon_api_error(
     token = "token"
     get_http_headers.return_value = {"centreon-api-token": token}
 
-    # Mock AsyncClient.request
+    # Mock get_client
     content: dict = {}
     client, response = AsyncMock(), MagicMock()
     response.json.return_value = content
     client.request.return_value = response
-    context_manager = AsyncMock()
-    context_manager.__aenter__.return_value = client
-    context_manager.__aexit__.return_value = None
-    client_cls.return_value = context_manager
+    get_client.return_value = client
 
     # Mock response.raise_for_status to raise an error
     response.raise_for_status.side_effect = HTTPStatusError(
@@ -116,3 +116,30 @@ async def test_request_centreon_api_error(
     # Call test function
     with pytest.raises(CentreonAPIError):
         _ = await request(method, endpoint, payload, params)
+
+
+@patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
+async def test_get_client(async_client_cls: MagicMock):
+
+    # Mock AsyncClient
+    client = MagicMock()
+    async_client_cls.return_value = client
+
+    # Call the test function
+    assert get_client() == client
+
+    # Assert AsyncClient called with correct args
+    async_client_cls.assert_called_once_with()
+
+
+async def test_close_client():
+
+    # Setup a shared client
+    client = get_client()
+
+    # Call test function
+    await close_client()
+
+    # Assert the client was closed and a new one is created on next use
+    assert client.is_closed
+    assert get_client() is not client

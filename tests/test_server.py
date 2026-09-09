@@ -8,11 +8,17 @@ from centreon_mcp.types.platform import Version
 MODULE = "centreon_mcp.server"
 
 
+@patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
 @patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
-async def test_lifespan(platform_get_web_version: AsyncMock):
+async def test_lifespan(platform_get_web_version: AsyncMock, async_client_cls: MagicMock):
 
     # Setup args
     app = MagicMock()
+
+    # Mock the Centreon client instantiated by the lifespan
+    client = MagicMock()
+    client.aclose = AsyncMock(return_value=None)
+    async_client_cls.return_value = client
 
     # Mock request
     version = Version(version="25.10.0", major="25", minor="10", fix="0")
@@ -32,6 +38,9 @@ async def test_lifespan(platform_get_web_version: AsyncMock):
 
     # Assert import_server called multiple times
     app.mount.assert_has_calls([call(s) for s in servers])
+
+    # Assert client.aclose awaited once
+    client.aclose.assert_awaited_once_with()
 
 
 @patch(f"{MODULE}.CREDENTIALS", {"CENTREON_BASE_URL": ""})

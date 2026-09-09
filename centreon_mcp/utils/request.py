@@ -1,12 +1,13 @@
 import json
 from copy import deepcopy
 
-import httpx
 from fastmcp.server.dependencies import get_http_headers
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPStatusError
 
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.utils import logger
+
+client: AsyncClient | None = None
 
 
 def hide(headers: dict | None) -> dict | None:
@@ -53,6 +54,10 @@ async def request(
     """
     Make request to Centreon API.
     """
+    # Check Centreon Client is initialiazed
+    if client is None:
+        raise RuntimeError("Centreon client is not initialized")
+
     # Build request arguments
     base = CREDENTIALS["CENTREON_BASE_URL"]
     token = get_http_headers().get("centreon-api-token") or CREDENTIALS["CENTREON_API_TOKEN"]
@@ -69,28 +74,23 @@ async def request(
         f"Payload: {json.dumps(payload, indent=2)}"
     )
     try:
-        async with AsyncClient() as client:
-            response = await client.request(
-                method, url, headers=headers, json=payload, params=params
+        response = await client.request(method, url, headers=headers, json=payload, params=params)
+        try:
+            content = response.json() if (response.status_code != 204 and response.content) else {}
+        except json.JSONDecodeError:
+            logger.warning(
+                f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
             )
-            try:
-                content = (
-                    response.json() if (response.status_code != 204 and response.content) else {}
-                )
-            except json.JSONDecodeError:
-                logger.warning(
-                    f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
-                )
-                content = {"raw": response.text}
+            content = {"raw": response.text}
 
-            logger.debug(
-                f"Centreon API Response: {response.status_code}\n"
-                f"Content: {json.dumps(content, indent=2)}"
-            )
-            response.raise_for_status()
-            return content
+        logger.debug(
+            f"Centreon API Response: {response.status_code}\n"
+            f"Content: {json.dumps(content, indent=2)}"
+        )
+        response.raise_for_status()
+        return content
 
-    except httpx.HTTPStatusError as e:
+    except HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)
         error = CentreonAPIError(status, url, method, content)

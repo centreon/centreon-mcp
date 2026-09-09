@@ -7,27 +7,7 @@ from httpx import AsyncClient, HTTPStatusError
 from centreon_mcp import CREDENTIALS
 from centreon_mcp.utils import logger
 
-_client: AsyncClient | None = None
-
-
-def get_client() -> AsyncClient:
-    """
-    Return the shared Centreon HTTP client, creating it on first use.
-    """
-    global _client
-    if _client is None or _client.is_closed:
-        _client = AsyncClient()
-    return _client
-
-
-async def close_client() -> None:
-    """
-    Close the shared Centreon HTTP client.
-    """
-    global _client
-    if _client is not None:
-        await _client.aclose()
-        _client = None
+client: AsyncClient | None = None
 
 
 def hide(headers: dict | None) -> dict | None:
@@ -74,6 +54,10 @@ async def request(
     """
     Make request to Centreon API.
     """
+    # Check Centreon Client is initialiazed
+    if client is None:
+        raise RuntimeError("Centreon client is not initialized")
+
     # Build request arguments
     base = CREDENTIALS["CENTREON_BASE_URL"]
     token = get_http_headers().get("centreon-api-token") or CREDENTIALS["CENTREON_API_TOKEN"]
@@ -90,7 +74,6 @@ async def request(
         f"Payload: {json.dumps(payload, indent=2)}"
     )
     try:
-        client = get_client()
         response = await client.request(method, url, headers=headers, json=payload, params=params)
         try:
             content = response.json() if (response.status_code != 204 and response.content) else {}

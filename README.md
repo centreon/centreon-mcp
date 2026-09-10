@@ -49,6 +49,8 @@ cd centreon-mcp
 | `CENTREON_MCP_PORT`       | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
 | `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
 
+> Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+
 ### Using UV
 
 3. Start the MCP server

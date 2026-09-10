@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     mcp_host: str = "localhost"
     mcp_port: int = 8000
-    mcp_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    mcp_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     base_url: str
     api_token: str | None = None
     client_timeout: int = 30

@@ -4,7 +4,7 @@ from copy import deepcopy
 from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
 
-from centreon_mcp import CREDENTIALS
+from centreon_mcp import settings
 from centreon_mcp.utils import logger
 
 client: AsyncClient | None = None
@@ -59,9 +59,8 @@ async def request(
         raise RuntimeError("Centreon client is not initialized")
 
     # Build request arguments
-    base = CREDENTIALS["CENTREON_BASE_URL"]
-    token = get_http_headers().get("centreon-api-token") or CREDENTIALS["CENTREON_API_TOKEN"]
-    url = f"{base}/api/latest/{endpoint}"
+    token = get_http_headers().get("centreon-api-token") or settings.api_token
+    url = f"{settings.base_url}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token} if token else None
     params = params or {}
     params = {name: value for name, value in params.items() if value is not None}

@@ -40,13 +40,16 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                     | Required | Default     | Description                                                         |
-| ------------------------ | -------- | -------     | ------------------------------------------------------------------- |
-| `CENTREON_BASE_URL`      | `True`   |             | Base URL of the Centreon instance.                                  |
-| `CENTREON_API_TOKEN`     | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
-| `CENTREON_MCP_HOST`      | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_PORT`      | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_LOG_LEVEL` | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
+| Name                      | Required | Default     | Description                                                         |
+| ------------------------- | -------- | -------     | ------------------------------------------------------------------- |
+| `CENTREON_BASE_URL`       | `True`   |             | Base URL of the Centreon instance.                                  |
+| `CENTREON_API_TOKEN`      | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
+| `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout for Centreon API client.                                    |
+| `CENTREON_MCP_HOST`       | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_PORT`       | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
+
+> Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 
 ### Using UV
 

@@ -6,5 +6,6 @@ os.environ.update(
         "CENTREON_API_TOKEN": "env-token",
         "CENTREON_MCP_HOST": "localhost",
         "CENTREON_MCP_PORT": "8000",
+        "CENTREON_MCP_LOG_LEVEL": "INFO",
     }
 )

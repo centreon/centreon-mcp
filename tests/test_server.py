@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
-import pytest
-
+from centreon_mcp import settings
 from centreon_mcp.server import lifespan
 from centreon_mcp.types.platform import Version
 
@@ -33,6 +32,9 @@ async def test_lifespan(platform_get_web_version: AsyncMock, async_client_cls: M
         async with lifespan(app):
             pass
 
+    # Assert client instanciated with correct args
+    async_client_cls.assert_called_once_with(timeout=settings.client_timeout)
+
     # Assert request called with right args
     platform_get_web_version.assert_awaited_once()
 
@@ -41,15 +43,3 @@ async def test_lifespan(platform_get_web_version: AsyncMock, async_client_cls: M
 
     # Assert client.aclose awaited once
     client.aclose.assert_awaited_once_with()
-
-
-@patch(f"{MODULE}.CREDENTIALS", {"CENTREON_BASE_URL": ""})
-async def test_lifespan_missing_base_url_raises():
-
-    # Setup args
-    app = MagicMock()
-
-    # Call test funtion
-    with pytest.raises(RuntimeError, match="CENTREON_BASE_URL is missing"):
-        async with lifespan(app):
-            pass

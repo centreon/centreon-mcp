@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from httpx import HTTPStatusError, Request, Response
 
-from centreon_mcp import CREDENTIALS
+from centreon_mcp import settings
 from centreon_mcp.utils.request import CentreonAPIError, hide, request
 
 MODULE = "centreon_mcp.utils.request"
@@ -59,9 +59,8 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, token: st
     assert logger.debug.call_count == 2
 
     # Assert request was called with good args
-    base = CREDENTIALS["CENTREON_BASE_URL"]
-    url = f"{base}/api/latest/{endpoint}"
-    headers = {"X-AUTH-TOKEN": token or CREDENTIALS["CENTREON_API_TOKEN"]}
+    url = f"{settings.base_url}/api/latest/{endpoint}"
+    headers = {"X-AUTH-TOKEN": token or settings.api_token}
     client.request.assert_awaited_once_with(
         method, url, headers=headers, json=payload, params=params
     )

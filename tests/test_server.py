@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
+from centreon_mcp import settings
 from centreon_mcp.server import lifespan
 from centreon_mcp.types.platform import Version
 
@@ -30,6 +31,9 @@ async def test_lifespan(platform_get_web_version: AsyncMock, async_client_cls: M
     with patch(f"{MODULE}.components", servers):
         async with lifespan(app):
             pass
+
+    # Assert client instanciated with correct args
+    async_client_cls.assert_called_once_with(timeout=settings.client_timeout)
 
     # Assert request called with right args
     platform_get_web_version.assert_awaited_once()

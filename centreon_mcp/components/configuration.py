@@ -5,6 +5,7 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.auth import ADMIN, EDITOR, READER
 from centreon_mcp.types.configuration import (
     Configuration,
     ConfigurationFilter,
@@ -31,7 +32,8 @@ configuration = FastMCP()
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def list_configurations(
     model_type: Literal[
@@ -88,7 +90,8 @@ async def list_configurations(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=EDITOR,
 )
 async def create_configuration(
     model_type: Literal[
@@ -132,7 +135,8 @@ async def create_configuration(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=EDITOR,
 )
 async def update_configuration(
     model_type: Literal[
@@ -173,7 +177,8 @@ async def update_configuration(
         "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=ADMIN,
 )
 async def delete_configurations(
     model_type: Literal[
@@ -211,7 +216,8 @@ async def delete_configurations(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=ADMIN,
 )
 async def manage_monitoring_server_configurations(
     action: Literal["generate", "reload"],
@@ -220,6 +226,9 @@ async def manage_monitoring_server_configurations(
     """
     Generate/Reload configurations of monitoring servers based on their ids.
     If no ids provided, generate/reload configurations of all monitoring servers.
+    The ids are the configuration ids, as returned by list_configurations for
+    model_type "monitoring_server". They are not the ids list_monitoring_entities
+    returns, which identify the same servers in the monitoring data and match no configuration.
     """
     logger.info("Executing tool manage_monitoring_server_configurations")
 

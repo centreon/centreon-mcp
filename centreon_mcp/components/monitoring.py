@@ -5,6 +5,7 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp.auth import EDITOR, READER
 from centreon_mcp.types.monitoring import Monitoring, MonitoringFilter, MonitoringOrder
 from centreon_mcp.types.monitoring.actions import (
     MonitoringAction,
@@ -33,7 +34,8 @@ monitoring = FastMCP()
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def list_monitoring_resources(
     filters: list[ResourceFilter] | None = None,
@@ -76,7 +78,8 @@ async def list_monitoring_resources(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def list_monitoring_entities(
     model_type: Literal[
@@ -119,7 +122,8 @@ async def list_monitoring_entities(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def list_monitoring_actions(
     model_type: Literal["acknowledgement", "downtime"],
@@ -157,7 +161,8 @@ async def list_monitoring_actions(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=EDITOR,
 )
 async def set_monitoring_actions(
     model_type: Literal["acknowledgement", "downtime", "comment", "check"],
@@ -187,7 +192,8 @@ async def set_monitoring_actions(
         "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=EDITOR,
 )
 async def cancel_monitoring_actions(
     model_type: Literal["acknowledgement", "downtime"],
@@ -210,7 +216,8 @@ async def cancel_monitoring_actions(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def count_monitoring_resources_by_status(
     model_type: Literal["host", "service"],

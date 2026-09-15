@@ -40,7 +40,7 @@ Three layers, and almost every change touches them in this order:
    A model gets an operation by inheriting the mixin, parameterised with its own types. Endpoints
    come from the model's `endpoint`/`set_endpoint` class vars.
 3. **`centreon_mcp/components/`** — the MCP tools. Four `FastMCP` sub-apps (`monitoring`, `metric`,
-   `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `server.py`.
+   `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `__main__.py`.
 
 `centreon_mcp/utils/request.py` is the single exit point to the Centreon API: builds
 `{base}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP header

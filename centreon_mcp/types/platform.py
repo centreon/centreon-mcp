@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from centreon_mcp.auth import Tenant
 from centreon_mcp.utils.request import request
 
 
@@ -12,9 +13,9 @@ class Version(BaseModel):
 
 class Platform(BaseModel):
     @staticmethod
-    async def get_web_version() -> Version:
+    async def get_web_version(tenant: Tenant | None = None) -> Version:
         """
         Get platform web version.
         """
-        content = await request("GET", "platform/versions")
+        content = await request("GET", "platform/versions", tenant=tenant)
         return Version(**content["web"])

@@ -26,7 +26,7 @@ uv run coverage run --source centreon_mcp -m pytest tests && uv run coverage rep
 
 Requires `CENTREON_BASE_URL` in the environment (or `.env`, loaded via `python-dotenv`); see the
 README table for the full set. The server refuses to start without it — `lifespan` in
-`centreon_mcp/server.py` calls `platform/versions` to prove connectivity before mounting components.
+`centreon_mcp/__main__.py` calls `platform/versions` to prove connectivity before mounting components.
 
 ## Architecture
 

@@ -136,7 +136,7 @@ token themselves, and the `centreon-api-token` header is ignored.
 | `CENTREON_OIDC_CONFIG_URL`      | `True`   |                        | OpenID Connect discovery URL of the provider.                                                             |
 | `CENTREON_OIDC_CLIENT_ID`       | `True`   |                        | Client ID registered for the MCP server.                                                                  |
 | `CENTREON_OIDC_CLIENT_SECRET`   | `True`   |                        | Client secret registered for the MCP server.                                                              |
-| `CENTREON_OIDC_AUDIENCE`        | `False`  | `None`                 | API audience, required by providers that would otherwise issue an opaque token.                           |
+| `CENTREON_OIDC_AUDIENCE`        | `False`  | `None`                 | API audience. Set it: left unset, tokens are accepted whatever audience they were issued for.             |
 | `CENTREON_OIDC_SCOPES`          | `False`  | `openid profile email` | Scopes requested at login.                                                                                |
 | `CENTREON_OIDC_JWT_SIGNING_KEY` | `False`  | `None`                 | Signing key of the tokens issued to MCP clients. Required when several workers serve the same deployment. |
 | `CENTREON_OIDC_ROLE_CLAIM`      | `False`  | `roles`                | Claim holding the roles of the user, as a dotted path.                                                    |
@@ -178,7 +178,7 @@ class AuthPlugin(Protocol):
     def auth_provider(self) -> AuthProvider | None: ...  # None leaves the server unauthenticated
     async def tenant(self, token: AccessToken | None) -> Tenant: ...  # may reach the network
     async def role(self, token: AccessToken | None) -> Role: ...  # called once per tool listed
-    def tenants(self) -> Sequence[Tenant]: ...  # tenants checked at startup, may be empty
+    def tenants(self) -> Sequence[Tenant] | None: ...  # None: resolved per request, not checked
     def components(self) -> Sequence[FastMCP]: ...  # extra tools, mounted with the built-in ones
 ```
 

@@ -1,5 +1,5 @@
 """
-Unauthenticated plugin, preserving the historical single Centreon behaviour.
+Unauthenticated plugin, the default, preserving the single Centreon behaviour.
 
 The token comes from the `centreon-api-token` header, falling back to `CENTREON_API_TOKEN`, and
 every tool is granted since that token already carries the user rights in Centreon.
@@ -23,7 +23,7 @@ TOKEN_HEADER = "centreon-api-token"
 TENANT_NAME = "centreon"
 
 
-class LegacyPlugin:
+class NoAuthPlugin:
     """
     Authentication plugin exposing a single Centreon to unauthenticated clients.
     """

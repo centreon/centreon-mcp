@@ -15,8 +15,8 @@ from pydantic import BaseModel, SecretStr
 
 class AuthenticationError(Exception):
     """
-    Raised when a request cannot be resolved to a tenant, including when the plugin that resolves
-    it is misconfigured.
+    Raised when a request cannot be resolved to a tenant or a permission level, including when
+    the plugin that resolves it is misconfigured.
     """
 
 
@@ -77,8 +77,9 @@ class AuthPlugin(Protocol):
         """
         Return the permission level of the authenticated user, NONE when it is granted none.
 
-        Raise only when the level cannot be determined at all, which is an error rather than a
-        denial and is reported as such.
+        Raise `AuthenticationError` to refuse this identity outright, which denies every tool and
+        is logged as a decision. Any other exception is reported as a fault to investigate, and
+        denies too, since a level that cannot be established must never grant.
 
         Called once per tool for every tool listing, so a plugin resolving the level over the
         network caches it itself: the core cannot choose how long that answer stays valid.
@@ -100,6 +101,7 @@ class AuthPlugin(Protocol):
         Return the tools this plugin adds to the server, mounted alongside the built-in ones.
 
         A plugin whose deployment needs a choice the generic tools know nothing about exposes it
-        here rather than adding an argument to every tool.
+        here rather than adding an argument to every tool. These tools declare their own level,
+        and nothing in this package checks that they do.
         """
         ...

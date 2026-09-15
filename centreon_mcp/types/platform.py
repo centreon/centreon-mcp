@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from centreon_mcp.auth import Tenant
+from centreon_mcp.auth.base import Tenant
 from centreon_mcp.utils.request import request
 
 

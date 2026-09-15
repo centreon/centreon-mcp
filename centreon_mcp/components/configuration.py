@@ -226,9 +226,8 @@ async def manage_monitoring_server_configurations(
     """
     Generate/Reload configurations of monitoring servers based on their ids.
     If no ids provided, generate/reload configurations of all monitoring servers.
-    The ids are the configuration ids, as returned by list_configurations for
-    model_type "monitoring_server". They are not the ids list_monitoring_entities
-    returns, which identify the same servers in the monitoring data and match no configuration.
+    The ids are the configuration ids returned by list_configurations for model_type
+    "monitoring_server", not the ones list_monitoring_entities returns for the same servers.
     """
     logger.info("Executing tool manage_monitoring_server_configurations")
 

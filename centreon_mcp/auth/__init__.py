@@ -9,6 +9,7 @@ selects one, by built-in name, by `centreon_mcp.auth` entry point, or by `module
 from importlib import import_module
 from importlib.metadata import entry_points
 
+from fastmcp.exceptions import AuthorizationError
 from fastmcp.server.auth import AuthCheck, AuthContext
 
 from centreon_mcp import settings
@@ -18,9 +19,11 @@ from centreon_mcp.utils import logger
 ENTRY_POINT_GROUP = "centreon_mcp.auth"
 
 BUILT_IN_PLUGINS = {
-    "none": "centreon_mcp.auth.none:LegacyPlugin",
+    "none": "centreon_mcp.auth.none:NoAuthPlugin",
     "oidc": "centreon_mcp.auth.oidc:OIDCPlugin",
 }
+
+AUTH_PLUGIN_METHODS = ("auth_provider", "tenant", "role", "tenants", "components")
 
 
 def import_plugin(path: str) -> AuthPlugin:
@@ -34,6 +37,28 @@ def import_plugin(path: str) -> AuthPlugin:
 def load_plugin(name: str) -> AuthPlugin:
     """
     Load an authentication plugin by built-in name, entry point name, or import path.
+
+    Built-in names win over entry points, so a package cannot publish one under a reserved name.
+    """
+    try:
+        plugin = resolve_plugin(name)
+    except (ImportError, AttributeError) as error:
+        raise ValueError(f"CENTREON_AUTH_PLUGIN '{name}' could not be loaded: {error}") from error
+
+    # The protocol is the whole contract a separate package implements, so a plugin missing a
+    # method is caught here rather than as an AttributeError on someone's first request
+    if not isinstance(plugin, AuthPlugin):
+        missing = [m for m in AUTH_PLUGIN_METHODS if not callable(getattr(plugin, m, None))]
+        raise TypeError(
+            f"CENTREON_AUTH_PLUGIN '{name}' does not implement AuthPlugin, "
+            f"missing: {', '.join(missing) or 'unknown'}"
+        )
+    return plugin
+
+
+def resolve_plugin(name: str) -> AuthPlugin:
+    """
+    Instantiate the plugin the given name designates, whichever way it is published.
     """
     if name in BUILT_IN_PLUGINS:
         logger.debug(f"Loading built-in authentication plugin {name}")
@@ -100,6 +125,10 @@ def require_role(level: Role) -> AuthCheck:
 
         try:
             role = await get_plugin().role(context.token)
+        except AuthorizationError:
+            # FastMCP propagates this one on purpose, to answer the caller rather than hide the
+            # tool. Catching it below would turn a plugin's deliberate refusal into a reported bug
+            raise
         except AuthenticationError as error:
             # The plugin refused this identity on purpose. Worth a line, since the caller only
             # sees a tool that is not there, but not a fault to investigate

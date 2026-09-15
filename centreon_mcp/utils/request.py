@@ -62,7 +62,8 @@ def secret(key: object, data: dict) -> bool:
     """
     if str(key).lower() in SECRET_FIELDS:
         return True
-    return key == "value" and data.get("is_password") is True
+    # Truthy rather than `is True`: a payload carries a real bool, a response carries raw JSON
+    return key == "value" and bool(data.get("is_password"))
 
 
 def redact(data: Any) -> Any:
@@ -136,7 +137,7 @@ async def request(
     logger.debug(
         f"Centreon API Request: {method} {url}\n"
         f"Headers: {json.dumps(hide(headers), indent=2)}\n"
-        f"Params: {json.dumps(params, indent=2)}\n"
+        f"Params: {json.dumps(redact(params), indent=2)}\n"
         f"Payload: {json.dumps(redact(payload), indent=2)}"
     )
     try:

@@ -26,6 +26,9 @@ ROLES = {role.name.lower(): role for role in Role if role is not Role.NONE}
 # Name reported for the single Centreon of a mono tenant deployment, which has no claim to name it
 TENANT_NAME = "centreon"
 
+# How many distinct claim values are remembered before starting to report them again
+REPORT_LIMIT = 100
+
 
 class OIDCSettings(BaseSettings):
     """
@@ -67,6 +70,8 @@ def claim(claims: dict[str, Any], path: str) -> list[str]:
 
     Providers expose claims as a single value (`org_id`), a list (`roles`), or a space
     separated string (`scope`), and nest them at arbitrary depths (`realm_access.roles`).
+
+    A single value is split on whitespace, so a tenant claim must not contain spaces.
     """
     value: Any = claims
     for part in path.split("."):
@@ -172,8 +177,12 @@ class OIDCPlugin:
         # A claim path that never matches is indistinguishable from a user granted nothing, and
         # silently hands everyone the default role, so say which of the two happened. Reported
         # once per set of values, since this runs for every tool of every listing
+        # Capped: the keys come from token claims, so an unbounded set would grow with whatever
+        # a provider puts there
         seen = tuple(values)
         if seen not in self.reported:
+            if len(self.reported) >= REPORT_LIMIT:
+                self.reported.clear()
             self.reported.add(seen)
             logger.warning(
                 f"Claim {self.settings.role_claim} carried {', '.join(values) or 'nothing'}, "

@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastmcp import FastMCP
-from httpx import AsyncClient, HTTPError
+from httpx import AsyncClient
 from mcp.types import Icon
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -11,16 +11,15 @@ from centreon_mcp.auth import get_plugin
 from centreon_mcp.components import components
 from centreon_mcp.types.platform import Platform
 from centreon_mcp.utils import logger, request
-from centreon_mcp.utils.request import CentreonAPIError
 
 
 async def check_tenants() -> None:
     """
-    Prove connectivity to the Centreon the server is configured with.
+    Prove connectivity to the Centreon instances the server is configured with.
 
-    A single tenant that cannot be reached prevents the server from starting. When several
-    tenants are served, one unreachable customer must not take the shared server down, so only a
-    complete failure aborts the startup.
+    With a single tenant configured, failing to reach it stops the server. When several are
+    served, one unreachable customer must not take the shared server down, so only a complete
+    failure aborts the startup.
     """
     tenants = get_plugin().tenants()
     if tenants is None:
@@ -31,7 +30,7 @@ async def check_tenants() -> None:
         return
 
     if not tenants:
-        logger.warning(
+        logger.error(
             f"The '{settings.auth_plugin}' plugin expects tenants and has none, so no Centreon is "
             "checked at startup and every request will fail. Check its configuration."
         )
@@ -42,7 +41,10 @@ async def check_tenants() -> None:
         try:
             version = await Platform.get_web_version(tenant=tenant)
             logger.info(f"Connected to Centreon API version {version.version} for {tenant.name}")
-        except (CentreonAPIError, HTTPError) as error:
+        # Deliberately broad: this is a probe, every outcome is reported by tenant name and
+        # type below, and a tenant answering something other than Centreon must degrade like an
+        # unreachable one rather than abort the startup of every other tenant
+        except Exception as error:
             if len(tenants) == 1:
                 raise
             unreachable.append(tenant.name)
@@ -70,10 +72,18 @@ async def lifespan(app: FastMCP):
     """
     Lifespan context manager for FastMCP application.
     """
-    # Initialize Centreon client
     request.client = AsyncClient(timeout=settings.client_timeout)
 
-    # Test Centreon API connectivity and get web version
+    plugin = get_plugin()
+    # The active plugin decides who may do what, so name it: a deployment meaning to authenticate
+    # its users but whose setting never reached the process would otherwise look healthy
+    logger.info(
+        f"Authenticating with the '{settings.auth_plugin}' plugin"
+        if plugin.auth_provider() is not None
+        else f"Running unauthenticated ('{settings.auth_plugin}' plugin), "
+        "every tool is granted and the Centreon token carries the rights"
+    )
+
     await check_tenants()
 
     # Import components, including those the authentication plugin adds. Mounted once for the
@@ -81,13 +91,12 @@ async def lifespan(app: FastMCP):
     # twice, and the duplicates shadow each other in listings
     global mounted
     if not mounted:
-        for server in [*components, *get_plugin().components()]:
+        for server in [*components, *plugin.components()]:
             app.mount(server)
         mounted = True
 
     yield
 
-    # Close Centreon Client
     await request.client.aclose()
 
 

@@ -75,3 +75,27 @@ async def test_get_current_context_explains_a_refusal(
     assert result.tenant is None
     assert result.role == "none"
     assert result.detail == "Organization acme is not served. No role held in acme"
+
+
+@patch(f"{MODULE}.get_access_token", new_callable=MagicMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_get_current_context_survives_a_broken_plugin(
+    logger: MagicMock, plugin: MagicMock, get_access_token: MagicMock
+):
+
+    # Mock a plugin that cannot answer at all, a provider outage for instance
+    get_access_token.return_value = MagicMock()
+    plugin.tenant = AsyncMock(side_effect=RuntimeError("identity provider is down"))
+    plugin.role = AsyncMock(side_effect=RuntimeError("identity provider is down"))
+
+    # Call test function: the tool a user falls back on must answer, not fail with them
+    result = await get_current_context()
+
+    # Assert the user is told something actionable without being shown the internal failure
+    assert result.tenant is None
+    assert result.role == "none"
+    assert "could not determine" in result.detail
+
+    # Assert the cause was recorded server side, since the answer deliberately omits it
+    assert logger.error.call_count == 2

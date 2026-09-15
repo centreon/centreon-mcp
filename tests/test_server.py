@@ -93,15 +93,16 @@ async def test_check_tenants_without_tenant(
     logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
 ):
 
-    # Setup args: a plugin resolving its tenants dynamically knows none upfront
+    # Setup args: a plugin that expects tenants and was given none, which is a misconfiguration
     plugin.tenants.return_value = []
 
     # Call test function
     await check_tenants()
 
-    # Assert the check was skipped, and loudly enough for a misconfiguration to show
+    # Assert the check was skipped, and reported as the fault it is rather than as the legitimate
+    # dynamic case, which the sibling test covers
     get_web_version.assert_not_awaited()
-    logger.warning.assert_called_once()
+    logger.error.assert_called_once()
 
 
 @patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)

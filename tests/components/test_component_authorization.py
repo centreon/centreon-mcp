@@ -191,10 +191,11 @@ async def test_list_tools_when_the_plugin_refuses(logger: MagicMock):
         build_plugin(error=RuntimeError("identity provider is down")),
     ],
 )
-async def test_context_tool_survives_a_plugin_that_grants_nothing(plugin: MagicMock):
+async def test_context_tool_stays_listed_when_the_plugin_grants_nothing(plugin: MagicMock):
 
     # Call test function: a tool requiring no level never asks the plugin for one, so it stays
-    # reachable for the users it exists to inform
+    # listed for the users it exists to inform. That it also answers when called is pinned by
+    # tests/components/test_component_account.py
     version, patched, token = serve(plugin)
     with version, patched, token:
         async with Client(mcp) as client:

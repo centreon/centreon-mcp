@@ -67,6 +67,9 @@ Permission levels are `Role.READER < Role.EDITOR < Role.ADMIN`. **Every tool dec
 added without a level. Update that table and `TOOLS.md` together. That guarantee stops at the
 package boundary: tools a plugin contributes through `components()` are its own responsibility.
 
+`auth=AUTHENTICATED` requires no level and never consults the plugin, so it is reserved for tools
+that reach no Centreon and expose nothing beyond the caller's own context.
+
 ### The discriminated-union tool pattern
 
 Tools are deliberately few and wide rather than one-per-entity. `list_configurations`,

@@ -8,6 +8,6 @@ os.environ.update(
         "CENTREON_MCP_PORT": "8000",
         "CENTREON_MCP_LOG_LEVEL": "INFO",
         "CENTREON_TLS_SECURE": "True",
-        "CENTREON_CA_BUNDLE": "/home/ca",
+        "CENTREON_CA_BUNDLE": "",
     }
 )

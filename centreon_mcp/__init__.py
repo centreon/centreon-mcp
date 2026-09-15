@@ -1,8 +1,9 @@
+import os
 from typing import Literal
 
 from dotenv import load_dotenv
 from fastmcp.utilities.logging import get_logger
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = get_logger("centreon")
@@ -46,10 +47,19 @@ class Settings(BaseSettings):
 
     @property
     def verify(self) -> bool | str:
-        if not self.tls_secure or (self.tls_secure and self.ca_bundle is None):
+        if not self.tls_secure or self.ca_bundle is None:
             return self.tls_secure
-        else:
-            return self.ca_bundle
+        return self.ca_bundle
+
+    @model_validator(mode="after")
+    def _check_ca_bundle_exists(self) -> "Settings":
+        if self.tls_secure and self.ca_bundle and not os.path.exists(self.ca_bundle):
+            raise ValueError(
+                f"CENTREON_CA_BUNDLE='{self.ca_bundle}' does not exist. Fix the path, unset "
+                "CENTREON_CA_BUNDLE to use the system CA trust store, or set "
+                "CENTREON_TLS_SECURE=False to disable TLS certificate verification."
+            )
+        return self
 
 
 settings = Settings()  # type: ignore[call-arg]

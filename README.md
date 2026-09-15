@@ -40,16 +40,23 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                      | Required | Default     | Description                                                         |
-| ------------------------- | -------- | -------     | ------------------------------------------------------------------- |
-| `CENTREON_BASE_URL`       | `True`   |             | Base URL of the Centreon instance.                                  |
-| `CENTREON_API_TOKEN`      | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
-| `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout for Centreon API client.                                    |
-| `CENTREON_MCP_HOST`       | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_PORT`       | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
+| Name                       | Required | Default     | Description                                                         |
+| -------------------------- | -------- | ----------- | ------------------------------------------------------------------- |
+| `CENTREON_BASE_URL`        | Depends  |             | Base URL of the Centreon instance.                                  |
+| `CENTREON_API_TOKEN`       | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
+| `CENTREON_CLIENT_TIMEOUT`  | `False`  | `30`        | Timeout for Centreon API client.                                    |
+| `CENTREON_MCP_HOST`        | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_PORT`        | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
+| `CENTREON_MCP_LOG_LEVEL`   | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
+| `CENTREON_MCP_PUBLIC_URL`  | `False`  | `None`      | Public URL of the MCP server, required to authenticate users.       |
+| `CENTREON_AUTH_PLUGIN`     | `False`  | `none`      | Authentication plugin used to identify users.                       |
+| `CENTREON_MCP_ICON_URL`    | `False`  | `None`      | Logo shown on the consent screen users see before signing in.       |
+| `CENTREON_MCP_WEBSITE_URL` | `False`  | `None`      | Link behind the server name on that screen.                         |
 
 > Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+
+> `CENTREON_BASE_URL` is required by the default `none` plugin. See [Authentication](#authentication)
+> for deployments serving several Centreon instances.
 
 ### Using UV
 
@@ -88,6 +95,106 @@ docker compose --profile ngrok up
 ```
 
 > Use `curl http://localhost:4040/api/tunnels` to retrieve public URL
+
+## Authentication
+
+By default the MCP server does not authenticate its users: it exposes every tool and calls Centreon
+with the token sent in the `centreon-api-token` header, falling back to `CENTREON_API_TOKEN`. Rights
+are those of that token in Centreon. This is the `none` plugin, and it is what most on premise
+deployments need.
+
+Deployments that want their users to sign in, or that serve several Centreon instances from a single
+MCP server, select another plugin with `CENTREON_AUTH_PLUGIN`. A plugin answers three questions:
+how users authenticate, which Centreon a given user reaches, and what that user is allowed to do.
+
+### Permission levels
+
+Tools are gated by three cumulative levels. Tools above the level of the current user are hidden from
+the tool list and cannot be called, so a client never offers an action its user may not perform.
+
+| Level    | Grants                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `reader` | Read monitoring status, configuration, timelines and metrics.                                                                  |
+| `editor` | Everything a reader may do, plus create and update configuration, acknowledge, schedule downtimes, comment and trigger checks. |
+| `admin`  | Everything an editor may do, plus delete configuration and generate or reload pollers.                                         |
+
+A user the deployment grants no level to reaches no tool at all, except `get_current_context`,
+which requires none: it reports the Centreon and the level in effect, so such a user is told why
+every other tool is missing rather than facing a server that appears to expose none.
+
+The level required by each tool is listed in [TOOLS.md](TOOLS.md).
+
+### The `oidc` plugin
+
+Authenticates users against any OpenID Connect provider (Keycloak, Entra, Auth0, Okta, ...). Register
+the MCP server as a confidential client of your provider, with `{CENTREON_MCP_PUBLIC_URL}/auth/callback`
+as its redirect URI. MCP clients then sign in through your provider instead of carrying a Centreon
+token themselves, and the `centreon-api-token` header is ignored.
+
+| Name                            | Required | Default                | Description                                                                                               |
+| ------------------------------- | -------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| `CENTREON_OIDC_CONFIG_URL`      | `True`   |                        | OpenID Connect discovery URL of the provider.                                                             |
+| `CENTREON_OIDC_CLIENT_ID`       | `True`   |                        | Client ID registered for the MCP server.                                                                  |
+| `CENTREON_OIDC_CLIENT_SECRET`   | `True`   |                        | Client secret registered for the MCP server.                                                              |
+| `CENTREON_OIDC_AUDIENCE`        | `False`  | `None`                 | API audience. Set it: left unset, tokens are accepted whatever audience they were issued for.             |
+| `CENTREON_OIDC_SCOPES`          | `False`  | `openid profile email` | Scopes requested at login.                                                                                |
+| `CENTREON_OIDC_JWT_SIGNING_KEY` | `False`  | `None`                 | Signing key of the tokens issued to MCP clients. Required when several workers serve the same deployment. |
+| `CENTREON_OIDC_ROLE_CLAIM`      | `False`  | `roles`                | Claim holding the roles of the user, as a dotted path.                                                    |
+| `CENTREON_OIDC_ROLE_MAPPING`    | `False`  | `{}`                   | JSON mapping claim values to `reader`, `editor` or `admin`.                                               |
+| `CENTREON_OIDC_DEFAULT_ROLE`    | `False`  | `None`                 | Level granted to users no mapping applies to. Without it, such users are granted no level.                |
+| `CENTREON_OIDC_TENANT_CLAIM`    | `False`  | `None`                 | Claim selecting the Centreon to call. Unset means a single Centreon serves everyone.                      |
+| `CENTREON_OIDC_TENANTS`         | `False`  | `{}`                   | JSON mapping tenant claim values to a Centreon and its API token.                                         |
+
+A Keycloak deployment reading realm roles, serving one Centreon:
+
+```shell
+CENTREON_AUTH_PLUGIN=oidc
+CENTREON_MCP_PUBLIC_URL=https://mcp.example.com
+CENTREON_OIDC_CONFIG_URL=https://keycloak.example.com/realms/main/.well-known/openid-configuration
+CENTREON_OIDC_CLIENT_ID=centreon-mcp
+CENTREON_OIDC_CLIENT_SECRET=<secret>
+CENTREON_OIDC_ROLE_CLAIM=realm_access.roles
+CENTREON_OIDC_ROLE_MAPPING='{"centreon-admins": "admin", "centreon-ops": "editor", "centreon-users": "reader"}'
+```
+
+Serving several Centreon instances, one per tenant, adds the tenant claim and its table:
+
+```shell
+CENTREON_OIDC_TENANT_CLAIM=org_id
+CENTREON_OIDC_TENANTS='{"org_1": {"name": "acme", "base_url": "https://acme.example.com/centreon", "api_token": "<token>"}}'
+```
+
+> Each Centreon is called with the service token configured for its tenant, not with credentials of
+> the end user, so Centreon ACLs do not apply per user. Give that token the rights an `admin` may
+> exercise, and rely on the permission levels above to restrict everyone else.
+
+### Writing a plugin
+
+Deployments whose identity model does not fit the `oidc` plugin ship their own, in a separate
+package. A plugin implements the `AuthPlugin` protocol of `centreon_mcp.auth.base`:
+
+```python
+class AuthPlugin(Protocol):
+    def auth_provider(self) -> AuthProvider | None: ...  # None leaves the server unauthenticated
+    async def tenant(self, token: AccessToken | None) -> Tenant: ...  # may reach the network
+    async def role(self, token: AccessToken | None) -> Role: ...  # called once per tool listed
+    def tenants(self) -> Sequence[Tenant] | None: ...  # None: resolved per request, not checked
+    def components(self) -> Sequence[FastMCP]: ...  # extra tools, mounted with the built-in ones
+```
+
+A plugin whose deployment needs a choice the generic tools know nothing about, such as which of
+several platforms of a tenant to act on, exposes it through `components` rather than adding an
+argument to every tool.
+
+Publish it in the `centreon_mcp.auth` entry point group and select it by name:
+
+```toml
+[project.entry-points."centreon_mcp.auth"]
+acme = "acme_mcp_auth.plugin:AcmePlugin"
+```
+
+`CENTREON_AUTH_PLUGIN` also accepts a `module:attribute` import path, which is convenient while
+developing a plugin.
 
 ## Integration
 

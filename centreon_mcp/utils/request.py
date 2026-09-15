@@ -4,8 +4,7 @@ from copy import deepcopy
 from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
 
-from centreon_mcp import settings
-from centreon_mcp.utils import logger
+from centreon_mcp import logger, settings
 
 client: AsyncClient | None = None
 

@@ -1,7 +1,7 @@
 from fastmcp import FastMCP
 
+from centreon_mcp import logger
 from centreon_mcp.types.monitoring.metric import Metric
-from centreon_mcp.utils import logger
 
 metric = FastMCP()
 

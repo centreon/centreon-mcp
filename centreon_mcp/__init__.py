@@ -1,8 +1,12 @@
 from typing import Literal
 
 from dotenv import load_dotenv
+from fastmcp.utilities.logging import get_logger
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = get_logger("centreon")
+
 
 load_dotenv()
 

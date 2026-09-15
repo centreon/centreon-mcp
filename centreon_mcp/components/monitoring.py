@@ -5,6 +5,7 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp import logger
 from centreon_mcp.types.monitoring import Monitoring, MonitoringFilter, MonitoringOrder
 from centreon_mcp.types.monitoring.actions import (
     MonitoringAction,
@@ -20,7 +21,6 @@ from centreon_mcp.types.monitoring.mapping import (
 )
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.types.monitoring.status import ResourceStatusCount, ResourceStatusCountFilter
-from centreon_mcp.utils import logger
 from centreon_mcp.utils.base import BaseResource, ResourceStatus, ResourceType, StatusType
 
 monitoring = FastMCP()

@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastmcp import FastMCP
 from httpx import AsyncClient
 
-from centreon_mcp import settings
+from centreon_mcp import logger, settings
 from centreon_mcp.components import components
 from centreon_mcp.types.platform import Platform
-from centreon_mcp.utils import logger, request
+from centreon_mcp.utils import request
 
 
 @asynccontextmanager

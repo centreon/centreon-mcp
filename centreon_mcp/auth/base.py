@@ -1,0 +1,105 @@
+"""
+Core types of the authentication layer, kept out of the package entry point, which plugins cannot
+import while it is loading them.
+"""
+
+from collections.abc import Sequence
+from enum import IntEnum
+from typing import Protocol, runtime_checkable
+
+from fastmcp import FastMCP
+from fastmcp.server.auth import AccessToken
+from fastmcp.server.auth.auth import AuthProvider
+from pydantic import BaseModel, SecretStr
+
+
+class AuthenticationError(Exception):
+    """
+    Raised when a request cannot be resolved to a tenant, including when the plugin that resolves
+    it is misconfigured.
+    """
+
+
+class Role(IntEnum):
+    """
+    Permission levels, ordered from the least to the most privileged.
+
+    A user is granted a tool when its own level is greater than or equal to the level required
+    by that tool, so levels are cumulative: an editor may do everything a reader may do.
+
+    NONE is the level of an authenticated user the deployment grants nothing to. It reaches the
+    tools requiring no level, which is how such a user can be told why every other tool is
+    missing, rather than facing a server that appears to expose none.
+    """
+
+    NONE = 0
+    READER = 1
+    EDITOR = 2
+    ADMIN = 3
+
+
+class Tenant(BaseModel):
+    """
+    A Centreon reachable by the MCP server, with the credentials used to call it.
+    """
+
+    name: str
+    base_url: str
+    api_token: SecretStr | None = None
+
+    @property
+    def token(self) -> str | None:
+        return self.api_token.get_secret_value() if self.api_token is not None else None
+
+
+@runtime_checkable
+class AuthPlugin(Protocol):
+    """
+    Contract implemented by authentication plugins.
+    """
+
+    def auth_provider(self) -> AuthProvider | None:
+        """
+        Return the FastMCP authentication provider, or None for an unauthenticated server.
+        """
+        ...
+
+    async def tenant(self, token: AccessToken | None) -> Tenant:
+        """
+        Return the Centreon to call for the current request.
+
+        Resolving a tenant may reach the network, for instance to mint a short lived Centreon
+        token for the current user, hence the coroutine.
+        """
+        ...
+
+    async def role(self, token: AccessToken | None) -> Role:
+        """
+        Return the permission level of the authenticated user, NONE when it is granted none.
+
+        Raise only when the level cannot be determined at all, which is an error rather than a
+        denial and is reported as such.
+
+        Called once per tool for every tool listing, so a plugin resolving the level over the
+        network caches it itself: the core cannot choose how long that answer stays valid.
+        """
+        ...
+
+    def tenants(self) -> Sequence[Tenant] | None:
+        """
+        Return the tenants known upfront, used by the startup connectivity check.
+
+        None means the plugin resolves them per request and none can be checked, which is
+        legitimate. An empty sequence means it expected some and has none, which is not, so the
+        two are reported differently.
+        """
+        ...
+
+    def components(self) -> Sequence[FastMCP]:
+        """
+        Return the tools this plugin adds to the server, mounted alongside the built-in ones.
+
+        A plugin whose deployment needs a choice the generic tools know nothing about exposes it
+        here rather than adding an argument to every tool.
+        """
+        ...

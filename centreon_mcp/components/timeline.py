@@ -4,8 +4,8 @@ from typing import Annotated
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp import logger
 from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineFilter, TimelineOrder
-from centreon_mcp.utils import logger
 
 timeline = FastMCP()
 

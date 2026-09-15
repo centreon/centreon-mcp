@@ -15,7 +15,7 @@ async def lifespan(app: FastMCP):
     Lifespan context manager for FastMCP application.
     """
     # Initialize Centreon client
-    request.client = AsyncClient(timeout=settings.client_timeout)
+    request.client = AsyncClient(verify=settings.verify, timeout=settings.client_timeout)
 
     # Test Centreon API connectivity and get web version
     version = await Platform.get_web_version()

@@ -54,7 +54,7 @@ cd centreon-mcp
 > Setting `CENTREON_TLS_SECURE` to `False` disables TLS certificate verification and is not recommended in production.
 
 > If `CENTREON_CA_BUNDLE` is `None`, the system default CA store is used to verify the TLS certificate. 
-> If `CENTREON_CA_BUNDLE` is set but the path does not exist, the server refuses to start.
+> If `CENTREON_CA_BUNDLE` is set while TLS verification is enabled but the path does not exist, the server refuses to start.
 
 > Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 

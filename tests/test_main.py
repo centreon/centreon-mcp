@@ -49,7 +49,9 @@ async def test_lifespan(platform_get_web_version: AsyncMock, async_client_cls: M
 
     # Assert client instanciated with correct args
     async_client_cls.assert_called_once_with(
-        verify=True, timeout=settings.client_timeout, base_url=f"{settings.base_url}/api/latest"
+        verify=settings.verify,
+        timeout=settings.client_timeout,
+        base_url=f"{settings.base_url}/api/latest",
     )
 
     # Assert request called with right args

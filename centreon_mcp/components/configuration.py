@@ -5,6 +5,7 @@ from typing import Annotated, Literal, cast
 from fastmcp import FastMCP
 from pydantic import Field
 
+from centreon_mcp import logger
 from centreon_mcp.types.configuration import (
     Configuration,
     ConfigurationFilter,
@@ -19,7 +20,6 @@ from centreon_mcp.types.configuration.mapping import (
     MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
-from centreon_mcp.utils import logger
 
 configuration = FastMCP()
 

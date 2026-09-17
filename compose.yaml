@@ -13,6 +13,10 @@ services:
       CENTREON_API_TOKEN: ${CENTREON_API_TOKEN}
       CENTREON_MCP_LOG_LEVEL: ${CENTREON_MCP_LOG_LEVEL:-INFO}
       CENTREON_MCP_HOST: "0.0.0.0"
+      CENTREON_TLS_SECURE: ${CENTREON_TLS_SECURE:-True}
+      CENTREON_CA_BUNDLE: ${CENTREON_CA_BUNDLE}
+    volumes:
+      - ${CENTREON_CA_BUNDLE:-./certs}:${CENTREON_CA_BUNDLE:-/certs}:ro
     extra_hosts: 
       - "host.docker.internal:host-gateway"
 

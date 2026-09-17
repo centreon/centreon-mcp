@@ -4,8 +4,7 @@ from copy import deepcopy
 from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
 
-from centreon_mcp import settings
-from centreon_mcp.utils import logger
+from centreon_mcp import logger, settings
 
 client: AsyncClient | None = None
 
@@ -60,25 +59,26 @@ async def request(
 
     # Build request arguments
     token = get_http_headers().get("centreon-api-token") or settings.api_token
-    url = f"{settings.base_url}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token} if token else None
     params = params or {}
     params = {name: value for name, value in params.items() if value is not None}
 
     # Make request and handle response
     logger.debug(
-        f"Centreon API Request: {method} {url}\n"
+        f"Centreon API Request: {method} {endpoint}\n"
         f"Headers: {json.dumps(hide(headers), indent=2)}\n"
         f"Params: {json.dumps(params, indent=2)}\n"
         f"Payload: {json.dumps(payload, indent=2)}"
     )
     try:
-        response = await client.request(method, url, headers=headers, json=payload, params=params)
+        response = await client.request(
+            method, endpoint, headers=headers, json=payload, params=params
+        )
         try:
             content = response.json() if (response.status_code != 204 and response.content) else {}
         except json.JSONDecodeError:
             logger.warning(
-                f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
+                f"Non-JSON response from {method} {endpoint} (status {response.status_code}): {response.text[:500]}"
             )
             content = {"raw": response.text}
 

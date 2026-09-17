@@ -59,10 +59,9 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, token: st
     assert logger.debug.call_count == 2
 
     # Assert request was called with good args
-    url = f"{settings.base_url}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token or settings.api_token}
     client.request.assert_awaited_once_with(
-        method, url, headers=headers, json=payload, params=params
+        method, endpoint, headers=headers, json=payload, params=params
     )
 
     # Assert request output

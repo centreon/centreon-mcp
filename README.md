@@ -40,14 +40,21 @@ cd centreon-mcp
 
 2. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                      | Required | Default     | Description                                                         |
-| ------------------------- | -------- | -------     | ------------------------------------------------------------------- |
-| `CENTREON_BASE_URL`       | `True`   |             | Base URL of the Centreon instance.                                  |
-| `CENTREON_API_TOKEN`      | `False`  | `None`      | Centreon API token used if not provided through MCP client headers. |
-| `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout for Centreon API client.                                    |
-| `CENTREON_MCP_HOST`       | `False`  | `localhost` | Host used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_PORT`       | `False`  | `8000`      | Port used to start the Centreon MCP service.                        |
-| `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Minimal severity level for Centreon MCP service logs.               |
+| Name                      | Required | Default     | Description                                                    |
+| ------------------------- | -------- | ----------- | -------------------------------------------------------------- |
+| `CENTREON_BASE_URL`       | `True`   |             | Base URL of the Centreon instance to connect to.               |
+| `CENTREON_API_TOKEN`      | `False`  | `None`      | Fallback API token, used when the MCP client sends none.       |
+| `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout, in seconds, for requests to the Centreon API.         |
+| `CENTREON_TLS_SECURE`     | `False`  | `True`      | Whether to verify the Centreon server's TLS certificate.       |
+| `CENTREON_CA_BUNDLE`      | `False`  | `None`      | Path to a custom CA bundle used to verify the TLS certificate. |
+| `CENTREON_MCP_HOST`       | `False`  | `localhost` | Network interface the MCP HTTP server binds to.                |
+| `CENTREON_MCP_PORT`       | `False`  | `8000`      | TCP port the MCP HTTP server listens on.                       |
+| `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Lowest severity level emitted by the MCP service logs.         |
+
+> Setting `CENTREON_TLS_SECURE` to `False` disables TLS certificate verification and is not recommended in production.
+
+> If `CENTREON_CA_BUNDLE` is `None`, the system default CA store is used to verify the TLS certificate. 
+> If `CENTREON_CA_BUNDLE` is set while TLS verification is enabled but the path does not exist, the server refuses to start.
 
 > Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 

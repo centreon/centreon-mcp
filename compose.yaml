@@ -16,7 +16,7 @@ services:
       CENTREON_TLS_SECURE: ${CENTREON_TLS_SECURE:-True}
       CENTREON_CA_BUNDLE: ${CENTREON_CA_BUNDLE}
     volumes:
-      - ${CENTREON_CA_BUNDLE:-./certs}:${CENTREON_CA_BUNDLE:-/certs}:ro
+      - ${CENTREON_CA_BUNDLE:-/dev/null}:${CENTREON_CA_BUNDLE:-/dev/null}:ro
     extra_hosts: 
       - "host.docker.internal:host-gateway"
 

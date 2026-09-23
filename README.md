@@ -42,7 +42,7 @@ cd centreon-mcp
 
 | Name                       | Required | Default     | Description                                                    |
 | -------------------------- | -------- | ----------- | -------------------------------------------------------------- |
-| `CENTREON_BASE_URL`        | `True`   |             | Base URL of the Centreon instance to connect to.               |
+| `CENTREON_BASE_URL`        | Depends  |             | Base URL of the Centreon instance to connect to. Required unless the authentication plugin resolves one per request. |
 | `CENTREON_API_TOKEN`       | `False`  | `None`      | Fallback API token, used when the MCP client sends none.       |
 | `CENTREON_CLIENT_TIMEOUT`  | `False`  | `30`        | Timeout, in seconds, for requests to the Centreon API.         |
 | `CENTREON_TLS_SECURE`      | `False`  | `True`      | Whether to verify the Centreon server's TLS certificate.       |
@@ -61,6 +61,9 @@ cd centreon-mcp
 > If `CENTREON_CA_BUNDLE` is set while TLS verification is enabled but the path does not exist, the server refuses to start.
 
 > Available log level for Centreon service are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+
+> `CENTREON_BASE_URL` is required by the default `none` plugin. See [Authentication](#authentication)
+> for deployments serving several Centreon instances.
 
 ### Using UV
 
@@ -146,8 +149,10 @@ token themselves, and the `centreon-api-token` header is ignored.
 | `CENTREON_OIDC_ROLE_CLAIM`      | `False`  | `roles`                | Claim holding the roles of the user, as a dotted path.                                                    |
 | `CENTREON_OIDC_ROLE_MAPPING`    | `False`  | `{}`                   | JSON mapping claim values to `reader`, `editor` or `admin`.                                               |
 | `CENTREON_OIDC_DEFAULT_ROLE`    | `False`  | `None`                 | Level granted to users no mapping applies to. Without it, such users are granted no level.                |
+| `CENTREON_OIDC_TENANT_CLAIM`    | `False`  | `None`                 | Claim selecting the Centreon to call. Unset means a single Centreon serves everyone.                      |
+| `CENTREON_OIDC_TENANTS`         | `False`  | `{}`                   | JSON mapping tenant claim values to a Centreon and its API token.                                         |
 
-A Keycloak deployment reading realm roles:
+A Keycloak deployment reading realm roles, serving one Centreon:
 
 ```shell
 CENTREON_AUTH_PLUGIN=oidc
@@ -159,9 +164,16 @@ CENTREON_OIDC_ROLE_CLAIM=realm_access.roles
 CENTREON_OIDC_ROLE_MAPPING='{"centreon-admins": "admin", "centreon-ops": "editor", "centreon-users": "reader"}'
 ```
 
-> Centreon is called with the token configured for the server, not with credentials of the end
-> user, so Centreon ACLs do not apply per user. Give that token the rights an `admin` may exercise,
-> and rely on the permission levels above to restrict everyone else.
+Serving several Centreon instances, one per tenant, adds the tenant claim and its table:
+
+```shell
+CENTREON_OIDC_TENANT_CLAIM=org_id
+CENTREON_OIDC_TENANTS='{"org_1": {"name": "acme", "base_url": "https://acme.example.com/centreon", "api_token": "<token>"}}'
+```
+
+> Each Centreon is called with the service token configured for its tenant, not with credentials of
+> the end user, so Centreon ACLs do not apply per user. Give that token the rights an `admin` may
+> exercise, and rely on the permission levels above to restrict everyone else.
 
 ### Writing a plugin
 
@@ -171,12 +183,15 @@ package. A plugin implements the `AuthPlugin` protocol of `centreon_mcp.auth.bas
 ```python
 class AuthPlugin(Protocol):
     def auth_provider(self) -> AuthProvider | None: ...  # None leaves the server unauthenticated
+    async def tenant(self, token: AccessToken | None) -> Tenant: ...  # may reach the network
     async def role(self, token: AccessToken | None) -> Role: ...  # called once per tool listed
+    def tenants(self) -> Sequence[Tenant] | None: ...  # None: resolved per request, not checked
     def components(self) -> Sequence[FastMCP]: ...  # extra tools, mounted with the built-in ones
 ```
 
-A plugin whose deployment needs a choice the generic tools know nothing about exposes it through
-`components` rather than adding an argument to every tool.
+A plugin whose deployment needs a choice the generic tools know nothing about, such as which of
+several platforms of a tenant to act on, exposes it through `components` rather than adding an
+argument to every tool.
 
 Publish it in the `centreon_mcp.auth` entry point group and select it by name:
 

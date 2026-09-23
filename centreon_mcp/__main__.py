@@ -20,18 +20,14 @@ async def lifespan(app: FastMCP):
     """
     Lifespan context manager for FastMCP application.
     """
-    # Initialize Centreon client
-    request.client = AsyncClient(
-        verify=settings.verify,
-        timeout=settings.client_timeout,
-        base_url=f"{settings.base_url}/api/latest",
-    )
+    # No base URL on the client: the Centreon to call is resolved per request, and only the TLS
+    # settings are the same for all of them
+    request.client = AsyncClient(verify=settings.verify, timeout=settings.client_timeout)
     logger.info(
         f"Centreon API Client initialized (\n"
         f"\ttimeout={settings.client_timeout},\n"
         f"\ttls_secure={settings.tls_secure},\n"
-        f"\tca_bundle={settings.ca_bundle},\n"
-        f"\tbase_url={request.client.base_url}\n"
+        f"\tca_bundle={settings.ca_bundle}\n"
         ")."
     )
 

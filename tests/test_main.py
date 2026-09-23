@@ -54,9 +54,7 @@ async def test_lifespan(get_web_version: AsyncMock, async_client_cls: MagicMock,
 
     # Assert client instanciated with correct args
     async_client_cls.assert_called_once_with(
-        verify=settings.verify,
-        timeout=settings.client_timeout,
-        base_url=f"{settings.base_url}/api/latest",
+        verify=settings.verify, timeout=settings.client_timeout
     )
 
     # Assert Centreon connectivity was checked

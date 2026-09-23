@@ -6,6 +6,7 @@ from centreon_mcp.auth import (
     BUILT_IN_PLUGINS,
     ENTRY_POINT_GROUP,
     Role,
+    Tenant,
     load_plugin,
     require_role,
 )
@@ -128,12 +129,20 @@ async def test_require_role(role: Role, level: Role, granted: bool):
     plugin.role.assert_awaited_once_with(context.token)
 
 
+async def test_tenant_token():
+
+    # Call test function
+    assert Tenant(name="centreon", base_url="http://centreon", api_token="token").token == "token"
+    assert Tenant(name="centreon", base_url="http://centreon").token is None
+
+
 @pytest.mark.parametrize(
     "plugin,missing",
     [
         # A plugin that implements nothing at all
         (object(), "auth_provider"),
         # A plugin that forgot one method of the contract, the likeliest mistake
+        (type("Partial", (NoAuthPlugin,), {"tenants": None})(), "tenants"),
     ],
 )
 async def test_load_plugin_rejects_an_incomplete_plugin(plugin: object, missing: str):

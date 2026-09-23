@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from fastmcp.utilities.logging import get_logger
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -9,7 +9,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 logger = get_logger("centreon")
 
 
-load_dotenv()
+# Search from the working directory, not from this file, which sits in the installed package
+load_dotenv(find_dotenv(usecwd=True))
 
 
 class Settings(BaseSettings):
@@ -21,6 +22,22 @@ class Settings(BaseSettings):
     mcp_port: int = Field(default=8000, description="TCP port the MCP HTTP server listens on.")
     mcp_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Lowest severity level emitted by the MCP service logs."
+    )
+    mcp_public_url: str | None = Field(
+        default=None,
+        description="URL clients reach this server at, which an interactive authentication "
+        "plugin needs to build its callback.",
+    )
+    mcp_icon_url: str | None = Field(
+        default=None, description="Icon identifying this server on the consent screen."
+    )
+    mcp_website_url: str | None = Field(
+        default=None, description="Link identifying this server on the consent screen."
+    )
+    auth_plugin: str = Field(
+        default="none",
+        description="Authentication plugin deciding who the caller is, which Centreon they "
+        "reach and what they may do: a built-in name, an entry point name, or an import path.",
     )
     base_url: str = Field(
         description="Base URL of the Centreon instance to connect to, "

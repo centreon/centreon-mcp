@@ -108,6 +108,14 @@ format-heavy fields).
   no test hits the network. Component tests also patch the module `logger`.
 - Coverage sits at ~99%; CI runs `coverage report` after the suite.
 
+## Project Management
+
+- **Jira project**: `MON` (Centreon).
+- **Component**: `centreon-mcp`.
+- **Assignee**:
+  - name: Grégory LEVENTOUX
+  - email: gleventoux@centreon.com
+
 ## Conventions
 
 - Conventional Commits with a component scope: `feat(configuration):`, `feat(monitoring):`,

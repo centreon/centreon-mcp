@@ -2,10 +2,11 @@ import json
 from copy import deepcopy
 from typing import Any
 
-from fastmcp.server.dependencies import get_http_headers
+from fastmcp.server.dependencies import get_access_token
 from httpx import AsyncClient, HTTPStatusError
 
-from centreon_mcp import logger, settings
+from centreon_mcp import logger
+from centreon_mcp.auth.base import Tenant
 
 client: AsyncClient | None = None
 
@@ -105,38 +106,47 @@ class CentreonAPIError(Exception):
 
 
 async def request(
-    method: str, endpoint: str, payload: dict | None = None, params: dict | None = None
+    method: str,
+    endpoint: str,
+    payload: dict | None = None,
+    params: dict | None = None,
+    tenant: Tenant | None = None,
 ) -> dict:
     """
     Make request to Centreon API.
+
+    The Centreon to call is resolved by the authentication plugin, unless an explicit tenant is
+    given, which the startup connectivity check relies on to reach each tenant in turn.
     """
     # Check Centreon Client is initialiazed
     if client is None:
         raise RuntimeError("Centreon client is not initialized")
 
     # Build request arguments
-    token = get_http_headers().get("centreon-api-token") or settings.api_token
+    # Imported late, as a second guard against the cycle described in centreon_mcp/auth/__init__.py
+    from centreon_mcp.auth import get_plugin
+
+    tenant = tenant or await get_plugin().tenant(get_access_token())
+    token = tenant.token
+    url = f"{tenant.base_url}/api/latest/{endpoint}"
     headers = {"X-AUTH-TOKEN": token} if token else None
     params = params or {}
     params = {name: value for name, value in params.items() if value is not None}
 
     # Make request and handle response
     logger.debug(
-        f"Centreon API Request: {method} {endpoint}\n"
+        f"Centreon API Request: {method} {url}\n"
         f"Headers: {json.dumps(hide(headers), indent=2)}\n"
         f"Params: {json.dumps(redact(params), indent=2)}\n"
         f"Payload: {json.dumps(redact(payload), indent=2)}"
     )
     try:
-        response = await client.request(
-            method, endpoint, headers=headers, json=payload, params=params
-        )
+        response = await client.request(method, url, headers=headers, json=payload, params=params)
         try:
             content = response.json() if (response.status_code != 204 and response.content) else {}
         except json.JSONDecodeError:
             logger.warning(
-                f"Non-JSON response from {method} {endpoint} "
-                f"(status {response.status_code}): {response.text[:500]}"
+                f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
             )
             content = {"raw": response.text}
 

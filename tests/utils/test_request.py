@@ -3,10 +3,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from httpx import HTTPStatusError, Request, Response
 
-from centreon_mcp import settings
+from centreon_mcp.auth.base import Tenant
 from centreon_mcp.utils.request import REDACTED, CentreonAPIError, hide, redact, request
 
 MODULE = "centreon_mcp.utils.request"
+
+# Deliberately not CENTREON_BASE_URL: the request must be built from the tenant, not the setting
+TENANT_URL = "http://customer.example.com"
 
 
 @pytest.mark.parametrize(
@@ -34,9 +37,9 @@ async def test_hide(headers: dict | None, result: dict | None):
     "token",
     ["header-token", None],
 )
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_request(logger: MagicMock, get_http_headers: MagicMock, token: str | None):
+async def test_request(logger: MagicMock, plugin: MagicMock, token: str | None):
 
     # Setup args
     method = "GET"
@@ -47,8 +50,12 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, token: st
     # Mock logger
     logger.debug.return_value = None
 
-    # Mock get_http_hearders
-    get_http_headers.return_value = {"centreon-api-token": token} if token else {}
+    # Mock the tenant resolved by the authentication plugin. Its base URL differs from
+    # CENTREON_BASE_URL on purpose: the assertion below must fail if the request is built from
+    # the global setting rather than from the tenant of the caller
+    plugin.tenant = AsyncMock(
+        return_value=Tenant(name="customer", base_url=TENANT_URL, api_token=token)
+    )
 
     # Mock the shared client's response (client is the global mocked in conftest.py)
     content: dict = {}
@@ -64,18 +71,19 @@ async def test_request(logger: MagicMock, get_http_headers: MagicMock, token: st
     assert logger.debug.call_count == 2
 
     # Assert request was called with good args
-    headers = {"X-AUTH-TOKEN": token or settings.api_token}
+    url = f"{TENANT_URL}/api/latest/{endpoint}"
+    headers = {"X-AUTH-TOKEN": token} if token else None
     client.request.assert_awaited_once_with(
-        method, endpoint, headers=headers, json=payload, params=params
+        method, url, headers=headers, json=payload, params=params
     )
 
     # Assert request output
     assert result == content
 
 
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_request_centreon_api_error(logger: MagicMock, get_http_headers: MagicMock):
+async def test_request_centreon_api_error(logger: MagicMock, plugin: MagicMock):
 
     # Setup args
     method = "GET"
@@ -86,9 +94,10 @@ async def test_request_centreon_api_error(logger: MagicMock, get_http_headers: M
     # Mock logger
     logger.debug.return_value = None
 
-    # Mock get_http_hearders
-    token = "token"
-    get_http_headers.return_value = {"centreon-api-token": token}
+    # Mock the tenant resolved by the authentication plugin
+    plugin.tenant = AsyncMock(
+        return_value=Tenant(name="customer", base_url=TENANT_URL, api_token="token")
+    )
 
     # Mock the shared client's response (client is the global mocked in conftest.py)
     content: dict = {}
@@ -167,13 +176,45 @@ async def test_redact_leaves_the_original_alone():
     assert data == {"password": "s3cr3t"}
 
 
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_request_redacts_the_exchange_it_logs(logger: MagicMock, get_http_headers: MagicMock):
+async def test_request_uses_the_given_tenant(logger: MagicMock, plugin: MagicMock):
+
+    # Mock a plugin that would resolve a different Centreon, to prove the argument wins
+    plugin.tenant = AsyncMock(
+        return_value=Tenant(name="wrong", base_url="http://wrong.example.com", api_token="wrong")
+    )
+    tenant = Tenant(name="explicit", base_url=TENANT_URL, api_token="explicit-token-value")
+
+    # Mock the shared client's response
+    client, response = MagicMock(), MagicMock()
+    response.json.return_value = {}
+    client.request = AsyncMock(return_value=response)
+
+    # Call test function: the startup check runs outside any request and passes its own tenant
+    with patch(f"{MODULE}.client", client):
+        _ = await request("GET", "some/endpoint", tenant=tenant)
+
+    # Assert the plugin was never consulted and the given tenant was used
+    plugin.tenant.assert_not_awaited()
+    client.request.assert_awaited_once_with(
+        "GET",
+        f"{TENANT_URL}/api/latest/some/endpoint",
+        headers={"X-AUTH-TOKEN": "explicit-token-value"},
+        json=None,
+        params={},
+    )
+
+
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_request_redacts_the_exchange_it_logs(logger: MagicMock, plugin: MagicMock):
 
     # Setup args: a payload carrying a credential, as a service creation does
     payload = {"macros": [{"name": "DBPASSWORD", "value": "s3cr3t", "is_password": True}]}
-    get_http_headers.return_value = {"centreon-api-token": "long-enough-token"}
+    plugin.tenant = AsyncMock(
+        return_value=Tenant(name="customer", base_url=TENANT_URL, api_token="long-enough-token")
+    )
 
     # Mock a response carrying a token back, as a token creation does
     content = {"result": [{"token": "minted-token"}]}
@@ -195,12 +236,14 @@ async def test_request_redacts_the_exchange_it_logs(logger: MagicMock, get_http_
     assert payload["macros"][0]["value"] == "s3cr3t"
 
 
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-async def test_request_redacts_the_error_it_raises(logger: MagicMock, get_http_headers: MagicMock):
+async def test_request_redacts_the_error_it_raises(logger: MagicMock, plugin: MagicMock):
 
     # Setup args
-    get_http_headers.return_value = {"centreon-api-token": "token"}
+    plugin.tenant = AsyncMock(
+        return_value=Tenant(name="customer", base_url=TENANT_URL, api_token="token")
+    )
 
     # Mock an error body that echoes back what was sent, which Centreon does
     content = {"message": "rejected", "password": "s3cr3t"}
@@ -208,7 +251,7 @@ async def test_request_redacts_the_error_it_raises(logger: MagicMock, get_http_h
     response.json.return_value = content
     response.raise_for_status.side_effect = HTTPStatusError(
         message="Error",
-        request=Request("POST", "http://centreon.example.com/api/latest/some/endpoint"),
+        request=Request("POST", f"{TENANT_URL}/api/latest/some/endpoint"),
         response=Response(400),
     )
     client.request = AsyncMock(return_value=response)

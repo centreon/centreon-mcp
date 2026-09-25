@@ -4,7 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from centreon_mcp import settings
-from centreon_mcp.auth.base import AuthenticationError, Role
+from centreon_mcp.auth.base import AuthenticationError, Role, Tenant
 from centreon_mcp.auth.oidc import OIDCPlugin, OIDCSettings, claim
 
 MODULE = "centreon_mcp.auth.oidc"
@@ -96,6 +96,72 @@ async def test_auth_provider_without_public_url(oidc_proxy: MagicMock):
         pytest.raises(AuthenticationError, match="CENTREON_MCP_PUBLIC_URL is required"),
     ):
         _ = plugin.auth_provider()
+
+
+async def test_tenant_single():
+
+    # Setup args: no tenant claim means a single Centreon serves every user
+    plugin = build()
+
+    # Call test function
+    tenant = await plugin.tenant(token({}))
+
+    # Assert the configured Centreon is returned
+    assert tenant.base_url == settings.base_url
+    assert tenant.token == settings.api_token
+
+
+async def test_tenant_single_without_base_url():
+
+    # Setup args
+    plugin = build()
+
+    # Call test function
+    with (
+        patch.object(settings, "base_url", None),
+        pytest.raises(AuthenticationError, match="CENTREON_BASE_URL is required"),
+    ):
+        _ = await plugin.tenant(token({}))
+
+
+async def test_tenant_by_claim():
+
+    # Setup args
+    customer = Tenant(name="customer", base_url="http://customer.example.com", api_token="token")
+    plugin = build(tenant_claim="org_id", tenants={"org_1": customer})
+
+    # Call test function
+    assert await plugin.tenant(token({"org_id": "org_1"})) == customer
+
+
+async def test_tenant_unknown():
+
+    # Setup args
+    plugin = build(tenant_claim="org_id", tenants={})
+
+    # Call test function
+    with pytest.raises(AuthenticationError, match="No Centreon is registered for org_id org_1"):
+        _ = await plugin.tenant(token({"org_id": "org_1"}))
+
+
+async def test_tenant_missing_claim():
+
+    # Setup args
+    plugin = build(tenant_claim="org_id", tenants={})
+
+    # Call test function
+    with pytest.raises(AuthenticationError, match="org_id <missing>"):
+        _ = await plugin.tenant(token({}))
+
+
+async def test_tenant_without_token():
+
+    # Setup args
+    plugin = build(tenant_claim="org_id", tenants={})
+
+    # Call test function
+    with pytest.raises(AuthenticationError, match="not authenticated"):
+        _ = await plugin.tenant(None)
 
 
 @pytest.mark.parametrize(
@@ -193,14 +259,49 @@ async def test_unknown_role_configured(overrides: dict):
         _ = build(**overrides)
 
 
+async def test_tenants():
+
+    # Setup args
+    customer = Tenant(name="customer", base_url="http://customer.example.com", api_token="token")
+    plugin = build(tenant_claim="org_id", tenants={"org_1": customer})
+
+    # Call test function
+    assert plugin.tenants() == [customer]
+
+
+async def test_tenants_single():
+
+    # Setup args
+    plugin = build()
+
+    # Call test function
+    assert [tenant.base_url for tenant in plugin.tenants()] == [settings.base_url]
+
+
+async def test_tenants_single_without_base_url():
+
+    # Setup args
+    plugin = build()
+
+    # Call test function: nothing can be checked at startup
+    with patch.object(settings, "base_url", None):
+        assert plugin.tenants() == []
+
+
 async def test_settings_from_environment(monkeypatch: pytest.MonkeyPatch):
 
-    # Mock the environment of a deployment reading its roles from a nested claim
+    # Mock the environment of a deployment serving several Centreon
     monkeypatch.setenv("CENTREON_OIDC_CONFIG_URL", CONFIG_URL)
     monkeypatch.setenv("CENTREON_OIDC_CLIENT_ID", "client-id")
     monkeypatch.setenv("CENTREON_OIDC_CLIENT_SECRET", "client-secret")
     monkeypatch.setenv("CENTREON_OIDC_ROLE_CLAIM", "realm_access.roles")
     monkeypatch.setenv("CENTREON_OIDC_ROLE_MAPPING", '{"ops": "admin"}')
+    monkeypatch.setenv("CENTREON_OIDC_TENANT_CLAIM", "org_id")
+    monkeypatch.setenv(
+        "CENTREON_OIDC_TENANTS",
+        '{"org_1": {"name": "customer", "base_url": "http://customer.example.com",'
+        ' "api_token": "token"}}',
+    )
 
     # Call test function
     plugin = OIDCPlugin()
@@ -209,6 +310,7 @@ async def test_settings_from_environment(monkeypatch: pytest.MonkeyPatch):
     assert plugin.settings.role_claim == "realm_access.roles"
     assert plugin.settings.client_secret.get_secret_value() == "client-secret"
     assert await plugin.role(token({"realm_access": {"roles": ["ops"]}})) == Role.ADMIN
+    assert (await plugin.tenant(token({"org_id": "org_1"}))).token == "token"
 
 
 @patch(f"{MODULE}.logger", new_callable=MagicMock)

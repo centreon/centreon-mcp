@@ -1,11 +1,14 @@
 import importlib
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
+import pytest
 from fastmcp.server.auth.auth import AuthProvider
 
 from centreon_mcp import settings
-from centreon_mcp.__main__ import health, lifespan, main
+from centreon_mcp.__main__ import check_tenants, health, icons, lifespan, main, mcp
+from centreon_mcp.auth import Tenant
 from centreon_mcp.types.platform import Version
+from centreon_mcp.utils.request import CentreonAPIError
 
 MODULE = "centreon_mcp.__main__"
 
@@ -27,10 +30,24 @@ def test_main(mcp: MagicMock):
     )
 
 
+def tenant(name: str) -> Tenant:
+    """
+    Build a tenant pointing at a fake Centreon.
+    """
+    return Tenant(name=name, base_url=f"http://{name}.example.com", api_token="token")
+
+
+def unreachable() -> CentreonAPIError:
+    """
+    Build the error a Centreon that cannot be reached raises.
+    """
+    return CentreonAPIError(503, "http://example.com", "GET", {"message": "unreachable"})
+
+
 @patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
-@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
-async def test_lifespan(get_web_version: AsyncMock, async_client_cls: MagicMock, plugin: MagicMock):
+@patch(f"{MODULE}.check_tenants", new_callable=AsyncMock)
+async def test_lifespan(check_tenants: AsyncMock, async_client_cls: MagicMock, plugin: MagicMock):
 
     # Setup args
     app = MagicMock()
@@ -54,19 +71,158 @@ async def test_lifespan(get_web_version: AsyncMock, async_client_cls: MagicMock,
 
     # Assert client instanciated with correct args
     async_client_cls.assert_called_once_with(
-        verify=settings.verify,
-        timeout=settings.client_timeout,
-        base_url=f"{settings.base_url}/api/latest",
+        verify=settings.verify, timeout=settings.client_timeout
     )
 
     # Assert Centreon connectivity was checked
-    get_web_version.assert_awaited_once_with()
+    check_tenants.assert_awaited_once_with()
 
     # Assert import_server called multiple times
     app.mount.assert_has_calls([call(s) for s in servers])
 
     # Assert client.aclose awaited once
     client.aclose.assert_awaited_once_with()
+
+
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants(logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock):
+
+    # Setup args
+    tenants = [tenant("first"), tenant("second")]
+    plugin.tenants.return_value = tenants
+
+    # Mock request
+    get_web_version.return_value = VERSION
+
+    # Call test function
+    await check_tenants()
+
+    # Assert every tenant was reached
+    get_web_version.assert_has_awaits([call(tenant=t) for t in tenants])
+
+
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants_without_tenant(
+    logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
+):
+
+    # Setup args: a plugin that expects tenants and was given none, which is a misconfiguration
+    plugin.tenants.return_value = []
+
+    # Call test function
+    await check_tenants()
+
+    # Assert the check was skipped, and reported as the fault it is rather than as the legitimate
+    # dynamic case, which the sibling test covers
+    get_web_version.assert_not_awaited()
+    logger.error.assert_called_once()
+
+
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants_single_unreachable(
+    logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
+):
+
+    # Setup args
+    plugin.tenants.return_value = [tenant("only")]
+
+    # Mock an unreachable Centreon
+    get_web_version.side_effect = unreachable()
+
+    # Call test function: a single unreachable Centreon prevents the server from starting
+    with pytest.raises(CentreonAPIError):
+        await check_tenants()
+
+
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants_partially_unreachable(
+    logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
+):
+
+    # Setup args
+    plugin.tenants.return_value = [tenant("down"), tenant("up")]
+
+    # Mock the first Centreon being unreachable
+    get_web_version.side_effect = [unreachable(), VERSION]
+
+    # Call test function: one unreachable tenant does not take the shared server down
+    await check_tenants()
+
+    # Assert the failure was reported, and the degraded startup named the tenant
+    logger.warning.assert_called_once()
+    assert "down" in logger.error.call_args.args[0]
+
+
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants_all_unreachable(
+    logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
+):
+
+    # Setup args
+    plugin.tenants.return_value = [tenant("first"), tenant("second")]
+
+    # Mock every Centreon being unreachable
+    get_web_version.side_effect = unreachable()
+
+    # Call test function
+    with pytest.raises(RuntimeError, match="unreachable for every tenant: first, second"):
+        await check_tenants()
+
+
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
+@patch(f"{MODULE}.check_tenants", new_callable=AsyncMock)
+async def test_lifespan_mounts_plugin_components(
+    check_tenants: AsyncMock, async_client_cls: MagicMock, plugin: MagicMock
+):
+
+    # Setup args
+    app = MagicMock()
+    app.mount = MagicMock()
+
+    # Mock the Centreon client instantiated by the lifespan
+    client = MagicMock()
+    client.aclose = AsyncMock(return_value=None)
+    async_client_cls.return_value = client
+
+    # Mock a plugin contributing its own tools
+    contributed = MagicMock()
+    plugin.components.return_value = [contributed]
+
+    # Call test function
+    built_in = [MagicMock()]
+    with patch(f"{MODULE}.components", built_in), patch(f"{MODULE}.mounted", False):
+        async with lifespan(app):
+            pass
+
+    # Assert the plugin tools were mounted alongside the built-in ones
+    app.mount.assert_has_calls([call(built_in[0]), call(contributed)])
+
+
+@pytest.mark.parametrize("icon", ["https://example.com/logo.png", None])
+async def test_icons(icon: str | None):
+
+    # Call test function: a deployment that sets no icon is identified by its name alone
+    with patch.object(settings, "mcp_icon_url", icon):
+        result = icons()
+
+    assert (result[0].src if result else None) == icon
+
+
+async def test_server_identity():
+
+    # Call test function: the consent screen names this server
+    assert mcp.name == "Centreon MCP Server"
 
 
 async def test_health():
@@ -95,11 +251,30 @@ async def test_server_is_built_with_the_plugin_provider(plugin: MagicMock):
     importlib.reload(module)
 
 
+@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
+@patch(f"{MODULE}.logger", new_callable=MagicMock)
+async def test_check_tenants_resolved_per_request(
+    logger: MagicMock, plugin: MagicMock, get_web_version: AsyncMock
+):
+
+    # Setup args: a plugin resolving its Centreon from the identity of each request knows none
+    plugin.tenants.return_value = None
+
+    # Call test function
+    await check_tenants()
+
+    # Assert the check was skipped without crying misconfiguration, unlike an empty sequence
+    get_web_version.assert_not_awaited()
+    logger.info.assert_called_once()
+    logger.warning.assert_not_called()
+
+
 @patch("centreon_mcp.auth.plugin", new_callable=MagicMock)
 @patch(f"{MODULE}.AsyncClient", new_callable=MagicMock)
-@patch(f"{MODULE}.Platform.get_web_version", new_callable=AsyncMock)
+@patch(f"{MODULE}.check_tenants", new_callable=AsyncMock)
 async def test_lifespan_mounts_once(
-    get_web_version: AsyncMock, async_client_cls: MagicMock, plugin: MagicMock
+    check_tenants: AsyncMock, async_client_cls: MagicMock, plugin: MagicMock
 ):
 
     # Setup args

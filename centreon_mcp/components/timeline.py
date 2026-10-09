@@ -5,6 +5,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp import logger
+from centreon_mcp.auth import READER
 from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineFilter, TimelineOrder
 
 timeline = FastMCP()
@@ -17,7 +18,8 @@ timeline = FastMCP()
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def get_host_timeline(
     host_id: int,
@@ -52,7 +54,8 @@ async def get_host_timeline(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=READER,
 )
 async def get_service_timeline(
     host_id: int,

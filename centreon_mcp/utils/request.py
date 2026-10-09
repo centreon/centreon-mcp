@@ -1,5 +1,6 @@
 import json
 from copy import deepcopy
+from typing import Any
 
 from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
@@ -7,6 +8,27 @@ from httpx import AsyncClient, HTTPStatusError
 from centreon_mcp import logger, settings
 
 client: AsyncClient | None = None
+
+
+# Redacted in both directions: requests carry credentials, responses carry tokens
+SECRET_FIELDS = frozenset(
+    {
+        "access_token",
+        "api_key",
+        "api_token",
+        "authorization",
+        "authtoken",
+        "client_secret",
+        "password",
+        "private_key",
+        "refresh_token",
+        "secret",
+        "snmp_community",
+        "token",
+    }
+)
+
+REDACTED = "[redacted]"
 
 
 def hide(headers: dict | None) -> dict | None:
@@ -17,10 +39,45 @@ def hide(headers: dict | None) -> dict | None:
         return None
 
     hidden = deepcopy(headers)
-    token = headers["X-AUTH-TOKEN"]
+    token = headers.get("X-AUTH-TOKEN")
+    if token is None:
+        return hidden
+
+    # Keeping a tail to recognise the token only works while there is more to hide than to keep:
+    # a short one would otherwise be written out whole
     size = 6
-    hidden["X-AUTH-TOKEN"] = (len(token) - size) * "*" + token[-size:]
+    hidden["X-AUTH-TOKEN"] = (
+        (len(token) - size) * "*" + token[-size:] if len(token) > 2 * size else REDACTED
+    )
     return hidden
+
+
+def secret(key: object, data: dict) -> bool:
+    """
+    Tell whether a key of a Centreon payload holds a credential.
+
+    Macros carry the passwords a monitoring plugin authenticates with, under the neutral key
+    `value`; the entity itself says so through `is_password`.
+    """
+    if str(key).lower() in SECRET_FIELDS:
+        return True
+    # Truthy rather than `is True`: a payload carries a real bool, a response carries raw JSON
+    return key == "value" and bool(data.get("is_password"))
+
+
+def redact(data: Any) -> Any:
+    """
+    Return a copy of a payload or a response with every secret replaced.
+
+    Debug logs are shipped off-host and outlive the credentials they would otherwise carry.
+    """
+    if isinstance(data, dict):
+        return {
+            key: REDACTED if secret(key, data) else redact(value) for key, value in data.items()
+        }
+    if isinstance(data, list):
+        return [redact(item) for item in data]
+    return data
 
 
 class CentreonAPIError(Exception):
@@ -67,8 +124,8 @@ async def request(
     logger.debug(
         f"Centreon API Request: {method} {endpoint}\n"
         f"Headers: {json.dumps(hide(headers), indent=2)}\n"
-        f"Params: {json.dumps(params, indent=2)}\n"
-        f"Payload: {json.dumps(payload, indent=2)}"
+        f"Params: {json.dumps(redact(params), indent=2)}\n"
+        f"Payload: {json.dumps(redact(payload), indent=2)}"
     )
     try:
         response = await client.request(
@@ -78,13 +135,14 @@ async def request(
             content = response.json() if (response.status_code != 204 and response.content) else {}
         except json.JSONDecodeError:
             logger.warning(
-                f"Non-JSON response from {method} {endpoint} (status {response.status_code}): {response.text[:500]}"
+                f"Non-JSON response from {method} {endpoint} "
+                f"(status {response.status_code}): {response.text[:500]}"
             )
             content = {"raw": response.text}
 
         logger.debug(
             f"Centreon API Response: {response.status_code}\n"
-            f"Content: {json.dumps(content, indent=2)}"
+            f"Content: {json.dumps(redact(content), indent=2)}"
         )
         response.raise_for_status()
         return content
@@ -92,6 +150,6 @@ async def request(
     except HTTPStatusError as e:
         status = e.response.status_code
         url = str(e.request.url)
-        error = CentreonAPIError(status, url, method, content)
+        error = CentreonAPIError(status, url, method, redact(content))
         logger.error(error)
         raise error from e

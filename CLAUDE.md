@@ -10,7 +10,7 @@ Python 3.14 (`>=3.13` supported), [FastMCP](https://gofastmcp.com), `httpx`, Pyd
 Runs as an HTTP MCP server (`transport="http"`), not stdio.
 
 Tracked in the `MON` Jira project — reference tickets as `MON-<id>` in branches, commits and PRs.
-The work is attached to epic `MON-197998` — *MCP Server for basic configuration*.
+The work is attached to epic `MON-197998` — _MCP Server for basic configuration_.
 
 ## Commands
 
@@ -39,13 +39,36 @@ Three layers, and almost every change touches them in this order:
    `ListMixin`, `UpdateMixin` (via `PutMixin`/`PatchMixin`), `DeleteMixin`, `SetMixin`, `CountMixin`.
    A model gets an operation by inheriting the mixin, parameterised with its own types. Endpoints
    come from the model's `endpoint`/`set_endpoint` class vars.
-3. **`centreon_mcp/components/`** — the MCP tools. Four `FastMCP` sub-apps (`monitoring`, `metric`,
-   `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `__main__.py`.
+3. **`centreon_mcp/components/`** — the MCP tools. Five `FastMCP` sub-apps (`monitoring`, `metric`,
+   `timeline`, `configuration`, `account`) listed in `components/__init__.py` and mounted by
+   `__main__.py`.
 
 `centreon_mcp/utils/request.py` is the single exit point to the Centreon API: builds
 `{base}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP header
-(per-request, via `get_http_headers()`) falling back to `CENTREON_API_TOKEN`, logs a
-token-masked trace, and raises `CentreonAPIError` on non-2xx.
+(per-request, via `get_http_headers()`) falling back to `CENTREON_API_TOKEN`, logs a token-masked
+trace and redacts every secret it prints, and raises `CentreonAPIError` on non-2xx.
+
+### Authentication and roles
+
+`centreon_mcp/auth/` decides who the caller is and what it may do. The `AuthPlugin` protocol
+(`auth/base.py`) is implemented by `auth/none.py` (unauthenticated, every tool granted) and
+`auth/oidc.py` (any OpenID Connect provider, roles read from token claims); `CENTREON_AUTH_PLUGIN`
+selects one, and a deployment whose identity model fits neither ships its own plugin in a separate
+package. Keep provider-specific settings inside the plugin, never in the core `Settings`.
+
+A plugin may also contribute its own `FastMCP` sub-apps through `components()`, mounted by the
+lifespan alongside the built-in ones. That is how deployment-specific choices stay out of the
+generic tools.
+
+Permission levels are `Role.READER < Role.EDITOR < Role.ADMIN`. **Every tool declares one** through
+`auth=READER | EDITOR | ADMIN` in its decorator: tools above the caller level are hidden from
+`tools/list` and cannot be called. A tool shipped without `auth=` would be reachable by anyone, so
+`tests/components/test_component_authorization.py` asserts the full table and fails when a tool is
+added without a level. Update that table and `TOOLS.md` together. That guarantee stops at the
+package boundary: tools a plugin contributes through `components()` are its own responsibility.
+
+`auth=AUTHENTICATED` requires no level and never consults the plugin, so it is reserved for tools
+that reach no Centreon and expose nothing beyond the caller's own context.
 
 ### The discriminated-union tool pattern
 
@@ -59,7 +82,7 @@ Two consequences to respect:
 - `model_type` is duplicated: it discriminates the union **and** keys the
   `MODELS_MIXIN_{LIST,CREATE,UPDATE,DELETE,SET,COUNT}` dicts in the `mapping.py` modules, which is
   how a tool resolves the model class to call.
-- Because Pydantic only validates that the payload is *one of* the union members, the tool must
+- Because Pydantic only validates that the payload is _one of_ the union members, the tool must
   cross-check it against the selected `model_type`. Every tool calls `.check(model_type)` on its
   params/filters/order (`BaseParams.check` and friends in `utils/base.py`) before dispatching. Skip
   it and a caller can pass `host` filters to a `service_group` list.
@@ -88,7 +111,8 @@ reference:
    `Configuration*`/`Monitoring*` unions.
 3. Register the model in the applicable `MODELS_MIXIN_*` lists in `mapping.py`.
 4. Add the `model_type` literal to each tool in the component that should accept it — the `Literal`
-   lists differ per tool (e.g. `monitoring_server` is listable but not creatable).
+   lists differ per tool (e.g. `monitoring_server` is listable but not creatable). A brand new tool
+   also needs its `auth=` level and a row in the authorization test table.
 5. Extend the `@pytest.mark.parametrize` tables in `tests/utils/mixins/test_*.py` and the component
    tests; update `TOOLS.md` and the README feature list if tool surface or capabilities changed.
 

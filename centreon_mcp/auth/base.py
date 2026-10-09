@@ -10,12 +10,13 @@ from typing import Protocol, runtime_checkable
 from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken
 from fastmcp.server.auth.auth import AuthProvider
+from pydantic import BaseModel, SecretStr
 
 
 class AuthenticationError(Exception):
     """
-    Raised when a request cannot be resolved to a permission level, including when the plugin
-    that resolves it is misconfigured.
+    Raised when a request cannot be resolved to a tenant or a permission level, including when
+    the plugin that resolves it is misconfigured.
     """
 
 
@@ -37,6 +38,20 @@ class Role(IntEnum):
     ADMIN = 3
 
 
+class Tenant(BaseModel):
+    """
+    A Centreon reachable by the MCP server, with the credentials used to call it.
+    """
+
+    name: str
+    base_url: str
+    api_token: SecretStr | None = None
+
+    @property
+    def token(self) -> str | None:
+        return self.api_token.get_secret_value() if self.api_token is not None else None
+
+
 @runtime_checkable
 class AuthPlugin(Protocol):
     """
@@ -46,6 +61,15 @@ class AuthPlugin(Protocol):
     def auth_provider(self) -> AuthProvider | None:
         """
         Return the FastMCP authentication provider, or None for an unauthenticated server.
+        """
+        ...
+
+    async def tenant(self, token: AccessToken | None) -> Tenant:
+        """
+        Return the Centreon to call for the current request.
+
+        Resolving a tenant may reach the network, for instance to mint a short lived Centreon
+        token for the current user, hence the coroutine.
         """
         ...
 
@@ -59,6 +83,16 @@ class AuthPlugin(Protocol):
 
         Called once per tool for every tool listing, so a plugin resolving the level over the
         network caches it itself: the core cannot choose how long that answer stays valid.
+        """
+        ...
+
+    def tenants(self) -> Sequence[Tenant] | None:
+        """
+        Return the tenants known upfront, used by the startup connectivity check.
+
+        None means the plugin resolves them per request and none can be checked, which is
+        legitimate. An empty sequence means it expected some and has none, which is not, so the
+        two are reported differently.
         """
         ...
 

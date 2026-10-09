@@ -43,18 +43,18 @@ Three layers, and almost every change touches them in this order:
    `timeline`, `configuration`, `account`) listed in `components/__init__.py` and mounted by
    `__main__.py`.
 
-`centreon_mcp/utils/request.py` is the single exit point to the Centreon API: builds
-`{base}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP header
-(per-request, via `get_http_headers()`) falling back to `CENTREON_API_TOKEN`, logs a token-masked
-trace and redacts every secret it prints, and raises `CentreonAPIError` on non-2xx.
+`centreon_mcp/utils/request.py` is the single exit point to the Centreon API: asks the
+authentication plugin which `Tenant` to call, builds `{tenant.base_url}/api/latest/{endpoint}`
+with the tenant token, logs a token-masked trace, and raises `CentreonAPIError` on non-2xx.
 
-### Authentication and roles
+### Authentication, tenants and roles
 
-`centreon_mcp/auth/` decides who the caller is and what it may do. The `AuthPlugin` protocol
-(`auth/base.py`) is implemented by `auth/none.py` (unauthenticated, every tool granted) and
-`auth/oidc.py` (any OpenID Connect provider, roles read from token claims); `CENTREON_AUTH_PLUGIN`
-selects one, and a deployment whose identity model fits neither ships its own plugin in a separate
-package. Keep provider-specific settings inside the plugin, never in the core `Settings`.
+`centreon_mcp/auth/` decides who the caller is, which Centreon it reaches and what it may do. The
+`AuthPlugin` protocol (`auth/base.py`) is implemented by `auth/none.py` (unauthenticated, one
+Centreon, every tool granted) and `auth/oidc.py` (any OpenID Connect provider, roles and tenant read
+from token claims); `CENTREON_AUTH_PLUGIN` selects one, and a deployment whose identity model fits
+neither ships its own plugin in a separate package. Keep provider-specific settings inside the
+plugin, never in the core `Settings`.
 
 A plugin may also contribute its own `FastMCP` sub-apps through `components()`, mounted by the
 lifespan alongside the built-in ones. That is how deployment-specific choices stay out of the

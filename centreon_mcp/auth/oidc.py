@@ -1,9 +1,9 @@
 """
 Generic OpenID Connect plugin.
 
-Users authenticate against any OpenID Connect provider, and the permission level is read from a
-claim of the access token. Providers name things differently, so the claim path and the value
-mapping are configuration.
+Users authenticate against any OpenID Connect provider. The permission level is read from a claim
+of the access token, and a second claim selects the tenant when several Centreon are served.
+Providers name things differently, so claim paths and value mappings are configuration.
 """
 
 from collections.abc import Sequence
@@ -17,10 +17,13 @@ from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from centreon_mcp import logger, settings
-from centreon_mcp.auth.base import AuthenticationError, Role
+from centreon_mcp.auth.base import AuthenticationError, Role, Tenant
 
 # Role.NONE is what a user who matches nothing is left with, never something to map a claim to
 ROLES = {role.name.lower(): role for role in Role if role is not Role.NONE}
+
+# Name reported for the single Centreon of a mono tenant deployment, which has no claim to name it
+TENANT_NAME = "centreon"
 
 # How many distinct claim values are remembered before starting to report them again
 REPORT_LIMIT = 100
@@ -42,6 +45,8 @@ class OIDCSettings(BaseSettings):
     role_claim: str = "roles"
     role_mapping: dict[str, str] = {}
     default_role: str | None = None
+    tenant_claim: str | None = None
+    tenants: dict[str, Tenant] = {}
 
     @field_validator("role_mapping", "default_role")
     @classmethod
@@ -65,7 +70,7 @@ def claim(claims: dict[str, Any], path: str) -> list[str]:
     Providers expose claims as a single value (`org_id`), a list (`roles`), or a space
     separated string (`scope`), and nest them at arbitrary depths (`realm_access.roles`).
 
-    A single value is split on whitespace, so a claim value must not contain spaces.
+    A single value is split on whitespace, so a tenant claim must not contain spaces.
     """
     value: Any = claims
     for part in path.split("."):
@@ -114,6 +119,44 @@ class OIDCPlugin:
             )
         return self.provider
 
+    async def tenant(self, token: AccessToken | None) -> Tenant:
+        """
+        Return the Centreon matching the tenant claim of the access token.
+
+        Deployments serving a single Centreon leave `CENTREON_OIDC_TENANT_CLAIM` unset and get
+        the one configured through `CENTREON_BASE_URL`.
+        """
+        if self.settings.tenant_claim is None:
+            return self.build_single_tenant()
+
+        if token is None:
+            raise AuthenticationError("Request is not authenticated")
+
+        values = claim(token.claims, self.settings.tenant_claim)
+        for value in values:
+            if value in self.settings.tenants:
+                return self.settings.tenants[value]
+
+        raise AuthenticationError(
+            f"No Centreon is registered for {self.settings.tenant_claim} "
+            f"{', '.join(values) or '<missing>'}"
+        )
+
+    def build_single_tenant(self) -> Tenant:
+        """
+        Build the Centreon serving every user when no tenant claim is configured.
+        """
+        if settings.base_url is None:
+            raise AuthenticationError(
+                "CENTREON_BASE_URL is required when CENTREON_OIDC_TENANT_CLAIM is not set"
+            )
+        api_token = settings.api_token
+        return Tenant(
+            name=TENANT_NAME,
+            base_url=settings.base_url,
+            api_token=SecretStr(api_token) if api_token else None,
+        )
+
     async def role(self, token: AccessToken | None) -> Role:
         """
         Return the highest permission level granted by the role claim of the access token.
@@ -147,6 +190,14 @@ class OIDCPlugin:
         return (
             ROLES[self.settings.default_role.lower()] if self.settings.default_role else Role.NONE
         )
+
+    def tenants(self) -> Sequence[Tenant]:
+        """
+        Return the configured tenants, or the single Centreon of a mono tenant deployment.
+        """
+        if self.settings.tenant_claim is None:
+            return [self.build_single_tenant()] if settings.base_url else []
+        return list(self.settings.tenants.values())
 
     def components(self) -> Sequence[FastMCP]:
         return []

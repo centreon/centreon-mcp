@@ -1,9 +1,9 @@
 """
-Pluggable authentication and role based authorization.
+Pluggable authentication, tenant routing and role based authorization.
 
-Who the caller is and what they may do is answered by the `AuthPlugin` contract of `base.py`.
-`CENTREON_AUTH_PLUGIN` selects one, by built-in name, by `centreon_mcp.auth` entry point, or by
-`module:attribute` path.
+A single Centreon reached with a static token and a shared service where each user belongs to a
+tenant are both expressed through the `AuthPlugin` contract of `base.py`. `CENTREON_AUTH_PLUGIN`
+selects one, by built-in name, by `centreon_mcp.auth` entry point, or by `module:attribute` path.
 """
 
 from importlib import import_module
@@ -13,7 +13,7 @@ from fastmcp.exceptions import AuthorizationError
 from fastmcp.server.auth import AuthCheck, AuthContext
 
 from centreon_mcp import logger, settings
-from centreon_mcp.auth.base import AuthenticationError, AuthPlugin, Role
+from centreon_mcp.auth.base import AuthenticationError, AuthPlugin, Role, Tenant
 
 ENTRY_POINT_GROUP = "centreon_mcp.auth"
 
@@ -22,7 +22,7 @@ BUILT_IN_PLUGINS = {
     "oidc": "centreon_mcp.auth.oidc:OIDCPlugin",
 }
 
-AUTH_PLUGIN_METHODS = ("auth_provider", "role", "components")
+AUTH_PLUGIN_METHODS = ("auth_provider", "tenant", "role", "tenants", "components")
 
 
 def import_plugin(path: str) -> AuthPlugin:
@@ -168,6 +168,7 @@ __all__ = [
     "AuthPlugin",
     "AuthenticationError",
     "Role",
+    "Tenant",
     "get_plugin",
     "load_plugin",
     "require_role",

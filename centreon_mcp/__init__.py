@@ -39,9 +39,11 @@ class Settings(BaseSettings):
         description="Authentication plugin deciding who the caller is, which Centreon they "
         "reach and what they may do: a built-in name, an entry point name, or an import path.",
     )
-    base_url: str = Field(
+    base_url: str | None = Field(
+        default=None,
         description="Base URL of the Centreon instance to connect to, "
-        "e.g. `https://centreon.example.com`."
+        "e.g. `https://centreon.example.com`. Required unless the authentication plugin "
+        "resolves one per request.",
     )
     api_token: str | None = Field(
         default=None,

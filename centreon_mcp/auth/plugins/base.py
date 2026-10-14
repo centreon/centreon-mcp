@@ -45,9 +45,5 @@ class AuthPlugin(ABC):
     async def tenants(self) -> list[Tenant]:
         """
         Return the tenants known upfront, used by the startup connectivity check.
-
-        None means the plugin resolves them per request and none can be checked, which is
-        legitimate. An empty sequence means it expected some and has none, which is not, so the
-        two are reported differently.
         """
         ...

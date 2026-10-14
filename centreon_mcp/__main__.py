@@ -48,7 +48,7 @@ def main():
     # Load auth plugin
     auth.load()
 
-    # Instanciate mcp server with configured authentification
+    # Instantiate mcp server with configured authentication
     mcp = FastMCP(name="Centreon MCP Server", auth=auth.plugin.provider(), lifespan=lifespan)
 
     # Import components

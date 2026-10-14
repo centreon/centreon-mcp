@@ -58,7 +58,7 @@ async def request(
     """
     Make request to Centreon API.
     """
-    # Check Centreon Client is initialiazed
+    # Check Centreon Client is initialized
     if client is None:
         raise RuntimeError("Centreon client is not initialized")
 

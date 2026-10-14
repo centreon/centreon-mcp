@@ -14,7 +14,7 @@ ENTRY_POINTS_GROUP = "centreon_mcp.auth"
 
 def load() -> None:
     """
-    Instantiate the plugin the given name designates.
+    Instantiate authentication plugin given by CENTREON_AUTH_PLUGIN environment variable.
     """
     global plugin
 

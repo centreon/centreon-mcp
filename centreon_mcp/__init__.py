@@ -22,14 +22,10 @@ class Settings(BaseSettings):
     mcp_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Lowest severity level emitted by the MCP service logs."
     )
-    base_url: str = Field(
-        description="Base URL of the Centreon instance to connect to, "
-        "e.g. `https://centreon.example.com`."
-    )
-    api_token: str | None = Field(
-        default=None,
-        description="Fallback Centreon API token, used when the MCP client does not supply one "
-        "through the `centreon-api-token` header.",
+    auth_plugin: str = Field(
+        default="none",
+        description="Name of the authentication plugin to load, among those registered under the "
+        "`centreon_mcp.auth` entry-point group.",
     )
     client_timeout: int = Field(
         default=30, description="Timeout, in seconds, for requests to the Centreon API."

@@ -4,7 +4,8 @@ from copy import deepcopy
 from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
 
-from centreon_mcp import logger, settings
+from centreon_mcp import auth, logger
+from centreon_mcp.auth.models import Tenant
 
 client: AsyncClient | None = None
 
@@ -48,7 +49,11 @@ class CentreonAPIError(Exception):
 
 
 async def request(
-    method: str, endpoint: str, payload: dict | None = None, params: dict | None = None
+    method: str,
+    endpoint: str,
+    payload: dict | None = None,
+    params: dict | None = None,
+    tenant: Tenant | None = None,
 ) -> dict:
     """
     Make request to Centreon API.
@@ -58,27 +63,27 @@ async def request(
         raise RuntimeError("Centreon client is not initialized")
 
     # Build request arguments
-    token = get_http_headers().get("centreon-api-token") or settings.api_token
+    tenant = tenant or await auth.plugin.tenant()
+    url = f"{tenant.base_url}/api/latest/{endpoint}"
+    token = get_http_headers().get("centreon-api-token") or tenant.token
     headers = {"X-AUTH-TOKEN": token} if token else None
     params = params or {}
     params = {name: value for name, value in params.items() if value is not None}
 
     # Make request and handle response
     logger.debug(
-        f"Centreon API Request: {method} {endpoint}\n"
+        f"Centreon API Request: {method} {url}\n"
         f"Headers: {json.dumps(hide(headers), indent=2)}\n"
         f"Params: {json.dumps(params, indent=2)}\n"
         f"Payload: {json.dumps(payload, indent=2)}"
     )
     try:
-        response = await client.request(
-            method, endpoint, headers=headers, json=payload, params=params
-        )
+        response = await client.request(method, url, headers=headers, json=payload, params=params)
         try:
             content = response.json() if (response.status_code != 204 and response.content) else {}
         except json.JSONDecodeError:
             logger.warning(
-                f"Non-JSON response from {method} {endpoint} (status {response.status_code}): {response.text[:500]}"
+                f"Non-JSON response from {method} {url} (status {response.status_code}): {response.text[:500]}"
             )
             content = {"raw": response.text}
 

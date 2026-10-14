@@ -6,6 +6,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from centreon_mcp import logger
+from centreon_mcp.auth import Role, require_roles
 from centreon_mcp.types.configuration import (
     Configuration,
     ConfigurationFilter,
@@ -31,7 +32,8 @@ configuration = FastMCP()
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.READER),
 )
 async def list_configurations(
     model_type: Literal[
@@ -88,7 +90,8 @@ async def list_configurations(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.EDITOR),
 )
 async def create_configuration(
     model_type: Literal[
@@ -132,7 +135,8 @@ async def create_configuration(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.EDITOR),
 )
 async def update_configuration(
     model_type: Literal[
@@ -173,7 +177,8 @@ async def update_configuration(
         "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.ADMIN),
 )
 async def delete_configurations(
     model_type: Literal[
@@ -211,7 +216,8 @@ async def delete_configurations(
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.ADMIN),
 )
 async def manage_monitoring_server_configurations(
     action: Literal["generate", "reload"],

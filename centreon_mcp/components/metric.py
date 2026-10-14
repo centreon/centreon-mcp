@@ -1,6 +1,7 @@
 from fastmcp import FastMCP
 
 from centreon_mcp import logger
+from centreon_mcp.auth import Role, require_roles
 from centreon_mcp.types.monitoring.metric import Metric
 
 metric = FastMCP()
@@ -13,7 +14,8 @@ metric = FastMCP()
         "destructiveHint": False,
         "idempotentHint": True,
         "openWorldHint": True,
-    }
+    },
+    auth=require_roles(Role.READER),
 )
 async def get_service_metrics(host_id: int, service_id: int) -> list[Metric]:
     """

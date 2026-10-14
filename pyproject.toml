@@ -30,6 +30,9 @@ dev = [
 [project.scripts]
 centreon-mcp-server = "centreon_mcp.__main__:main"
 
+[project.entry-points."centreon_mcp.auth"]
+none = "centreon_mcp.auth.plugins:NoAuthPlugin"
+
 [tool.uv]
 package = true
 

@@ -9,6 +9,7 @@ services:
     networks:
       - mcp
     environment:
+      CENTREON_AUTH_PLUGIN: ${CENTREON_AUTH_PLUGIN:-none}
       CENTREON_BASE_URL: ${CENTREON_BASE_URL}
       CENTREON_API_TOKEN: ${CENTREON_API_TOKEN}
       CENTREON_MCP_LOG_LEVEL: ${CENTREON_MCP_LOG_LEVEL:-INFO}

@@ -27,6 +27,11 @@ Using natural language, you can ask the Centreon MCP server to:
 
 - Retrieve a service's metrics along with their current values and warning/critical thresholds.
 
+### Control access with pluggable authentication
+
+- Choose how MCP clients authenticate and which Centreon instance each request targets by selecting an authentication plugin.
+- Restrict tools by role: readers can list and inspect, editors can create, update and act on alerts, admins can also delete and push configuration to pollers.
+
 > For the exact list of underlying tools, see [TOOLS.md](TOOLS.md).
 
 ## Quick Start
@@ -38,12 +43,13 @@ git clone https://github.com/centreon/centreon-mcp.git
 cd centreon-mcp
 ```
 
-2. Ensure all required environment variables are set. Default values are used for optional variables.
+2. Set up authentication by choosing a plugin and setting its environment variables, as described in the [Authentication](#authentication) section.
+
+3. Ensure all required environment variables are set. Default values are used for optional variables.
 
 | Name                      | Required | Default     | Description                                                    |
 | ------------------------- | -------- | ----------- | -------------------------------------------------------------- |
-| `CENTREON_BASE_URL`       | `True`   |             | Base URL of the Centreon instance to connect to.               |
-| `CENTREON_API_TOKEN`      | `False`  | `None`      | Fallback API token, used when the MCP client sends none.       |
+| `CENTREON_AUTH_PLUGIN`    | `False`  | `none`      | Authentication plugin to load, see [Authentication](#authentication). |
 | `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout, in seconds, for requests to the Centreon API.         |
 | `CENTREON_TLS_SECURE`     | `False`  | `True`      | Whether to verify the Centreon server's TLS certificate.       |
 | `CENTREON_CA_BUNDLE`      | `False`  | `None`      | Path to a custom CA bundle used to verify the TLS certificate. |
@@ -60,13 +66,13 @@ cd centreon-mcp
 
 ### Using UV
 
-3. Start the MCP server
+4. Start the MCP server
 
 ```shell
 uv run centreon-mcp-server
 ```
 
-4. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
+5. If the MCP server is not reachable from the internet, expose it using a tunneling tool such as [Ngrok](https://ngrok.com):
 
 ```shell
 ngrok http 8000
@@ -76,25 +82,56 @@ ngrok http 8000
 
 ### Using Docker
 
-3. Build Docker image
+4. Build Docker image
 
 ```shell
 docker build -t centreon/mcp .
 ```
 
-4. Start the MCP server
+5. Start the MCP server
 
 ```shell
 docker compose up
 ```
 
-5. To make it reachable from the internet, export `NGROK_AUTHTOKEN` in the environment and enable `ngrok` profile.
+6. To make it reachable from the internet, export `NGROK_AUTHTOKEN` in the environment and enable `ngrok` profile.
 
 ```shell
 docker compose --profile ngrok up
 ```
 
 > Use `curl http://localhost:4040/api/tunnels` to retrieve public URL
+
+## Authentication
+
+Authentication is handled by a plugin, selected with the `CENTREON_AUTH_PLUGIN` environment variable. The plugin decides:
+
+- how MCP clients authenticate to the MCP server;
+- which Centreon instance, and with which API token, each request targets;
+- which role the user is granted, and therefore which tools they can call.
+
+| Role     | Granted tools                                                                         |
+| -------- | ------------------------------------------------------------------------------------- |
+| `READER` | List, get and count tools.                                                            |
+| `EDITOR` | `READER` tools, plus create/update tools and setting or cancelling monitoring actions. |
+| `ADMIN`  | `EDITOR` tools, plus delete tools and poller generate/reload.                         |
+
+Each plugin reads its own settings from `CENTREON_*` environment variables, described in its section below.
+
+### `none` (default)
+
+Leaves the MCP server unauthenticated and serves a single Centreon instance. Every client is granted the `ADMIN` role: what a client can actually do is bounded by the rights of the Centreon API token in use.
+
+| Name                 | Required | Default | Description                                              |
+| -------------------- | -------- | ------- | -------------------------------------------------------- |
+| `CENTREON_BASE_URL`  | `True`   |         | Base URL of the Centreon instance to connect to.         |
+| `CENTREON_API_TOKEN` | `False`  | `None`  | Fallback API token, used when the MCP client sends none. |
+
+> The server refuses to start if `CENTREON_BASE_URL` is not set.
+
+> A token sent by the MCP client in the `centreon-api-token` header takes precedence over `CENTREON_API_TOKEN`, so each client can act with its own Centreon rights.
+
+> Only use this plugin when the MCP server is not exposed to untrusted clients, or when every client provides its own Centreon API token.
 
 ## Integration
 

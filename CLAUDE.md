@@ -24,9 +24,13 @@ uv run pytest tests -q                                     # tests
 uv run coverage run --source centreon_mcp -m pytest tests && uv run coverage report
 ```
 
-Requires `CENTREON_BASE_URL` in the environment (or `.env`, loaded via `python-dotenv`); see the
-README table for the full set. The server refuses to start without it — `lifespan` in
-`centreon_mcp/__main__.py` calls `platform/versions` to prove connectivity before mounting components.
+Configuration comes from the environment (or `.env`, loaded via `python-dotenv`); see the README
+table for the full set. `CENTREON_AUTH_PLUGIN` selects the authentication plugin (default `none`),
+and the Centreon connection settings belong to that plugin: the `none` plugin requires
+`CENTREON_BASE_URL` and refuses to start without it. At startup `main()` in
+`centreon_mcp/__main__.py` loads the plugin, builds the `FastMCP` app with the plugin's auth
+provider, mounts the components, and `lifespan` calls `platform/versions` on every tenant returned
+by `plugin.tenants()` to prove connectivity.
 
 ## Architecture
 
@@ -41,11 +45,33 @@ Three layers, and almost every change touches them in this order:
    come from the model's `endpoint`/`set_endpoint` class vars.
 3. **`centreon_mcp/components/`** — the MCP tools. Four `FastMCP` sub-apps (`monitoring`, `metric`,
    `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `__main__.py`.
+   Every tool declares `auth=require_roles(Role.<LEVEL>)`.
 
-`centreon_mcp/utils/request.py` is the single exit point to the Centreon API: builds
-`{base}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP header
-(per-request, via `get_http_headers()`) falling back to `CENTREON_API_TOKEN`, logs a
-token-masked trace, and raises `CentreonAPIError` on non-2xx.
+`centreon_mcp/utils/request.py` is the single exit point to the Centreon API: resolves the
+`Tenant` (passed explicitly, else `auth.plugin.tenant()` for the current request), builds
+`{tenant.base_url}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP
+header (per-request, via `get_http_headers()`) falling back to the tenant's token, logs a
+token-masked trace, and raises `CentreonAPIError` on non-2xx. The shared `AsyncClient` has no
+`base_url`; every request uses an absolute URL.
+
+### Pluggable authentication
+
+`centreon_mcp/auth/` decides who may call which tool and which Centreon each request targets.
+
+- Plugins subclass `AuthPlugin` (`auth/plugins/base.py`) and implement `provider()` (the FastMCP
+  `AuthProvider`, or `None` for an unauthenticated server), `tenant()` (the `Tenant` — name,
+  `base_url`, `api_token` — for the current request), `tenants()` (tenants known upfront, for the
+  startup check) and `role(token)` (the user's `Role`).
+- Plugins are discovered through the `centreon_mcp.auth` entry-point group declared in
+  `pyproject.toml`; `auth.load()` instantiates the one named by `CENTREON_AUTH_PLUGIN` into the
+  module-level `auth.plugin`. A new plugin needs an entry-point line — and `uv sync` to register it.
+- Each plugin owns its settings (own `BaseSettings` class, `CENTREON_` prefix); connection settings
+  are no longer in the core `Settings`. `NoAuthPlugin` (`none`) serves a single Centreon from
+  `CENTREON_BASE_URL`/`CENTREON_API_TOKEN` and grants `Role.ADMIN` to everyone.
+- `Role` is an ordered `IntEnum` (`NONE < READER < EDITOR < ADMIN`); `require_roles(level)` grants a
+  tool when `role >= level`. Convention: `READER` for list/get/count tools, `EDITOR` for
+  create/update and setting/cancelling monitoring actions, `ADMIN` for deletes and poller
+  generate/reload.
 
 ### The discriminated-union tool pattern
 
@@ -88,7 +114,8 @@ reference:
    `Configuration*`/`Monitoring*` unions.
 3. Register the model in the applicable `MODELS_MIXIN_*` lists in `mapping.py`.
 4. Add the `model_type` literal to each tool in the component that should accept it — the `Literal`
-   lists differ per tool (e.g. `monitoring_server` is listable but not creatable).
+   lists differ per tool (e.g. `monitoring_server` is listable but not creatable). A brand-new tool
+   must also declare `auth=require_roles(Role.<LEVEL>)` following the role convention above.
 5. Extend the `@pytest.mark.parametrize` tables in `tests/utils/mixins/test_*.py` and the component
    tests; update `TOOLS.md` and the README feature list if tool surface or capabilities changed.
 
@@ -106,6 +133,9 @@ format-heavy fields).
   `model`/`endpoint`/`params`. Adding an entity means adding rows, not new test logic.
 - Everything is mocked at `centreon_mcp.utils.mixins.request` or at the component's model method —
   no test hits the network. Component tests also patch the module `logger`.
+- Code that reaches `auth.plugin` (e.g. `utils/request.py`) is tested by patching the module's
+  `auth` import (`patch("centreon_mcp.utils.request.auth")`) and stubbing `plugin.tenant` with an
+  `AsyncMock` returning a `Tenant`; plugins themselves are tested under `tests/auth/`.
 - Coverage sits at ~99%; CI runs `coverage report` after the suite.
 
 ## Conventions

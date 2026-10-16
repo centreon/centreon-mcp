@@ -1,21 +1,16 @@
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
 from centreon_mcp import settings
-from centreon_mcp.__main__ import lifespan, main
+from centreon_mcp.__main__ import health, lifespan, main
 from centreon_mcp.components import components
 from centreon_mcp.types.platform import Version
 
 MODULE = "centreon_mcp.__main__"
 
 
-@patch(f"{MODULE}.FastMCP", new_callable=MagicMock)
-@patch(f"{MODULE}.lifespan", new_callable=MagicMock)
+@patch(f"{MODULE}.mcp", new_callable=MagicMock)
 @patch(f"{MODULE}.auth", new_callable=MagicMock)
-def test_main(auth: MagicMock, lifespan: MagicMock, fastmcp: MagicMock):
-
-    # Mock FastMCP to return a fake mcp server
-    mcp = MagicMock()
-    fastmcp.return_value = mcp
+def test_main(auth: MagicMock, mcp: MagicMock):
 
     # Mock mcp.run
     mcp.run.return_value = None
@@ -25,14 +20,6 @@ def test_main(auth: MagicMock, lifespan: MagicMock, fastmcp: MagicMock):
 
     # Assert auth.load called once
     auth.load.assert_called_once_with()
-
-    # Assert FastMCP called with correct args
-    fastmcp.assert_called_once_with(
-        name="Centreon MCP Server",
-        auth=auth.plugin.provider(),
-        lifespan=lifespan,
-        website_url=settings.mcp_website_url,
-    )
 
     # Assert all components are mounted
     mcp.mount.assert_has_calls([call(component) for component in components])
@@ -81,3 +68,15 @@ async def test_lifespan(
 
     # Assert client.aclose awaited once
     client.aclose.assert_awaited_once_with()
+
+
+async def test_health():
+
+    # Setup args
+    request = MagicMock()
+
+    # Call test function
+    response = await health(request)
+
+    # Check response
+    assert response.status_code == 200

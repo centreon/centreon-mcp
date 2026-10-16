@@ -68,8 +68,8 @@ def main():
     # Attach auth plugin provider to mcp server
     mcp.auth = auth.plugin.provider()
 
-    # Import components
-    [mcp.mount(server) for server in components]
+    # Import built in and plugin specific components
+    [mcp.mount(server) for server in [*components, *auth.plugin.components()]]
 
     # Start Centreon MCP
     mcp.run(transport="http", host=settings.mcp_host, port=settings.mcp_port)

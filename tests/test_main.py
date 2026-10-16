@@ -15,6 +15,10 @@ def test_main(auth: MagicMock, mcp: MagicMock):
     # Mock mcp.run
     mcp.run.return_value = None
 
+    # Mock auth plugin components
+    plugin_components = [MagicMock(), MagicMock(), MagicMock()]
+    auth.plugin.components.return_value = plugin_components
+
     # Call test function
     main()
 
@@ -22,7 +26,7 @@ def test_main(auth: MagicMock, mcp: MagicMock):
     auth.load.assert_called_once_with()
 
     # Assert all components are mounted
-    mcp.mount.assert_has_calls([call(component) for component in components])
+    mcp.mount.assert_has_calls([call(component) for component in [*components, *plugin_components]])
 
     # Assert mcp.run called with rigt args
     mcp.run.assert_called_once_with(

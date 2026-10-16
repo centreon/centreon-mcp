@@ -207,6 +207,10 @@ class ServiceFullParams(ServiceBaseParams):
 class ServicePartialParams(ServiceBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
     host_id: int | None = Field(None, description=DESCRIPTION["host_id"])
+    macros: None = Field(
+        None,
+        description="Service macros cannot be updated through the MCP server. Please use the Centreon UI instead.",
+    )
 
 
 class Service(

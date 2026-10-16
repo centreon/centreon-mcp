@@ -2,7 +2,7 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus, Link
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, EnablementStatus, Link, Macro
 from centreon_mcp.utils.mixins import CreateMixin, DeleteMixin, ListMixin, PatchMixin, ReadMixin
 
 DESCRIPTION = {
@@ -58,6 +58,10 @@ DESCRIPTION = {
     "categories": "Define the host category IDs that should be associated with this host",
     "groups": "Define the host groups IDs that should be associated with this host",
     "templates": "Define the parent host template IDs that should be associated with this host. The order of the IDs determines the inheritance priority order.",
+    "macros": (
+        "Macros defined for the host (directly or through a template or command inheritance). "
+        "If multiple macros are defined with the same name, only the last one will be saved."
+    ),
 }
 
 
@@ -149,6 +153,7 @@ class HostBaseParams(BaseParams):
     categories: list[int] | None = Field(None, description=DESCRIPTION["categories"])
     groups: list[int] | None = Field(None, description=DESCRIPTION["groups"])
     templates: list[int] | None = Field(None, description=DESCRIPTION["templates"])
+    macros: list[Macro] | None = Field(None, description=DESCRIPTION["macros"])
 
 
 class HostFullParams(HostBaseParams):
@@ -161,6 +166,10 @@ class HostPartialParams(HostBaseParams):
     monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
     name: str | None = Field(None, description=DESCRIPTION["name"])
     address: str | None = Field(None, description=DESCRIPTION["address"])
+    macros: None = Field(
+        None,
+        description="Host macros cannot be updated through the MCP server. Please use the Centreon UI instead.",
+    )
 
 
 class Host(

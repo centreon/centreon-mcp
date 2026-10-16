@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from centreon_mcp.auth import ENTRY_POINTS_GROUP, Role, load, require_roles
+from centreon_mcp.auth.models import AuthenticationError
 
 MODULE = "centreon_mcp.auth"
 
@@ -83,3 +84,25 @@ async def test_requires_role(plugin: MagicMock, role: Role, expected: bool):
     # Assertions
     assert granted is expected
     plugin.role.assert_awaited_once_with(context.token)
+
+
+@patch(f"{MODULE}.logger")
+@patch(f"{MODULE}.plugin", new_callable=MagicMock, create=True)
+async def test_requires_role_authentication_error(plugin: MagicMock, logger: MagicMock):
+
+    # Setup args
+    level = Role.READER
+    context = MagicMock()
+    context.component.name = "list_configurations"
+
+    # Mock plugin.role to refuse the user identity
+    plugin.role = AsyncMock(side_effect=AuthenticationError("unknown user"))
+
+    # Call test function
+    check = require_roles(level)
+    granted = await check(context)
+
+    # Assertions
+    assert granted is False
+    plugin.role.assert_awaited_once_with(context.token)
+    logger.info.assert_called_once_with("Denying list_configurations: unknown user")

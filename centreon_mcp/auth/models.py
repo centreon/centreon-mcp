@@ -3,6 +3,13 @@ from enum import IntEnum
 from pydantic import BaseModel, SecretStr
 
 
+class AuthenticationError(Exception):
+    """
+    Raised when a request cannot be resolved to a tenant or a permission level, including when
+    the plugin that resolves it is misconfigured.
+    """
+
+
 class Role(IntEnum):
     """
     Permission levels, ordered from the least to the most privileged.

@@ -1,4 +1,5 @@
 from fastmcp.server.auth import AccessToken, AuthProvider
+from fastmcp.server.dependencies import get_http_headers
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -45,9 +46,10 @@ class NoAuthPlugin(AuthPlugin):
         The token carried by the `centreon-api-token` header takes precedence over the one set
         with `CENTREON_API_TOKEN`, so a client may act with its own Centreon rights.
         """
-        return Tenant(
-            name="centreon", base_url=self.settings.base_url, api_token=self.settings.api_token
-        )
+        header_api_token = get_http_headers().get("centreon-api-token")
+        api_token = SecretStr(header_api_token) if header_api_token else None
+        api_token = api_token or self.settings.api_token
+        return Tenant(name="centreon", base_url=self.settings.base_url, api_token=api_token)
 
     async def role(self, token: AccessToken | None) -> Role:
         """

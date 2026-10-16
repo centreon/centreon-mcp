@@ -26,16 +26,8 @@ async def test_hide(headers: dict | None, result: dict | None):
     assert hide(headers) == result
 
 
-@pytest.mark.parametrize(
-    "token",
-    ["header-token", None],
-)
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-@patch(f"{MODULE}.auth", new_callable=MagicMock)
-async def test_request(
-    auth: MagicMock, logger: MagicMock, get_http_headers: MagicMock, token: str | None
-):
+async def test_request(logger: MagicMock):
 
     # Setup args
     method = "GET"
@@ -46,14 +38,8 @@ async def test_request(
         name="default", base_url="http://centreon.example.com", api_token=SecretStr("tenant-token")
     )
 
-    # Mock auth plugin
-    auth.plugin.tenant = AsyncMock(return_value=tenant)
-
     # Mock logger
     logger.debug.return_value = None
-
-    # Mock get_http_hearders
-    get_http_headers.return_value = {"centreon-api-token": token} if token else {}
 
     # Mock the shared client's response (client is the global mocked in conftest.py)
     content: dict = {}
@@ -63,14 +49,14 @@ async def test_request(
 
     # Call test function
     with patch(f"{MODULE}.client", client):
-        result = await request(method, endpoint, payload, params)
+        result = await request(method, endpoint, payload, params, tenant=tenant)
 
     # Assert logger was called
     assert logger.debug.call_count == 2
 
     # Assert request was called with good args
     url = f"{tenant.base_url}/api/latest/{endpoint}"
-    headers = {"X-AUTH-TOKEN": token or tenant.token}
+    headers = {"X-AUTH-TOKEN": tenant.token}
     client.request.assert_awaited_once_with(
         method, url, headers=headers, json=payload, params=params
     )
@@ -79,30 +65,20 @@ async def test_request(
     assert result == content
 
 
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-@patch(f"{MODULE}.auth", new_callable=MagicMock)
-async def test_request_centreon_api_error(
-    auth: MagicMock, logger: MagicMock, get_http_headers: MagicMock
-):
+async def test_request_centreon_api_error(logger: MagicMock):
 
     # Setup args
     method = "GET"
     endpoint = "some/endpoint"
     params: dict = {}
     payload: dict = {}
-
-    # Mock auth plugin
-    auth.plugin.tenant = AsyncMock(
-        return_value=Tenant(name="default", base_url="http://centreon.example.com")
+    tenant = Tenant(
+        name="default", base_url="http://centreon.example.com", api_token=SecretStr("tenant-token")
     )
 
     # Mock logger
     logger.debug.return_value = None
-
-    # Mock get_http_hearders
-    token = "token"
-    get_http_headers.return_value = {"centreon-api-token": token}
 
     # Mock the shared client's response (client is the global mocked in conftest.py)
     content: dict = {}
@@ -119,7 +95,7 @@ async def test_request_centreon_api_error(
 
     # Call test function
     with pytest.raises(CentreonAPIError), patch(f"{MODULE}.client", client):
-        _ = await request(method, endpoint, payload, params)
+        _ = await request(method, endpoint, payload, params, tenant=tenant)
 
 
 async def test_request_client_not_initialized():
@@ -151,20 +127,13 @@ def test_centreon_api_error_str():
     )
 
 
-@patch(f"{MODULE}.get_http_headers", new_callable=MagicMock)
 @patch(f"{MODULE}.logger", new_callable=MagicMock)
-@patch(f"{MODULE}.auth", new_callable=MagicMock)
-async def test_request_non_json_response(
-    auth: MagicMock, logger: MagicMock, get_http_headers: MagicMock
-):
+async def test_request_non_json_response(logger: MagicMock):
 
-    # Mock auth plugin
-    auth.plugin.tenant = AsyncMock(
-        return_value=Tenant(name="default", base_url="http://centreon.example.com")
+    # Setup args
+    tenant = Tenant(
+        name="default", base_url="http://centreon.example.com", api_token=SecretStr("tenant-token")
     )
-
-    # Mock get_http_hearders
-    get_http_headers.return_value = {"centreon-api-token": "token"}
 
     # Mock the shared client's response with a non-JSON body
     client = MagicMock()
@@ -177,7 +146,7 @@ async def test_request_non_json_response(
 
     # Call test function
     with patch(f"{MODULE}.client", client):
-        result = await request("GET", "some/endpoint")
+        result = await request("GET", "some/endpoint", tenant=tenant)
 
     # Assert raw text is returned and a warning was logged
     assert result == {"raw": "<html>Not JSON</html>"}

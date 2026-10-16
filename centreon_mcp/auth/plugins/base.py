@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, AuthProvider
 
 from centreon_mcp.auth.models import Role, Tenant
@@ -47,3 +48,13 @@ class AuthPlugin(ABC):
         Return the tenants known upfront, used by the startup connectivity check.
         """
         ...
+
+    def components(self) -> list[FastMCP]:
+        """
+        Return the tools this plugin adds to the server, mounted alongside the built-in ones.
+
+        A plugin whose deployment needs a choice the generic tools know nothing about exposes it
+        here rather than adding an argument to every tool. These tools declare their own level,
+        and nothing in this package checks that they do.
+        """
+        return []

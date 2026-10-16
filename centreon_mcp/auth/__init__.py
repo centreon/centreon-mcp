@@ -3,8 +3,8 @@ from importlib.metadata import entry_points
 
 from fastmcp.server.auth import AuthContext
 
-from centreon_mcp import settings
-from centreon_mcp.auth.models import Role
+from centreon_mcp import logger, settings
+from centreon_mcp.auth.models import AuthenticationError, Role
 from centreon_mcp.auth.plugins.base import AuthPlugin
 
 plugin: AuthPlugin
@@ -40,7 +40,14 @@ def require_roles(level: Role) -> Callable[[AuthContext], Awaitable[bool]]:
     async def check(context: AuthContext) -> bool:
 
         # Get role of current user
-        role = await plugin.role(context.token)
+        try:
+            role = await plugin.role(context.token)
+
+        except AuthenticationError as error:
+            # The plugin refused this identity on purpose. Worth a line, since the caller only
+            # sees a tool that is not there, but not a fault to investigate
+            logger.info(f"Denying {context.component.name}: {error}")
+            return False
 
         # Grant tool if user role is higher or equal to level
         return role >= level

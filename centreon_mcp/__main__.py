@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 
 from fastmcp import FastMCP
 from httpx import AsyncClient
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from centreon_mcp import auth, logger, settings
 from centreon_mcp.components import components
@@ -40,6 +42,21 @@ async def lifespan(app: FastMCP):
     await request.client.aclose()
 
 
+mcp = FastMCP(name="Centreon MCP Server", lifespan=lifespan, website_url=settings.mcp_website_url)
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health(request: Request) -> JSONResponse:
+    """
+    Report that the process is up, for the probes of an orchestrator.
+
+    It deliberately says nothing about Centreon: a platform being unreachable is not a reason to
+    restart the server or to take it out of the load balancer, since the other tenants it serves
+    are unaffected.
+    """
+    return JSONResponse({"status": "ok"})
+
+
 def main():
 
     # Set log level from environment variable
@@ -48,11 +65,11 @@ def main():
     # Load auth plugin
     auth.load()
 
-    # Instantiate mcp server with configured authentication
-    mcp = FastMCP(name="Centreon MCP Server", auth=auth.plugin.provider(), lifespan=lifespan)
+    # Attach auth plugin provider to mcp server
+    mcp.auth = auth.plugin.provider()
 
-    # Import components
-    [mcp.mount(server) for server in components]
+    # Import built in and plugin specific components
+    [mcp.mount(server) for server in [*components, *auth.plugin.components()]]
 
     # Start Centreon MCP
     mcp.run(transport="http", host=settings.mcp_host, port=settings.mcp_port)

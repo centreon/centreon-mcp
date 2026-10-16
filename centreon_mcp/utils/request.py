@@ -1,7 +1,6 @@
 import json
 from copy import deepcopy
 
-from fastmcp.server.dependencies import get_http_headers
 from httpx import AsyncClient, HTTPStatusError
 
 from centreon_mcp import auth, logger
@@ -65,8 +64,7 @@ async def request(
     # Build request arguments
     tenant = tenant or await auth.plugin.tenant()
     url = f"{tenant.base_url}/api/latest/{endpoint}"
-    token = get_http_headers().get("centreon-api-token") or tenant.token
-    headers = {"X-AUTH-TOKEN": token} if token else None
+    headers = {"X-AUTH-TOKEN": tenant.token} if tenant.token else None
     params = params or {}
     params = {name: value for name, value in params.items() if value is not None}
 

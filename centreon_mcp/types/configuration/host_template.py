@@ -165,6 +165,10 @@ class HostTemplateFullParams(HostTemplateBaseParams):
 class HostTemplatePartialParams(HostTemplateBaseParams):
     name: str | None = Field(None, description=DESCRIPTION["name"])
     alias: str | None = Field(None, description=DESCRIPTION["alias"])
+    macros: None = Field(
+        None,
+        description="Host template macros cannot be updated through the MCP server. Please use the Centreon UI instead.",
+    )
 
 
 class HostTemplate(

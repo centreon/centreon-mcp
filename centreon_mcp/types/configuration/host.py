@@ -166,6 +166,10 @@ class HostPartialParams(HostBaseParams):
     monitoring_server_id: int | None = Field(None, description=DESCRIPTION["monitoring_server_id"])
     name: str | None = Field(None, description=DESCRIPTION["name"])
     address: str | None = Field(None, description=DESCRIPTION["address"])
+    macros: None = Field(
+        None,
+        description="Host macros cannot be updated through the MCP server. Please use the Centreon UI instead.",
+    )
 
 
 class Host(

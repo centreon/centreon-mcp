@@ -49,7 +49,12 @@ def main():
     auth.load()
 
     # Instantiate mcp server with configured authentication
-    mcp = FastMCP(name="Centreon MCP Server", auth=auth.plugin.provider(), lifespan=lifespan)
+    mcp = FastMCP(
+        name="Centreon MCP Server",
+        auth=auth.plugin.provider(),
+        lifespan=lifespan,
+        website_url=settings.mcp_website_url,
+    )
 
     # Import components
     [mcp.mount(server) for server in components]

@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     mcp_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Lowest severity level emitted by the MCP service logs."
     )
+    mcp_website_url: str | None = Field(
+        default=None,
+        description="URL to a website with more information about your server. Displayed in client applications",
+    )
     auth_plugin: str = Field(
         default="none",
         description="Name of the authentication plugin to load, among those registered under the "

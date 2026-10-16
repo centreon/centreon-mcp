@@ -28,7 +28,10 @@ def test_main(auth: MagicMock, lifespan: MagicMock, fastmcp: MagicMock):
 
     # Assert FastMCP called with correct args
     fastmcp.assert_called_once_with(
-        name="Centreon MCP Server", auth=auth.plugin.provider(), lifespan=lifespan
+        name="Centreon MCP Server",
+        auth=auth.plugin.provider(),
+        lifespan=lifespan,
+        website_url=settings.mcp_website_url,
     )
 
     # Assert all components are mounted

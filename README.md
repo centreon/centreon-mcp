@@ -47,15 +47,16 @@ cd centreon-mcp
 
 3. Ensure all required environment variables are set. Default values are used for optional variables.
 
-| Name                      | Required | Default     | Description                                                    |
-| ------------------------- | -------- | ----------- | -------------------------------------------------------------- |
-| `CENTREON_AUTH_PLUGIN`    | `False`  | `none`      | Authentication plugin to load, see [Authentication](#authentication). |
-| `CENTREON_CLIENT_TIMEOUT` | `False`  | `30`        | Timeout, in seconds, for requests to the Centreon API.         |
-| `CENTREON_TLS_SECURE`     | `False`  | `True`      | Whether to verify the Centreon server's TLS certificate.       |
-| `CENTREON_CA_BUNDLE`      | `False`  | `None`      | Path to a custom CA bundle used to verify the TLS certificate. |
-| `CENTREON_MCP_HOST`       | `False`  | `localhost` | Network interface the MCP HTTP server binds to.                |
-| `CENTREON_MCP_PORT`       | `False`  | `8000`      | TCP port the MCP HTTP server listens on.                       |
-| `CENTREON_MCP_LOG_LEVEL`  | `False`  | `INFO`      | Lowest severity level emitted by the MCP service logs.         |
+| Name                       | Required | Default     | Description                                                            |
+| -------------------------- | -------- | ----------- | ---------------------------------------------------------------------- |
+| `CENTREON_AUTH_PLUGIN`     | `False`  | `none`      | Authentication plugin to load, see [Authentication](#authentication).  |
+| `CENTREON_CLIENT_TIMEOUT`  | `False`  | `30`        | Timeout, in seconds, for requests to the Centreon API.                 |
+| `CENTREON_TLS_SECURE`      | `False`  | `True`      | Whether to verify the Centreon server's TLS certificate.               |
+| `CENTREON_CA_BUNDLE`       | `False`  | `None`      | Path to a custom CA bundle used to verify the TLS certificate.         |
+| `CENTREON_MCP_HOST`        | `False`  | `localhost` | Network interface the MCP HTTP server binds to.                        |
+| `CENTREON_MCP_PORT`        | `False`  | `8000`      | TCP port the MCP HTTP server listens on.                               |
+| `CENTREON_MCP_LOG_LEVEL`   | `False`  | `INFO`      | Lowest severity level emitted by the MCP service logs.                 |
+| `CENTREON_MCP_WEBSITE_URL` | `False`  | `None`      | Website with more information about your server, shown in client apps. |
 
 > Setting `CENTREON_TLS_SECURE` to `False` disables TLS certificate verification and is not recommended in production.
 

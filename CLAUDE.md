@@ -27,9 +27,12 @@ uv run coverage run --source centreon_mcp -m pytest tests && uv run coverage rep
 Configuration comes from the environment (or `.env`, loaded via `python-dotenv`); see the README
 table for the full set. `CENTREON_AUTH_PLUGIN` selects the authentication plugin (default `none`),
 and the Centreon connection settings belong to that plugin: the `none` plugin requires
-`CENTREON_BASE_URL` and refuses to start without it. At startup `main()` in
-`centreon_mcp/__main__.py` loads the plugin, builds the `FastMCP` app with the plugin's auth
-provider, mounts the components, and `lifespan` calls `platform/versions` on every tenant returned
+`CENTREON_BASE_URL` and refuses to start without it. The `FastMCP` app is built at import time as
+the module-level `mcp` in `centreon_mcp/__main__.py` (it must exist for `@mcp.custom_route`, which
+registers the unauthenticated `GET /health` liveness probe; it never contacts Centreon). `main()`
+then loads the plugin, attaches its provider with `mcp.auth = auth.plugin.provider()` — FastMCP only
+reads it when `run()` builds the HTTP app — mounts the built-in components plus
+`auth.plugin.components()`, and runs. `lifespan` calls `platform/versions` on every tenant returned
 by `plugin.tenants()` to prove connectivity.
 
 ## Architecture
@@ -45,14 +48,16 @@ Three layers, and almost every change touches them in this order:
    come from the model's `endpoint`/`set_endpoint` class vars.
 3. **`centreon_mcp/components/`** — the MCP tools. Four `FastMCP` sub-apps (`monitoring`, `metric`,
    `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `__main__.py`.
-   Every tool declares `auth=require_roles(Role.<LEVEL>)`.
+   Every tool declares `auth=require_roles(Role.<LEVEL>)` — a convention nothing enforces, and a
+   tool without it is open to every caller.
 
 `centreon_mcp/utils/request.py` is the single exit point to the Centreon API: resolves the
 `Tenant` (passed explicitly, else `auth.plugin.tenant()` for the current request), builds
-`{tenant.base_url}/api/latest/{endpoint}`, resolves the token from the `centreon-api-token` HTTP
-header (per-request, via `get_http_headers()`) falling back to the tenant's token, logs a
-token-masked trace, and raises `CentreonAPIError` on non-2xx. The shared `AsyncClient` has no
-`base_url`; every request uses an absolute URL.
+`{tenant.base_url}/api/latest/{endpoint}`, sends `tenant.token` as `X-AUTH-TOKEN`, logs a
+token-masked trace, and raises `CentreonAPIError` on non-2xx. It does not read request headers:
+choosing the token, including honouring a client-supplied `centreon-api-token` header, is the
+plugin's job in `tenant()`. The shared `AsyncClient` has no `base_url`; every request uses an
+absolute URL.
 
 ### Pluggable authentication
 
@@ -61,13 +66,21 @@ token-masked trace, and raises `CentreonAPIError` on non-2xx. The shared `AsyncC
 - Plugins subclass `AuthPlugin` (`auth/plugins/base.py`) and implement `provider()` (the FastMCP
   `AuthProvider`, or `None` for an unauthenticated server), `tenant()` (the `Tenant` — name,
   `base_url`, `api_token` — for the current request), `tenants()` (tenants known upfront, for the
-  startup check) and `role(token)` (the user's `Role`).
+  startup check) and `role(token)` (the user's `Role`). `tenants()` runs outside any HTTP request,
+  where `get_http_headers()` returns `{}`.
+- `role()` raises `AuthenticationError` (`auth/models.py`) to refuse an identity on purpose:
+  `require_roles` denies the tool and logs one INFO line. Any other exception is a fault — FastMCP
+  logs it as a warning with traceback and denies too. Never raise `AuthenticationError` for plugin
+  misconfiguration, or the fault is logged as a routine refusal.
+- `components()` is optional (default `[]`): `FastMCP` sub-apps the plugin mounts next to the
+  built-in ones, for deployment-specific tools. They must declare `require_roles` themselves.
 - Plugins are discovered through the `centreon_mcp.auth` entry-point group declared in
   `pyproject.toml`; `auth.load()` instantiates the one named by `CENTREON_AUTH_PLUGIN` into the
   module-level `auth.plugin`. A new plugin needs an entry-point line — and `uv sync` to register it.
 - Each plugin owns its settings (own `BaseSettings` class, `CENTREON_` prefix); connection settings
   are no longer in the core `Settings`. `NoAuthPlugin` (`none`) serves a single Centreon from
-  `CENTREON_BASE_URL`/`CENTREON_API_TOKEN` and grants `Role.ADMIN` to everyone.
+  `CENTREON_BASE_URL`/`CENTREON_API_TOKEN` and grants `Role.ADMIN` to everyone; its `tenant()`
+  prefers the `centreon-api-token` request header over `CENTREON_API_TOKEN`.
 - `Role` is an ordered `IntEnum` (`NONE < READER < EDITOR < ADMIN`); `require_roles(level)` grants a
   tool when `role >= level`. Convention: `READER` for list/get/count tools, `EDITOR` for
   create/update and setting/cancelling monitoring actions, `ADMIN` for deletes and poller

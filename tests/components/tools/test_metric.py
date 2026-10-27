@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.metric import get_service_metrics
+from centreon_mcp.components.tools.metric import get_service_metrics
 from centreon_mcp.types.monitoring.metric import Metric
 
-MODULE = "centreon_mcp.components.metric"
+MODULE = "centreon_mcp.components.tools.metric"
 
 
 @patch(f"{MODULE}.Metric.list", new_callable=AsyncMock)

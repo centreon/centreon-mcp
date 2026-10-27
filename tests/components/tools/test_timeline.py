@@ -1,10 +1,10 @@
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from centreon_mcp.components.timeline import get_host_timeline, get_service_timeline
+from centreon_mcp.components.tools.timeline import get_host_timeline, get_service_timeline
 from centreon_mcp.types.monitoring.timeline import TimelineFilter, TimelineOrder
 
-MODULE = "centreon_mcp.components.timeline"
+MODULE = "centreon_mcp.components.tools.timeline"
 
 
 @patch(f"{MODULE}.TimelineEvent.list_for_host", new_callable=AsyncMock)

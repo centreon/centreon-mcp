@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from centreon_mcp.components.monitoring import (
+from centreon_mcp.components.tools.monitoring import (
     cancel_monitoring_actions,
     count_monitoring_resources_by_status,
     list_monitoring_actions,
@@ -16,7 +16,7 @@ from centreon_mcp.types.monitoring.mapping import MODELS_MIXIN_SET
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.utils.base import BaseResource
 
-MODULE = "centreon_mcp.components.monitoring"
+MODULE = "centreon_mcp.components.tools.monitoring"
 
 
 @patch(f"{MODULE}.Resource.list", new_callable=AsyncMock)

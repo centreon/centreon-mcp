@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
-from centreon_mcp.components.configuration import (
+from centreon_mcp.components.tools.configuration import (
     create_configuration,
     delete_configurations,
     list_configurations,
@@ -11,7 +11,7 @@ from centreon_mcp.components.configuration import (
     update_configuration,
 )
 
-MODULE = "centreon_mcp.components.configuration"
+MODULE = "centreon_mcp.components.tools.configuration"
 
 
 @pytest.mark.parametrize(

@@ -46,10 +46,16 @@ Three layers, and almost every change touches them in this order:
    `ListMixin`, `UpdateMixin` (via `PutMixin`/`PatchMixin`), `DeleteMixin`, `SetMixin`, `CountMixin`.
    A model gets an operation by inheriting the mixin, parameterised with its own types. Endpoints
    come from the model's `endpoint`/`set_endpoint` class vars.
-3. **`centreon_mcp/components/`** — the MCP tools. Four `FastMCP` sub-apps (`monitoring`, `metric`,
-   `timeline`, `configuration`) listed in `components/__init__.py` and mounted by `__main__.py`.
-   Every tool declares `auth=require_roles(Role.<LEVEL>)` — a convention nothing enforces, and a
-   tool without it is open to every caller.
+3. **`centreon_mcp/components/`** — the MCP components, split by kind into two `FastMCP` sub-apps
+   listed in `components/__init__.py` and mounted by `__main__.py`:
+   - `components/tools/` — the MCP tools. `tools/__init__.py` builds the `tools` app and mounts one
+     `FastMCP` sub-app per domain module (`configuration`, `monitoring`, `timeline`, `metric`).
+     Every tool declares `auth=require_roles(Role.<LEVEL>)` — a convention nothing enforces, and a
+     tool without it is open to every caller.
+   - `components/prompts/` — the MCP prompts, as the `prompts` app (currently empty).
+
+   A new domain module goes in the matching sub-package and is mounted from its `__init__.py`, not
+   from `components/__init__.py`.
 
 `centreon_mcp/utils/request.py` is the single exit point to the Centreon API: resolves the
 `Tenant` (passed explicitly, else `auth.plugin.tenant()` for the current request), builds
@@ -126,11 +132,11 @@ reference:
 2. Export the new names from the package `__init__.py` and add them to the relevant
    `Configuration*`/`Monitoring*` unions.
 3. Register the model in the applicable `MODELS_MIXIN_*` lists in `mapping.py`.
-4. Add the `model_type` literal to each tool in the component that should accept it — the `Literal`
+4. Add the `model_type` literal to each tool in `components/tools/` that should accept it — the `Literal`
    lists differ per tool (e.g. `monitoring_server` is listable but not creatable). A brand-new tool
    must also declare `auth=require_roles(Role.<LEVEL>)` following the role convention above.
-5. Extend the `@pytest.mark.parametrize` tables in `tests/utils/mixins/test_*.py` and the component
-   tests; update `TOOLS.md` and the README feature list if tool surface or capabilities changed.
+5. Extend the `@pytest.mark.parametrize` tables in `tests/utils/mixins/test_*.py` and the tool tests
+   in `tests/components/tools/`; update `TOOLS.md` and the README feature list if tool surface or capabilities changed.
 
 `DESCRIPTION` dict entries are the descriptions the LLM client sees — they are the tool's real
 documentation, so write them for a model that has never seen Centreon (see `time_period.py` for

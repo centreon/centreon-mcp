@@ -27,12 +27,16 @@ Using natural language, you can ask the Centreon MCP server to:
 
 - Retrieve a service's metrics along with their current values and warning/critical thresholds.
 
+### Diagnose problems with ready-made prompts
+
+- Run the host diagnosis prompt on a host: it checks the host's state, services, metrics and recent history, explains the most likely root cause, and suggests what to do next, without changing anything until you ask.
+
 ### Control access with pluggable authentication
 
 - Choose how MCP clients authenticate and which Centreon instance each request targets by selecting an authentication plugin.
 - Restrict tools by role: readers can list and inspect, editors can create, update and act on alerts, admins can also delete and push configuration to pollers.
 
-> For the exact list of underlying tools, see [TOOLS.md](TOOLS.md).
+> For the exact list of underlying tools and prompts, see [TOOLS.md](TOOLS.md) and [PROMPTS.md](PROMPTS.md).
 
 ## Quick Start
 

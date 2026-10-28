@@ -120,9 +120,12 @@ def host_diagnosis(
         10. If the host is DOWN or UNREACHABLE, or if many of its services fail at the same time,
             measure the blast radius: call `count_monitoring_resources_by_status` with
             `model_type="host"` and a filter on one of its host groups
-            (`{{"model_type": "host", "host_group_name": "<group name>"}}`). Many unavailable hosts
-            in the same group or on the same poller point to a shared cause (network, site, poller)
-            rather than to this host. UNREACHABLE specifically means that a parent host is down.
+            (`{{"model_type": "host", "host_group_name": "<group name>"}}`). Then call
+            `list_monitoring_resources` with `types=["host"]`, `statuses=["DOWN", "UNREACHABLE"]`
+            and `monitoring_server_names=["<monitoring server name>"]` to list the unavailable
+            hosts monitored by the same poller. Many unavailable hosts in the same group or on the
+            same poller point to a shared cause (network, site, poller) rather than to this host.
+            UNREACHABLE specifically means that a parent host is down.
         11. If the outputs suggest a check misconfiguration (timeouts, "command not found",
             authentication or SNMP errors, wrong arguments), call `list_configurations` with
             `model_type="host_template"` and

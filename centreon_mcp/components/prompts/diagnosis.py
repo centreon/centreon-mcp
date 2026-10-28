@@ -1,6 +1,8 @@
 from textwrap import dedent
+from typing import Annotated
 
 from fastmcp import FastMCP
+from pydantic import Field
 
 from centreon_mcp import logger
 from centreon_mcp.auth import Role, require_roles
@@ -12,14 +14,20 @@ diagnosis = FastMCP()
     title="Host Diagnosis",
     auth=require_roles(Role.READER),
 )
-def host_diagnosis(host_name: str) -> str:
+def host_diagnosis(
+    host_name: Annotated[
+        str,
+        Field(
+            description="Exact configured name of the host to diagnose (not its alias nor a partial "
+            "name): the first step looks it up with an exact match."
+        ),
+    ],
+) -> str:
     """
     Return a step-by-step investigation plan for the assistant to diagnose a host monitored by
     Centreon, structured in three parts: Describe (current state), Understand (root cause) and
     Act (remediation levers). The plan chains the read-only monitoring, timeline, metric and
     configuration tools of this server.
-    `host_name` must be the exact configured name of the host: the first step looks it up with an
-    exact match, so an alias or a partial name stops the diagnosis.
     """
     logger.info("Executing prompt host_diagnosis")
     return dedent(f"""\

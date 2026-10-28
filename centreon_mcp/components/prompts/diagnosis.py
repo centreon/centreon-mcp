@@ -65,9 +65,12 @@ def host_diagnosis(
            `filters=[{{"model_type": "resource", "name": "{host_name}"}}]`. The name filter is a
            substring match: keep only the entry whose `host_id` is `<host id>`.
            Note: `status` (UP / DOWN / UNREACHABLE / PENDING), `information` (the plugin output),
-           `tries` and status type (soft or hard), `last_check`, `last_status_change`,
-           `is_in_downtime`, `is_acknowledged`, `is_in_flapping`, `has_active_checks_enabled`,
-           `has_passive_checks_enabled` and `monitoring_server_name`.
+           `tries`, `last_check`, `last_status_change`, `is_in_downtime`, `is_acknowledged`,
+           `is_in_flapping`, `has_active_checks_enabled`, `has_passive_checks_enabled` and
+           `monitoring_server_name`.
+           No field carries the status type on its own: read it from the suffix of `tries`,
+           formatted as "<check attempt>/<max check attempts> (<type>)" where the type is `H`
+           for HARD and `S` for SOFT (e.g. "1/3 (S)" is the first of 3 attempts, still SOFT).
            - If the host is absent from real-time monitoring although it is activated, the
              configuration has most likely not been exported to its monitoring server yet.
 
@@ -79,8 +82,9 @@ def host_diagnosis(
         4. Call `list_monitoring_resources` with `types=["service"]`,
            `statuses=["WARNING", "CRITICAL", "UNKNOWN", "PENDING"]` and
            `filters=[{{"model_type": "resource", "parent_name": "{host_name}"}}]`. Keep only entries
-           whose `host_id` is `<host id>`. For each one note its status, output, tries, last status
-           change, downtime and acknowledgement flags.
+           whose `host_id` is `<host id>`. For each one note its status, output, tries (and the
+           SOFT/HARD type they carry, as in step 2), last status change, downtime and
+           acknowledgement flags.
         5. For each non-OK service (the 5 most severe ones if there are many, CRITICAL first), call
            in parallel:
            - `get_service_metrics` with `host_id=<host id>` and its `service_id`: compare every

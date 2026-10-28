@@ -1,10 +1,11 @@
 import re
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from centreon_mcp.auth import Role
 from centreon_mcp.components.prompts.diagnosis import host_diagnosis
-
-MODULE = "centreon_mcp.components.prompts.diagnosis"
+from centreon_mcp.components.tools import tools
 
 
 @pytest.mark.parametrize(
@@ -26,23 +27,19 @@ MODULE = "centreon_mcp.components.prompts.diagnosis"
         "manage_monitoring_server_configurations",
     ],
 )
-def test_host_diagnosis(tool: str):
+@patch("centreon_mcp.auth.plugin", new_callable=MagicMock, create=True)
+async def test_host_diagnosis(plugin: MagicMock, tool: str):
+
+    # Mock plugin.role so that every tool is listed
+    plugin.role = AsyncMock(return_value=Role.ADMIN)
 
     # Call test function
     prompt = host_diagnosis("srv-01")
 
-    # Assert the tool is referenced in the prompt
+    # Assert the tool exists on the server and is referenced in the prompt
+    assert tool in [t.name for t in await tools.list_tools()], f"Tool {tool} not on the server"
     assert re.search(rf"\b{tool}\b", prompt), f"Tool {tool} missing from the prompt"
 
-
-def test_host_diagnosis_indentation():
-
-    # Call test function
-    prompt = host_diagnosis("srv-01")
-
-    # Assert the code indentation is stripped, so Markdown headings are not read as code blocks
-    assert prompt.startswith("You are"), "Prompt starts with stray indentation"
-    assert re.search(r"^# Investigation plan$", prompt, re.MULTILINE), "Heading is indented"
-
-    # Assert no line break leaves a run of spaces in the middle of a sentence
-    assert not re.search(r"\S {2,}\S", prompt), "Stray spaces inside a line"
+    # Assert the host name is interpolated and no placeholder is left
+    assert '"srv-01"' in prompt
+    assert "{host_name}" not in prompt

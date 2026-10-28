@@ -52,7 +52,12 @@ Three layers, and almost every change touches them in this order:
      `FastMCP` sub-app per domain module (`configuration`, `monitoring`, `timeline`, `metric`).
      Every tool declares `auth=require_roles(Role.<LEVEL>)` — a convention nothing enforces, and a
      tool without it is open to every caller.
-   - `components/prompts/` — the MCP prompts, as the `prompts` app (currently empty).
+   - `components/prompts/` — the MCP prompts. `prompts/__init__.py` builds the `prompts` app and
+     mounts one `FastMCP` sub-app per module. `diagnosis` holds `host_diagnosis(host_name)`
+     (`READER`), which returns a step-by-step plan that chains the read-only tools (`list_*`, `get_*`,
+     `count_*`) into a "Describe, Understand, Act" diagnosis of a host. Prompts declare
+     `require_roles` like tools do. Their text names tools, `model_type` values and filter fields,
+     so renaming any of them means updating the prompt too.
 
    A new domain module goes in the matching sub-package and is mounted from its `__init__.py`, not
    from `components/__init__.py`.
@@ -136,7 +141,7 @@ reference:
    lists differ per tool (e.g. `monitoring_server` is listable but not creatable). A brand-new tool
    must also declare `auth=require_roles(Role.<LEVEL>)` following the role convention above.
 5. Extend the `@pytest.mark.parametrize` tables in `tests/utils/mixins/test_*.py` and the tool tests
-   in `tests/components/tools/`; update `TOOLS.md` and the README feature list if tool surface or capabilities changed.
+   in `tests/components/tools/`; update `TOOLS.md` (or `PROMPTS.md` for prompts) and the README feature list if tool surface or capabilities changed.
 
 `DESCRIPTION` dict entries are the descriptions the LLM client sees — they are the tool's real
 documentation, so write them for a model that has never seen Centreon (see `time_period.py` for

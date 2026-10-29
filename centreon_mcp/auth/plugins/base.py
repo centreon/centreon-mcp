@@ -7,16 +7,18 @@ from pydantic_settings import BaseSettings
 from centreon_mcp.auth.models import Role, Tenant
 
 
-class AuthPlugin(ABC):
+class AuthPlugin[AuthSettings: BaseSettings](ABC):
     """
     Contract implemented by authentication plugins.
     """
 
-    settings: BaseSettings
-    """
-    Settings owned by the plugin, loaded from its own environment variables and logged at startup,
-    so secrets among them must be typed `SecretStr`.
-    """
+    settings_cls: type[AuthSettings]
+
+    def __init__(self) -> None:
+        """
+        Load the plugin settings, so a plugin overriding this must call it.
+        """
+        self.settings = self.settings_cls()
 
     @abstractmethod
     def provider(self) -> AuthProvider | None:

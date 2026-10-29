@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, AuthProvider
+from pydantic_settings import BaseSettings
 
 from centreon_mcp.auth.models import Role, Tenant
 
@@ -9,6 +10,12 @@ from centreon_mcp.auth.models import Role, Tenant
 class AuthPlugin(ABC):
     """
     Contract implemented by authentication plugins.
+    """
+
+    settings: BaseSettings
+    """
+    Settings owned by the plugin, loaded from its own environment variables and logged at startup,
+    so secrets among them must be typed `SecretStr`.
     """
 
     @abstractmethod

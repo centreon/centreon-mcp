@@ -25,6 +25,8 @@ class NoAuthPlugin(AuthPlugin):
     Authentication plugin exposing a single Centreon to unauthenticated clients.
     """
 
+    settings: NoAuthSettings
+
     def __init__(self) -> None:
         """
         Load the Centreon connection settings from the `CENTREON_*` environment variables.

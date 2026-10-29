@@ -1,4 +1,5 @@
 import asyncio
+import json
 from contextlib import asynccontextmanager
 
 from fastmcp import FastMCP
@@ -18,23 +19,27 @@ async def lifespan(app: FastMCP):
     Lifespan context manager for FastMCP application.
     """
 
+    # Log global and authentication settings
+    logger.info("Global Settings: %s", settings.model_dump_json(indent=2))
+    logger.info("Authentication Settings: %s", auth.plugin.settings.model_dump_json(indent=2))
+
     # Initialize Centreon client
     request.client = AsyncClient(verify=settings.verify, timeout=settings.client_timeout)
-    logger.info(
-        f"Centreon API Client initialized (\n"
-        f"\ttimeout={settings.client_timeout},\n"
-        f"\ttls_secure={settings.tls_secure},\n"
-        f"\tca_bundle={settings.ca_bundle},\n"
-        ")."
-    )
 
     # Test Centreon API connectivity and get web version
     tenants = await auth.plugin.tenants()
     tasks = [asyncio.create_task(Platform.get_web_version(tenant)) for tenant in tenants]
     versions = await asyncio.gather(*tasks)
-
-    for tenant, version in zip(tenants, versions):
-        logger.info(f"Connected to Centreon API version {version.version} for {tenant.name}")
+    logger.info(
+        "Connected Tenants: %s",
+        json.dumps(
+            [
+                {"name": tenant.name, "url": tenant.base_url, "version": version.version}
+                for tenant, version in zip(tenants, versions)
+            ],
+            indent=2,
+        ),
+    )
 
     yield
 

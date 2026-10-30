@@ -1,13 +1,16 @@
 from fastmcp.server.auth import AccessToken, AuthProvider
+from pydantic_settings import BaseSettings
 
 from centreon_mcp.auth.models import Role, Tenant
 from centreon_mcp.auth.plugins.base import AuthPlugin
 
 
-class DummyPlugin(AuthPlugin):
+class DummyPlugin(AuthPlugin[BaseSettings]):
     """
     Minimal plugin relying on every default the base class provides.
     """
+
+    settings_cls = BaseSettings
 
     def provider(self) -> AuthProvider | None:
         return None

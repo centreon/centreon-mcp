@@ -59,7 +59,7 @@ class Downtime(
     model_type: ClassVar[str] = "downtime"
 
     id: int
-    author_id: int
+    author_id: int | None = None
     author_name: str
     host_id: int
     service_id: int | None = None

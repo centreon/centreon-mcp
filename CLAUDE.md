@@ -89,7 +89,11 @@ absolute URL.
   `pyproject.toml`; `auth.load()` instantiates the one named by `CENTREON_AUTH_PLUGIN` into the
   module-level `auth.plugin`. A new plugin needs an entry-point line — and `uv sync` to register it.
 - Each plugin owns its settings (own `BaseSettings` class, `CENTREON_` prefix); connection settings
-  are no longer in the core `Settings`. `NoAuthPlugin` (`none`) serves a single Centreon from
+  are no longer in the core `Settings`. A plugin subclasses `AuthPlugin[<Settings>]` and sets the
+  `settings_cls` class var — omitting it raises `AttributeError` when `auth.load()` instantiates
+  the plugin — and `AuthPlugin.__init__` loads it into `self.settings`, so a plugin overriding
+  `__init__` must call `super().__init__()`. `lifespan` logs `self.settings` in full at startup, so
+  plugin secrets must be typed `SecretStr`. `NoAuthPlugin` (`none`) serves a single Centreon from
   `CENTREON_BASE_URL`/`CENTREON_API_TOKEN` and grants `Role.ADMIN` to everyone; its `tenant()`
   prefers the `centreon-api-token` request header over `CENTREON_API_TOKEN`.
 - `Role` is an ordered `IntEnum` (`NONE < READER < EDITOR < ADMIN`); `require_roles(level)` grants a

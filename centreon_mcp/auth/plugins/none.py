@@ -20,18 +20,15 @@ class NoAuthSettings(BaseSettings):
     )
 
 
-class NoAuthPlugin(AuthPlugin):
+class NoAuthPlugin(AuthPlugin[NoAuthSettings]):
     """
     Authentication plugin exposing a single Centreon to unauthenticated clients.
+
+    Its settings come from the `CENTREON_*` environment variables, and loading it fails at startup
+    with a validation error when `CENTREON_BASE_URL` is missing.
     """
 
-    def __init__(self) -> None:
-        """
-        Load the Centreon connection settings from the `CENTREON_*` environment variables.
-
-        Fails at startup with a validation error when `CENTREON_BASE_URL` is missing.
-        """
-        self.settings = NoAuthSettings()  # type: ignore[call-arg]
+    settings_cls = NoAuthSettings
 
     def provider(self) -> AuthProvider | None:
         """

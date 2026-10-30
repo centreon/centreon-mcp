@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 from centreon_mcp import settings
 from centreon_mcp.__main__ import health, lifespan, main
+from centreon_mcp.auth.models import Tenant
 from centreon_mcp.components import components
 from centreon_mcp.types.platform import Version
 
@@ -49,8 +50,11 @@ async def test_lifespan(
     client.aclose = AsyncMock(return_value=None)
     async_client_cls.return_value = client
 
+    # Mock auth plugin to return fake settings
+    auth.plugin.settings.model_dump_json.return_value = ""
+
     # Mock auth plugin to return fake tenants
-    tenants = [MagicMock(), MagicMock(), MagicMock()]
+    tenants = [Tenant(name=f"tenant{i}", base_url=f"https://centreon{i}") for i in range(3)]
     auth.plugin.tenants = AsyncMock(return_value=tenants)
 
     # Mock Platform.get_web_version

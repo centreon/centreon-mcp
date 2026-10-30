@@ -2,14 +2,23 @@ from abc import ABC, abstractmethod
 
 from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, AuthProvider
+from pydantic_settings import BaseSettings
 
 from centreon_mcp.auth.models import Role, Tenant
 
 
-class AuthPlugin(ABC):
+class AuthPlugin[AuthSettings: BaseSettings](ABC):
     """
     Contract implemented by authentication plugins.
     """
+
+    settings_cls: type[AuthSettings]
+
+    def __init__(self) -> None:
+        """
+        Load the plugin settings, so a plugin overriding this must call it.
+        """
+        self.settings = self.settings_cls()
 
     @abstractmethod
     def provider(self) -> AuthProvider | None:

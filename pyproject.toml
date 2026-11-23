@@ -44,9 +44,10 @@ line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
+extend-select = [
+  "A",    # builtin shadowing (list, id, type as variable names)
+  "B904", # raise ... from err inside except — proper exception chaining
+]
 ignore = [
-  "E501",   # handled by formatter
-  "RUF001", # ambiguous unicode in strings — too noisy for French/typographic prompts
-  "RUF002", # same, but for docstrings
-  "RUF003", # same, but for comments
+  "BLE001", # we catch Exception at CLI/agent boundaries deliberately
 ]

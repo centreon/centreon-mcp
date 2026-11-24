@@ -137,6 +137,16 @@ class Macro(BaseModel):
 
 
 class Pagination(BaseModel):
-    page: int
-    limit: int
-    total: int
+    """
+    Paging information of a list result, built from the `meta` object of a Centreon API response.
+    """
+
+    page: int = Field(ge=1, description="Number of the returned page, starting at 1")
+    limit: int = Field(ge=1, description="Maximum number of items returned per page")
+    total: int = Field(
+        ge=0,
+        description=(
+            "Total number of items matching the filters across all pages, not only this page. "
+            "More pages remain while page * limit < total."
+        ),
+    )

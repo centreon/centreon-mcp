@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, call, patch
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, Page, PageMetadata
 from centreon_mcp.utils.mixins import (
     CountMixin,
     CreateMixin,
@@ -220,17 +220,26 @@ class TestListMixinBase:
         page = 1
 
         # Mock request
-        request.return_value = {"result": [payload]}
+        request.return_value = {
+            "result": [payload],
+            "meta": {
+                "page": page,
+                "limit": limit,
+                "total": 50,
+            },
+        }
 
         # Call test function
-        results = await model.list(filters, limit, page, order)
+        result = await model.list(filters, limit, page, order)
 
         # Assert request called with right args
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         request.assert_awaited_once_with("GET", endpoint, params=params)
 
         # Assert result
-        assert results == [model(**payload)]
+        assert result == Page(
+            results=[model(**payload)], meta=PageMetadata(page=page, limit=limit, total=50)
+        )
 
 
 class TestSetMixinBase:

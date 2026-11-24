@@ -13,7 +13,7 @@ from centreon_mcp.components.tools.monitoring import (
     set_monitoring_actions,
 )
 from centreon_mcp.types.monitoring.mapping import MODELS_MIXIN_SET
-from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
+from centreon_mcp.types.monitoring.resource import ResourceFilter, ResourceOrder
 from centreon_mcp.utils.base import BaseResource
 
 MODULE = "centreon_mcp.components.tools.monitoring"
@@ -35,8 +35,8 @@ async def test_list_monitoring_resources(logger: MagicMock, list_mixin: AsyncMoc
     logger.info.return_value = None
 
     # Mock Resource.list
-    resource = Resource.model_construct()
-    list_mixin.return_value = [resource]
+    resources = MagicMock()
+    list_mixin.return_value = resources
 
     # Call test function
     results = await list_monitoring_resources(
@@ -57,7 +57,7 @@ async def test_list_monitoring_resources(logger: MagicMock, list_mixin: AsyncMoc
     list_mixin.assert_awaited_once_with(filters, limit, page, order, extras)
 
     # Assert result
-    assert results[0] == resource
+    assert results == resources
 
 
 @pytest.mark.parametrize(
@@ -89,8 +89,8 @@ async def test_list_monitoring_entities(
     # Mock logger
     logger.debug.return_value = None
 
-    model = MagicMock()
-    list_mixin.return_value = [model]
+    models = MagicMock()
+    list_mixin.return_value = models
 
     # Call test function
     results = await list_monitoring_entities(model_type, filters, limit, page, order)
@@ -99,7 +99,7 @@ async def test_list_monitoring_entities(
     list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
-    assert results == [model]
+    assert results == models
 
 
 @pytest.mark.parametrize(
@@ -123,8 +123,8 @@ async def test_list_monitoring_actions(
     # Mock logger
     logger.debug.return_value = None
 
-    model = MagicMock()
-    list_mixin.return_value = [model]
+    models = MagicMock()
+    list_mixin.return_value = models
 
     # Call test function
     results = await list_monitoring_actions(model_type, filters, limit, page, order)
@@ -133,7 +133,7 @@ async def test_list_monitoring_actions(
     list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
-    assert results == [model]
+    assert results == models
 
 
 @pytest.mark.parametrize(

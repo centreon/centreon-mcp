@@ -135,10 +135,11 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
             {
                 "id": 10,
                 "uuid": "resource_uuid",
-                "type": "host",
+                "type": "service",
                 "name": "resource_name",
                 "host_id": 10,
                 "monitoring_server_name": "poller_name",
+                "parent": {"id": 20, "name": "host_name", "type": "host"},
                 "is_in_downtime": False,
                 "is_acknowledged": False,
                 "is_in_flapping": False,

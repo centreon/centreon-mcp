@@ -44,6 +44,14 @@ class ResourceFilter(BaseFilter):
     )
 
 
+class ResourceParent(BaseModel):
+    id: int
+    name: str
+    type: ResourceType
+    alias: str | None = None
+    fqdn: str | None = None
+
+
 class Resource(BaseModel, ListMixin[ResourceFilter, ResourceOrder]):
     endpoint: ClassVar[str] = "monitoring/resources"
 
@@ -56,6 +64,7 @@ class Resource(BaseModel, ListMixin[ResourceFilter, ResourceOrder]):
     host_id: int
     service_id: int | None = None
     monitoring_server_name: str
+    parent: ResourceParent | None = None
     is_in_downtime: bool
     is_acknowledged: bool
     is_in_flapping: bool

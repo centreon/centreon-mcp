@@ -29,8 +29,8 @@ async def test_get_host_timeline(
     join.return_value = conditions
 
     # Mock TimelineEvent.list_for_host
-    event, pagination = MagicMock(), MagicMock()
-    timeline_list_for_host.return_value = ([event], pagination)
+    events = MagicMock()
+    timeline_list_for_host.return_value = events
 
     # Call test function
     result = await get_host_timeline(host_id, filters, limit, page, order)
@@ -45,7 +45,7 @@ async def test_get_host_timeline(
     )
 
     # Asser result
-    assert result == ([event], pagination)
+    assert result == events
 
 
 @patch(f"{MODULE}.TimelineEvent.list_for_service", new_callable=AsyncMock)
@@ -71,8 +71,8 @@ async def test_get_service_timeline(
     join.return_value = conditions
 
     # Mock TimelineEvent.list_for_service
-    event, pagination = MagicMock(), MagicMock()
-    timeline_list_for_service.return_value = ([event], pagination)
+    events = MagicMock()
+    timeline_list_for_service.return_value = events
 
     # Call test function
     result = await get_service_timeline(host_id, service_id, filters, limit, page, order)
@@ -90,4 +90,4 @@ async def test_get_service_timeline(
     )
 
     # Assert result
-    assert result == ([event], pagination)
+    assert result == events

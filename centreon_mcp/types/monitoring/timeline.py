@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, Pagination, Status
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, Page, PageMetadata, Status
 from centreon_mcp.utils.request import request
 
 TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
@@ -55,46 +55,52 @@ class TimelineEvent(BaseModel):
     status: Status | None = None
     tries: int | None = None
 
-    @staticmethod
+    @classmethod
     async def _list(
+        cls,
         endpoint: str,
         search: str | None = None,
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> tuple[list["TimelineEvent"], Pagination]:
+    ) -> Page[Self]:
         """
         Internal method to list timeline events for a resource.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", endpoint, params=params)
-        return [TimelineEvent(**item) for item in content["result"]], Pagination(**content["meta"])
+        return Page(
+            results=[cls(**item) for item in content["result"]],
+            meta=PageMetadata(**content["meta"]),
+        )
 
-    @staticmethod
+    @classmethod
     async def list_for_host(
+        cls,
         host_id: int,
         search: str | None = None,
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> tuple[list["TimelineEvent"], Pagination]:
+    ) -> Page[Self]:
         """
         List timeline events for a host.
         """
         endpoint = f"monitoring/hosts/{host_id}/timeline"
-        return await TimelineEvent._list(endpoint, search, limit, page, sort_by)
+        return await cls._list(endpoint, search, limit, page, sort_by)
 
-    @staticmethod
+    @classmethod
     async def list_for_service(
+        cls,
         host_id: int,
         service_id: int,
         search: str | None = None,
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> tuple[list["TimelineEvent"], Pagination]:
+    ) -> Page[Self]:
         """
         List timeline events for a service.
         """
         endpoint = f"monitoring/hosts/{host_id}/services/{service_id}/timeline"
-        return await TimelineEvent._list(endpoint, search, limit, page, sort_by)
+        return await cls._list(endpoint, search, limit, page, sort_by)

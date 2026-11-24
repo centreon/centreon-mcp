@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, call, patch
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, Pagination
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseResource, Page, PageMetadata
 from centreon_mcp.utils.mixins import (
     CountMixin,
     CreateMixin,
@@ -230,15 +230,16 @@ class TestListMixinBase:
         }
 
         # Call test function
-        results, pagination = await model.list(filters, limit, page, order)
+        result = await model.list(filters, limit, page, order)
 
         # Assert request called with right args
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         request.assert_awaited_once_with("GET", endpoint, params=params)
 
         # Assert result
-        assert results == [model(**payload)]
-        assert pagination == Pagination(page=page, limit=limit, total=50)
+        assert result == Page(
+            results=[model(**payload)], meta=PageMetadata(page=page, limit=limit, total=50)
+        )
 
 
 class TestSetMixinBase:

@@ -136,7 +136,7 @@ class Macro(BaseModel):
     description: str | None = Field(None, description="Macro description")
 
 
-class Pagination(BaseModel):
+class PageMetadata(BaseModel):
     """
     Paging information of a list result, built from the `meta` object of a Centreon API response.
     """
@@ -149,4 +149,21 @@ class Pagination(BaseModel):
             "Total number of items matching the filters across all pages, not only this page. "
             "More pages remain while page * limit < total."
         ),
+    )
+
+
+class Page[T](BaseModel):
+    """
+    One page of a list result: the items of the requested page and the paging information
+    needed to fetch the remaining ones.
+    """
+
+    results: list[T] = Field(
+        description="Items of the requested page only, at most meta.limit of them"
+    )
+    meta: PageMetadata = Field(
+        description=(
+            "Paging information. When meta.page * meta.limit < meta.total, more items exist: "
+            "call the tool again with page set to meta.page + 1 to get them."
+        )
     )

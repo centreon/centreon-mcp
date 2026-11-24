@@ -21,7 +21,7 @@ from centreon_mcp.types.configuration.mapping import (
     MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
-from centreon_mcp.utils.base import Pagination
+from centreon_mcp.utils.base import Page
 
 configuration = FastMCP()
 
@@ -56,7 +56,7 @@ async def list_configurations(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ConfigurationOrder | None = None,
-) -> tuple[list[Configuration], Pagination]:
+) -> Page[Configuration]:
     """
     List configurations matching the given filters for following entities:
         - Host / Service
@@ -80,8 +80,9 @@ async def list_configurations(
     if filters is not None:
         [f.check(model_type) for f in filters]
 
-    models, pagination = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return cast(list[Configuration], models), pagination
+    # The mapping is typed with the generic ListMixin; model_type guarantees a Configuration model
+    result = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
+    return cast(Page[Configuration], result)
 
 
 @configuration.tool(

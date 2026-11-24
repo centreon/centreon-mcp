@@ -35,8 +35,8 @@ async def test_list_monitoring_resources(logger: MagicMock, list_mixin: AsyncMoc
     logger.info.return_value = None
 
     # Mock Resource.list
-    resource = Resource.model_construct()
-    list_mixin.return_value = [resource]
+    resource, pagination = Resource.model_construct(), MagicMock()
+    list_mixin.return_value = ([resource], pagination)
 
     # Call test function
     results = await list_monitoring_resources(
@@ -57,7 +57,7 @@ async def test_list_monitoring_resources(logger: MagicMock, list_mixin: AsyncMoc
     list_mixin.assert_awaited_once_with(filters, limit, page, order, extras)
 
     # Assert result
-    assert results[0] == resource
+    assert results == ([resource], pagination)
 
 
 @pytest.mark.parametrize(
@@ -89,8 +89,8 @@ async def test_list_monitoring_entities(
     # Mock logger
     logger.debug.return_value = None
 
-    model = MagicMock()
-    list_mixin.return_value = [model]
+    model, pagination = MagicMock(), MagicMock()
+    list_mixin.return_value = ([model], pagination)
 
     # Call test function
     results = await list_monitoring_entities(model_type, filters, limit, page, order)
@@ -99,7 +99,7 @@ async def test_list_monitoring_entities(
     list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
-    assert results == [model]
+    assert results == ([model], pagination)
 
 
 @pytest.mark.parametrize(
@@ -123,8 +123,8 @@ async def test_list_monitoring_actions(
     # Mock logger
     logger.debug.return_value = None
 
-    model = MagicMock()
-    list_mixin.return_value = [model]
+    model, pagination = MagicMock(), MagicMock()
+    list_mixin.return_value = ([model], pagination)
 
     # Call test function
     results = await list_monitoring_actions(model_type, filters, limit, page, order)
@@ -133,7 +133,7 @@ async def test_list_monitoring_actions(
     list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
-    assert results == [model]
+    assert results == ([model], pagination)
 
 
 @pytest.mark.parametrize(

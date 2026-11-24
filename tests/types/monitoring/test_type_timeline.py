@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock, patch
 
 from centreon_mcp.types.monitoring.timeline import TimelineEvent
+from centreon_mcp.utils.base import Pagination
 
 MODULE = "centreon_mcp.types.monitoring.timeline"
 
@@ -16,10 +17,10 @@ async def test_timeline_list_for_host(request: AsyncMock):
     sort_by = ""
 
     # Mock request
-    request.return_value = {"result": []}
+    request.return_value = {"result": [], "meta": {"page": page, "limit": limit, "total": 0}}
 
     # Call test function
-    events = await TimelineEvent.list_for_host(host_id, search, limit, page, sort_by)
+    events, pagination = await TimelineEvent.list_for_host(host_id, search, limit, page, sort_by)
 
     # Assert request called with right args
     params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
@@ -27,6 +28,7 @@ async def test_timeline_list_for_host(request: AsyncMock):
 
     # Assert results
     assert events == []
+    assert pagination == Pagination(page=page, limit=limit, total=0)
 
 
 @patch(f"{MODULE}.request", new_callable=AsyncMock)
@@ -41,10 +43,12 @@ async def test_timeline_list_for_service(request: AsyncMock):
     sort_by = ""
 
     # Mock request
-    request.return_value = {"result": []}
+    request.return_value = {"result": [], "meta": {"page": page, "limit": limit, "total": 0}}
 
     # Call test function
-    events = await TimelineEvent.list_for_service(host_id, service_id, search, limit, page, sort_by)
+    events, pagination = await TimelineEvent.list_for_service(
+        host_id, service_id, search, limit, page, sort_by
+    )
 
     # Assert request called with right args
     params = {"search": search, "limit": 50, "page": 1, "sort_by": ""}
@@ -54,3 +58,4 @@ async def test_timeline_list_for_service(request: AsyncMock):
 
     # Assert results
     assert events == []
+    assert pagination == Pagination(page=page, limit=limit, total=0)

@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, Status
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, Pagination, Status
 from centreon_mcp.utils.request import request
 
 TimelineEventType = Literal["event", "notification", "downtime", "acknowledgement", "comment"]
@@ -62,13 +62,13 @@ class TimelineEvent(BaseModel):
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
+    ) -> tuple[list["TimelineEvent"], Pagination]:
         """
         Internal method to list timeline events for a resource.
         """
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by}
         content = await request("GET", endpoint, params=params)
-        return [TimelineEvent(**item) for item in content["result"]]
+        return [TimelineEvent(**item) for item in content["result"]], Pagination(**content["meta"])
 
     @staticmethod
     async def list_for_host(
@@ -77,7 +77,7 @@ class TimelineEvent(BaseModel):
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
+    ) -> tuple[list["TimelineEvent"], Pagination]:
         """
         List timeline events for a host.
         """
@@ -92,7 +92,7 @@ class TimelineEvent(BaseModel):
         limit: int | None = None,
         page: int | None = None,
         sort_by: str | None = None,
-    ) -> list["TimelineEvent"]:
+    ) -> tuple[list["TimelineEvent"], Pagination]:
         """
         List timeline events for a service.
         """

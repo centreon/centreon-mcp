@@ -134,3 +134,9 @@ class Macro(BaseModel):
         False, description="Indicates whether the macro value is a password or not"
     )
     description: str | None = Field(None, description="Macro description")
+
+
+class Pagination(BaseModel):
+    page: int
+    limit: int
+    total: int

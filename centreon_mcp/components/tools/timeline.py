@@ -7,6 +7,7 @@ from pydantic import Field
 from centreon_mcp import logger
 from centreon_mcp.auth import Role, require_roles
 from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineFilter, TimelineOrder
+from centreon_mcp.utils.base import Pagination
 
 timeline = FastMCP()
 
@@ -27,7 +28,7 @@ async def get_host_timeline(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: TimelineOrder | None = None,
-) -> list[TimelineEvent]:
+) -> tuple[list[TimelineEvent], Pagination]:
     """
     Get the event timeline of a single host in real-time monitoring.
     Events include state changes, notifications, downtimes, acknowledgements and comments,
@@ -64,7 +65,7 @@ async def get_service_timeline(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: TimelineOrder | None = None,
-) -> list[TimelineEvent]:
+) -> tuple[list[TimelineEvent], Pagination]:
     """
     Get the event timeline of a single service in real-time monitoring.
     Events include state changes, notifications, downtimes, acknowledgements and comments,

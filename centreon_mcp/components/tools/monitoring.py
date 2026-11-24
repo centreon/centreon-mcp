@@ -22,7 +22,13 @@ from centreon_mcp.types.monitoring.mapping import (
 )
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.types.monitoring.status import ResourceStatusCount, ResourceStatusCountFilter
-from centreon_mcp.utils.base import BaseResource, ResourceStatus, ResourceType, StatusType
+from centreon_mcp.utils.base import (
+    BaseResource,
+    Pagination,
+    ResourceStatus,
+    ResourceType,
+    StatusType,
+)
 
 monitoring = FastMCP()
 
@@ -50,7 +56,7 @@ async def list_monitoring_resources(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ResourceOrder | None = None,
-) -> list[Resource]:
+) -> tuple[list[Resource], Pagination]:
     """
     List resources (hosts and services) in real-time monitoring matching the given filters.
     If no filters are provided, ask users to provide at least one filter,
@@ -91,7 +97,7 @@ async def list_monitoring_entities(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: MonitoringOrder | None = None,
-) -> list[Monitoring]:
+) -> tuple[list[Monitoring], Pagination]:
     """
     List real-time monitoring entities matching the given filters.
     The entities kind is selected via model_type:
@@ -111,8 +117,8 @@ async def list_monitoring_entities(
     if filters is not None:
         [f.check(model_type) for f in filters]
 
-    models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return cast(list[Monitoring], models)
+    models, pagination = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
+    return cast(list[Monitoring], models), pagination
 
 
 @monitoring.tool(
@@ -131,7 +137,7 @@ async def list_monitoring_actions(
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: MonitoringActionOrder | None = None,
-) -> list[MonitoringAction]:
+) -> tuple[list[MonitoringAction], Pagination]:
     """
     List real-time monitoring actions matching the given filters.
     The action kind is selected via model_type:
@@ -150,8 +156,8 @@ async def list_monitoring_actions(
     if filters is not None:
         [f.check(model_type) for f in filters]
 
-    models = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
-    return cast(list[MonitoringAction], models)
+    models, pagination = await MODELS_MIXIN_LIST[model_type].list(filters, limit, page, order)
+    return cast(list[MonitoringAction], models), pagination
 
 
 @monitoring.tool(

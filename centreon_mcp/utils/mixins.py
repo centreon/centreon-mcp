@@ -6,7 +6,7 @@ from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
 
-from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, BaseResource
+from centreon_mcp.utils.base import BaseFilter, BaseOrder, BaseParams, BaseResource, Pagination
 from centreon_mcp.utils.request import request
 
 
@@ -149,7 +149,7 @@ class ListMixin[Filter: BaseFilter, Order: BaseOrder](BaseMixin):
         page: int | None = None,
         order: Order | None = None,
         extras: dict[str, Any] | None = None,
-    ) -> list[Self]:
+    ) -> tuple[list[Self], Pagination]:
         """
         List resources matching the provided filters, pagination and order using the model's endpoint.
         """
@@ -158,7 +158,7 @@ class ListMixin[Filter: BaseFilter, Order: BaseOrder](BaseMixin):
         sort_by = order.model_dump_json(exclude={"model_type"}) if order else None
         params = {"search": search, "limit": limit, "page": page, "sort_by": sort_by, **extras}
         content = await request("GET", cls.endpoint, params=params)
-        return [cls(**item) for item in content["result"]]
+        return [cls(**item) for item in content["result"]], Pagination(**content["meta"])
 
 
 class SetMixin[

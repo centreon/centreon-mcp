@@ -63,8 +63,8 @@ async def test_list_configurations(
     # Mock logger
     logger.debug.return_value = None
 
-    model = MagicMock()
-    list_mixin.return_value = [model]
+    model, pagination = MagicMock(), MagicMock()
+    list_mixin.return_value = ([model], pagination)
 
     # Call test function
     results = await list_configurations(model_type, filters, limit, page, order)
@@ -73,7 +73,7 @@ async def test_list_configurations(
     list_mixin.assert_awaited_once_with(filters, limit, page, order)
 
     # Assert result
-    assert results == [model]
+    assert results == ([model], pagination)
 
 
 @pytest.mark.parametrize(

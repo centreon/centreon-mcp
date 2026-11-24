@@ -6,6 +6,28 @@ from pydantic import BaseModel, Field
 from centreon_mcp.utils.base import BaseFilter, BaseOrder, ResourceType, Status
 from centreon_mcp.utils.mixins import ListMixin
 
+# A resource is either a host or a service. A service always belongs to exactly one host, which is
+# its parent; a host has no parent. These descriptions are the only documentation the LLM client
+# sees, so they spell out which name goes in which field.
+DESCRIPTION = {
+    "name": (
+        "Substring of the resource's own name. For a host, the host name (e.g. 'srv-web-01'). "
+        "For a service, the service name only (e.g. 'CPU', 'Ping', 'Disk-/var'), never the name "
+        "of the host it runs on: that goes in `parent_name`."
+    ),
+    "alias": (
+        "Substring of the host alias, a free-text label set on a host in addition to its name "
+        "(e.g. 'Production web server'). Only hosts have an alias, so this field never matches "
+        "a service. To find a host by its name, use `name` instead."
+    ),
+    "parent_name": (
+        "Substring of the name of the host a service belongs to. Only services have a parent "
+        "(their host); hosts have none, so setting this field returns services only. "
+        "Example: {'parent_name': 'srv-web-01'} returns the services of host 'srv-web-01'. "
+        "Never put a service name here: it goes in `name`."
+    ),
+}
+
 
 class ResourceOrder(BaseOrder):
     model_type: Literal["resource"] = "resource"
@@ -20,17 +42,17 @@ class ResourceFilter(BaseFilter):
     name: str | None = Field(
         default=None,
         serialization_alias="name $lk",
-        description="Name of the resource (host or service)",
+        description=DESCRIPTION["name"],
     )
     alias: str | None = Field(
         default=None,
         serialization_alias="alias $lk",
-        description="Alias of the resource (host or service)",
+        description=DESCRIPTION["alias"],
     )
     parent_name: str | None = Field(
         default=None,
         serialization_alias="parent_name $lk",
-        description="Name of the parent resource (host or service)",
+        description=DESCRIPTION["parent_name"],
     )
     information_like: str | None = Field(
         default=None,

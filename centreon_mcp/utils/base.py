@@ -2,13 +2,34 @@ from collections.abc import Sequence
 from enum import IntEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 ResourceType = Literal["host", "service"]
 StatusType = Literal["soft", "hard"]
 HostStatus = Literal["UP", "DOWN", "UNREACHABLE", "PENDING"]
 ServiceStatus = Literal["OK", "WARNING", "CRITICAL", "UNKNOWN", "PENDING"]
 ResourceStatus = HostStatus | ServiceStatus
+
+# Centreon search operators that match their value as an SQL LIKE pattern, with the hint appended
+# to the description of every filter field using them.
+LIKE_OPERATORS = {
+    "$lk": "LIKE pattern: exact match unless it contains `%` (see the `filters` description).",
+    "$nk": (
+        "NOT LIKE pattern: excludes exact matches unless it contains `%` "
+        "(see the `filters` description)."
+    ),
+}
+
+# Description of the `filters` parameter of every tool taking a list of `BaseFilter`.
+FILTERS_FIELD = Field(
+    description=(
+        "Filters to narrow down the results. Several filters are combined with OR; the fields set "
+        "in one filter are combined with AND. Fields described as LIKE patterns use SQL LIKE "
+        "matching: without wildcards the match is exact ('srv-01' matches only 'srv-01'); add `%` "
+        "to match any sequence of characters: 'srv-%' (starts with), '%-01' (ends with), '%web%' "
+        "(contains)."
+    ),
+)
 
 
 class HostState(IntEnum):
@@ -79,7 +100,26 @@ class BaseOrder(BaseModel):
 
 
 class BaseFilter(BaseModel):
+    # Reject unknown fields: an ignored, misspelled field would silently widen the search.
+    model_config = ConfigDict(extra="forbid")
+
     model_type: str
+
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
+        """
+        Append the LIKE pattern hint to the description of every `$lk`/`$nk` field.
+        """
+        super().__pydantic_init_subclass__(**kwargs)
+        changed = False
+        for field in cls.model_fields.values():
+            alias = field.serialization_alias
+            hint = LIKE_OPERATORS.get(alias.split()[-1]) if alias else None
+            if hint and hint not in (field.description or ""):
+                field.description = f"{field.description} {hint}" if field.description else hint
+                changed = True
+        if changed:
+            cls.model_rebuild(force=True)
 
     @staticmethod
     def join(filters: Sequence["BaseFilter"] | None) -> dict:

@@ -28,9 +28,9 @@ class DowntimeFilter(BaseFilter):
     model_type: Literal["downtime"] = "downtime"
 
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(default=None, serialization_alias="host.address $eq")
+    host_name: str | None = Field(default=None, serialization_alias="host.name $lk")
+    host_alias: str | None = Field(default=None, serialization_alias="host.alias $lk")
+    host_address: str | None = Field(default=None, serialization_alias="host.address $lk")
     host_state: HostState | None = Field(default=None, serialization_alias="host.state $eq")
     is_fixed: bool | None = Field(default=None, serialization_alias="is_fixed $eq")
     is_cancelled: bool | None = Field(default=None, serialization_alias="is_cancelled $eq")

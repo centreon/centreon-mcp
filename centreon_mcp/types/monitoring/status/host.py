@@ -11,10 +11,10 @@ class HostStatusCountFilter(BaseFilter):
     model_type: Literal["host"] = "host"
 
     host_group_id: int | None = Field(default=None, serialization_alias="host_group.id $eq")
-    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $lk")
     host_category_id: int | None = Field(default=None, serialization_alias="host_category.id $eq")
     host_category_name: str | None = Field(
-        default=None, serialization_alias="host_category.name $eq"
+        default=None, serialization_alias="host_category.name $lk"
     )
 
 

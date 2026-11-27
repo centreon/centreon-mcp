@@ -16,7 +16,7 @@ class MonitoringServerFilter(BaseFilter):
     model_type: Literal["monitoring_server"] = "monitoring_server"
 
     monitoring_server_id: int | None = Field(default=None, serialization_alias="id $eq")
-    monitoring_server_name: str | None = Field(default=None, serialization_alias="name $eq")
+    monitoring_server_name: str | None = Field(default=None, serialization_alias="name $lk")
     monitoring_server_running: bool | None = Field(default=None, serialization_alias="running $eq")
 
 

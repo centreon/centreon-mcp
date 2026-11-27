@@ -90,8 +90,8 @@ class ServiceTemplateFilter(BaseFilter):
     model_type: Literal["service_template"] = "service_template"
 
     service_template_id: int | None = Field(default=None, serialization_alias="id $eq")
-    service_template_name: str | None = Field(default=None, serialization_alias="name $eq")
-    service_template_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    service_template_name: str | None = Field(default=None, serialization_alias="name $lk")
+    service_template_alias: str | None = Field(default=None, serialization_alias="alias $lk")
     service_template_is_locked: bool | None = Field(
         default=None, serialization_alias="is_locked $eq"
     )

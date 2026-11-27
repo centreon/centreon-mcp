@@ -120,7 +120,11 @@ Two consequences to respect:
 
 Filters serialise into Centreon's `search` query syntax via `serialization_alias` strings of the form
 `"<field> <operator>"` (e.g. `serialization_alias="name $eq"`); `BaseFilter.conditions` splits them
-back apart and `BaseFilter.join` ORs multiple filters together.
+back apart and `BaseFilter.join` ORs multiple filters together. String fields use `$lk`: values are
+sent as given, so they match exactly unless the caller adds `%` wildcards. `BaseFilter` appends a
+LIKE hint (`LIKE_OPERATORS`) to the description of every `$lk`/`$nk` field, the tools' `filters`
+parameter carries the full rule via `FILTERS_FIELD`, and `extra="forbid"` rejects unknown fields
+instead of silently dropping the condition.
 
 `PutMixin.update` implements partial update on a PUT-only API: it GETs the current entity, merges the
 partial params over it, and PUTs the result — hence the `full_params_cls` class var. Use

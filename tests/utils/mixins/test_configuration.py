@@ -370,7 +370,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             Command,
             [CommandFilter(command_name="command_name", command_is_locked=False)],
             CommandOrder(order="ASC", field="name"),
-            '{"$or": [{"$and": [{"name": {"$eq": "command_name"}}, {"is_locked": {"$eq": false}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "command_name"}}, {"is_locked": {"$eq": false}}]}]}',
             '{"order":"ASC","field":"name"}',
             "configuration/commands",
             {
@@ -385,9 +385,9 @@ class TestReadMixinConfiguration(TestReadMixinBase):
         ),
         (
             Host,
-            [HostFilter(host_configuration_name="host_name")],
+            [HostFilter(host_name="host_name")],
             HostOrder(order="DESC", field="address"),
-            '{"$or": [{"$and": [{"name": {"$eq": "host_name"}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "host_name"}}]}]}',
             '{"order":"DESC","field":"address"}',
             "configuration/hosts",
             {
@@ -406,7 +406,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             HostCategory,
             [HostCategoryFilter(host_category_name="host_category_name")],
             HostCategoryOrder(order="DESC", field="alias"),
-            '{"$or": [{"$and": [{"name": {"$eq": "host_category_name"}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "host_category_name"}}]}]}',
             '{"order":"DESC","field":"alias"}',
             "configuration/hosts/categories",
             {
@@ -420,7 +420,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             HostGroup,
             [HostGroupFilter(host_group_alias="host_group_alias")],
             HostGroupOrder(order="ASC", field="is_activated"),
-            '{"$or": [{"$and": [{"alias": {"$eq": "host_group_alias"}}]}]}',
+            '{"$or": [{"$and": [{"alias": {"$lk": "host_group_alias"}}]}]}',
             '{"order":"ASC","field":"is_activated"}',
             "configuration/hosts/groups",
             {
@@ -451,7 +451,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             HostTemplate,
             [HostTemplateFilter(host_template_alias="host_template_alias")],
             HostTemplateOrder(order="ASC", field="name"),
-            '{"$or": [{"$and": [{"alias": {"$eq": "host_template_alias"}}]}]}',
+            '{"$or": [{"$and": [{"alias": {"$lk": "host_template_alias"}}]}]}',
             '{"order":"ASC","field":"name"}',
             "configuration/hosts/templates",
             {
@@ -465,7 +465,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             MonitoringServer,
             [MonitoringServerFilter(monitoring_server_name="poller_name")],
             MonitoringServerOrder(order="ASC", field="name"),
-            '{"$or": [{"$and": [{"name": {"$eq": "poller_name"}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "poller_name"}}]}]}',
             '{"order":"ASC","field":"name"}',
             "configuration/monitoring-servers",
             {
@@ -491,9 +491,9 @@ class TestReadMixinConfiguration(TestReadMixinBase):
         ),
         (
             Service,
-            [ServiceFilter(name="service_name", severity_id=10)],
+            [ServiceFilter(service_name="service_name", service_severity_id=10)],
             ServiceOrder(order="DESC", field="name"),
-            '{"$or": [{"$and": [{"name": {"$eq": "service_name"}}, {"severity.id": {"$eq": 10}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "service_name"}}, {"severity.id": {"$eq": 10}}]}]}',
             '{"order":"DESC","field":"name"}',
             "configuration/services",
             {
@@ -508,7 +508,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             ServiceGroup,
             [ServiceGroupFilter(service_group_name="service_group_name", host_group_id=10)],
             ServiceGroupOrder(field="name"),
-            '{"$or": [{"$and": [{"name": {"$eq": "service_group_name"}}, {"hostgroup.id": {"$eq": 10}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "service_group_name"}}, {"hostgroup.id": {"$eq": 10}}]}]}',
             '{"order":"ASC","field":"name"}',
             "configuration/services/groups",
             {
@@ -522,7 +522,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             ServiceCategory,
             [ServiceCategoryFilter(service_category_alias="service_category_alias", host_id=10)],
             ServiceCategoryOrder(field="alias"),
-            '{"$or": [{"$and": [{"alias": {"$eq": "service_category_alias"}}, {"host.id": {"$eq": 10}}]}]}',
+            '{"$or": [{"$and": [{"alias": {"$lk": "service_category_alias"}}, {"host.id": {"$eq": 10}}]}]}',
             '{"order":"ASC","field":"alias"}',
             "configuration/services/categories",
             {
@@ -536,7 +536,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             ServiceTemplate,
             [ServiceTemplateFilter(service_template_name="service_template_name")],
             ServiceTemplateOrder(field="alias"),
-            '{"$or": [{"$and": [{"name": {"$eq": "service_template_name"}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "service_template_name"}}]}]}',
             '{"order":"ASC","field":"alias"}',
             "configuration/services/templates",
             {
@@ -550,7 +550,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             ServiceSeverity,
             [ServiceSeverityFilter(service_severity_name="name")],
             ServiceSeverityOrder(field="alias"),
-            '{"$or": [{"$and": [{"name": {"$eq": "name"}}]}]}',
+            '{"$or": [{"$and": [{"name": {"$lk": "name"}}]}]}',
             '{"order":"ASC","field":"alias"}',
             "configuration/services/severities",
             {
@@ -566,7 +566,7 @@ class TestReadMixinConfiguration(TestReadMixinBase):
             TimePeriod,
             [TimePeriodFilter(time_period_alias="alias")],
             TimePeriodOrder(field="name"),
-            '{"$or": [{"$and": [{"alias": {"$eq": "alias"}}]}]}',
+            '{"$or": [{"$and": [{"alias": {"$lk": "alias"}}]}]}',
             '{"order":"ASC","field":"name"}',
             "configuration/timeperiods",
             {

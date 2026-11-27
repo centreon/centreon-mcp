@@ -51,9 +51,10 @@ def host_diagnosis(
         ## Step 1 - Identify the host
 
         1. Call `list_configurations` with `model_type="host"` and
-           `filters=[{{"model_type": "host", "host_configuration_name": "{host_name}"}}]`.
-           Note its id (referred to as `<host id>` below), alias, address, monitoring server,
-           templates, groups, categories, check intervals and `is_activated`.
+           `filters=[{{"model_type": "host", "host_name": "{host_name}"}}]`.
+           Note its id (referred to as `<host id>` below), alias, address, monitoring server
+           (id and name), templates, groups (ids and names), categories, check intervals and
+           `is_activated`.
            - If no host is returned, tell the user that host "{host_name}" does not exist (or is not
              visible with their permissions) and stop.
            - If `is_activated` is false, the host is disabled in the configuration: it is not
@@ -62,8 +63,8 @@ def host_diagnosis(
         ## Step 2 - Real-time state of the host
 
         2. Call `list_monitoring_resources` with `types=["host"]` and
-           `filters=[{{"model_type": "resource", "name": "{host_name}"}}]`. The name filter is a
-           substring match: keep only the entry whose `host_id` is `<host id>`.
+           `filters=[{{"model_type": "resource", "resource_name": "{host_name}"}}]`. Keep only the
+           entry whose `host_id` is `<host id>`.
            Note: `status` (UP / DOWN / UNREACHABLE / PENDING), `information` (the plugin output),
            `tries`, `last_check`, `last_status_change`, `is_in_downtime`, `is_acknowledged`,
            `is_in_flapping`, `has_active_checks_enabled`, `has_passive_checks_enabled` and
@@ -81,9 +82,9 @@ def host_diagnosis(
            service picture.
         4. Call `list_monitoring_resources` with `types=["service"]`,
            `statuses=["WARNING", "CRITICAL", "UNKNOWN", "PENDING"]` and
-           `filters=[{{"model_type": "resource", "parent_name": "{host_name}"}}]`. Keep only entries
-           whose `host_id` is `<host id>`. For each one note its status, output, tries (and the
-           SOFT/HARD type they carry, as in step 2), last status change, downtime and
+           `filters=[{{"model_type": "resource", "resource_parent_name": "{host_name}"}}]`. Keep only
+           entries whose `host_id` is `<host id>`. For each one note its status, output, tries (and
+           the SOFT/HARD type they carry, as in step 2), last status change, downtime and
            acknowledgement flags.
         5. For each non-OK service (the 5 most severe ones if there are many, CRITICAL first), call
            in parallel:
@@ -113,14 +114,15 @@ def host_diagnosis(
         ## Step 6 - Infrastructure context
 
         9. Call `list_monitoring_entities` with `model_type="monitoring_server"` and
-           `filters=[{{"model_type": "monitoring_server", "monitoring_server_name": "<monitoring server name>"}}]`.
-           Check `is_running` and `last_alive`: a stopped poller, or one that has not reported for
-           several minutes, means the displayed statuses are stale and the problem may come from
-           the monitoring chain rather than from the host itself.
+           `filters=[{{"model_type": "monitoring_server", "monitoring_server_id": <monitoring server id>}}]`,
+           using the monitoring server id found in step 1. Check `is_running` and `last_alive`: a
+           stopped poller, or one that has not reported for several minutes, means the displayed
+           statuses are stale and the problem may come from the monitoring chain rather than from
+           the host itself.
         10. If the host is DOWN or UNREACHABLE, or if many of its services fail at the same time,
             measure the blast radius: call `count_monitoring_resources_by_status` with
-            `model_type="host"` and a filter on one of its host groups
-            (`{{"model_type": "host", "host_group_name": "<group name>"}}`). Then call
+            `model_type="host"` and a filter on the id of one of its host groups found in step 1
+            (`{{"model_type": "host", "host_group_id": <group id>}}`). Then call
             `list_monitoring_resources` with `types=["host"]`, `statuses=["DOWN", "UNREACHABLE"]`
             and `monitoring_server_names=["<monitoring server name>"]` to list the unavailable
             hosts monitored by the same poller. Many unavailable hosts in the same group or on the

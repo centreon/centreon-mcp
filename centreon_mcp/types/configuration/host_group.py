@@ -25,8 +25,8 @@ class HostGroupFilter(BaseFilter):
     model_type: Literal["host_group"] = "host_group"
 
     host_group_id: int | None = Field(default=None, serialization_alias="id $eq")
-    host_group_name: str | None = Field(default=None, serialization_alias="name $eq")
-    host_group_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="name $lk")
+    host_group_alias: str | None = Field(default=None, serialization_alias="alias $lk")
     host_group_is_activated: bool | None = Field(
         default=None, serialization_alias="is_activated $eq"
     )

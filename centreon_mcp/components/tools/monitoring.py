@@ -22,7 +22,14 @@ from centreon_mcp.types.monitoring.mapping import (
 )
 from centreon_mcp.types.monitoring.resource import Resource, ResourceFilter, ResourceOrder
 from centreon_mcp.types.monitoring.status import ResourceStatusCount, ResourceStatusCountFilter
-from centreon_mcp.utils.base import BaseResource, Page, ResourceStatus, ResourceType, StatusType
+from centreon_mcp.utils.base import (
+    FILTERS_FIELD,
+    BaseResource,
+    Page,
+    ResourceStatus,
+    ResourceType,
+    StatusType,
+)
 
 monitoring = FastMCP()
 
@@ -38,7 +45,7 @@ monitoring = FastMCP()
     auth=require_roles(Role.READER),
 )
 async def list_monitoring_resources(
-    filters: list[ResourceFilter] | None = None,
+    filters: Annotated[list[ResourceFilter] | None, FILTERS_FIELD] = None,
     types: list[ResourceType] | None = None,
     statuses: list[ResourceStatus] | None = None,
     hostgroup_names: list[str] | None = None,
@@ -87,7 +94,7 @@ async def list_monitoring_entities(
         "service_group",
         "monitoring_server",
     ],
-    filters: Sequence[MonitoringFilter] | None = None,
+    filters: Annotated[Sequence[MonitoringFilter] | None, FILTERS_FIELD] = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: MonitoringOrder | None = None,
@@ -127,7 +134,7 @@ async def list_monitoring_entities(
 )
 async def list_monitoring_actions(
     model_type: Literal["acknowledgement", "downtime"],
-    filters: Sequence[MonitoringActionFilter] | None = None,
+    filters: Annotated[Sequence[MonitoringActionFilter] | None, FILTERS_FIELD] = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: MonitoringActionOrder | None = None,
@@ -221,7 +228,7 @@ async def cancel_monitoring_actions(
 )
 async def count_monitoring_resources_by_status(
     model_type: Literal["host", "service"],
-    filters: Sequence[ResourceStatusCountFilter] | None = None,
+    filters: Annotated[Sequence[ResourceStatusCountFilter] | None, FILTERS_FIELD] = None,
 ) -> ResourceStatusCount:
     """
     Count resources (host/service) by status in real-time monitoring matching given filters.

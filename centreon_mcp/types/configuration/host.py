@@ -74,15 +74,15 @@ class HostOrder(BaseOrder):
 class HostFilter(BaseFilter):
     model_type: Literal["host"] = "host"
 
-    host_configuration_id: int | None = Field(default=None, serialization_alias="id $eq")
-    host_configuration_name: str | None = Field(default=None, serialization_alias="name $eq")
-    host_configuration_address: str | None = Field(default=None, serialization_alias="address $eq")
+    host_id: int | None = Field(default=None, serialization_alias="id $eq")
+    host_name: str | None = Field(default=None, serialization_alias="name $lk")
+    host_address: str | None = Field(default=None, serialization_alias="address $lk")
     poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
-    poller_name: str | None = Field(default=None, serialization_alias="poller.name $eq")
+    poller_name: str | None = Field(default=None, serialization_alias="poller.name $lk")
     host_group_id: int | None = Field(default=None, serialization_alias="group.id $eq")
-    host_group_name: str | None = Field(default=None, serialization_alias="group.name $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="group.name $lk")
     host_category_id: int | None = Field(default=None, serialization_alias="category.id $eq")
-    host_category_name: str | None = Field(default=None, serialization_alias="category.name $eq")
+    host_category_name: str | None = Field(default=None, serialization_alias="category.name $lk")
     is_activated: bool | None = Field(default=None, serialization_alias="is_activated $eq")
 
 

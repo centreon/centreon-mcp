@@ -24,7 +24,7 @@ class CommandFilter(BaseFilter):
     model_type: Literal["command"] = "command"
 
     command_id: int | None = Field(default=None, serialization_alias="id $eq")
-    command_name: str | None = Field(default=None, serialization_alias="name $eq")
+    command_name: str | None = Field(default=None, serialization_alias="name $lk")
     command_type: CommandType | None = Field(default=None, serialization_alias="type $eq")
     command_is_locked: bool | None = Field(default=None, serialization_alias="is_locked $eq")
 

@@ -18,7 +18,7 @@ class MonitoringServerFilter(BaseFilter):
     model_type: Literal["monitoring_server"] = "monitoring_server"
 
     monitoring_server_id: int | None = Field(default=None, serialization_alias="id $eq")
-    monitoring_server_name: str | None = Field(default=None, serialization_alias="name $eq")
+    monitoring_server_name: str | None = Field(default=None, serialization_alias="name $lk")
 
 
 class MonitoringServer(BaseModel, ListMixin[MonitoringServerFilter, MonitoringServerOrder]):

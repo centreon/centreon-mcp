@@ -10,21 +10,29 @@ from centreon_mcp.utils.mixins import ListMixin
 # its parent; a host has no parent. These descriptions are the only documentation the LLM client
 # sees, so they spell out which name goes in which field.
 DESCRIPTION = {
-    "name": (
-        "Substring of the resource's own name. For a host, the host name (e.g. 'srv-web-01'). "
-        "For a service, the service name only (e.g. 'CPU', 'Ping', 'Disk-/var'), never the name "
-        "of the host it runs on: that goes in `parent_name`."
+    "resource_name": (
+        "The resource's own name. For a host, the host name (e.g. 'srv-web-01'). For a service, "
+        "the service name only (e.g. 'CPU', 'Ping', 'Disk-/var'), never the name of the host it "
+        "runs on: that goes in `resource_parent_name`."
     ),
-    "alias": (
-        "Substring of the host alias, a free-text label set on a host in addition to its name "
+    "resource_alias": (
+        "The host alias, a free-text label set on a host in addition to its name "
         "(e.g. 'Production web server'). Only hosts have an alias, so this field never matches "
-        "a service. To find a host by its name, use `name` instead."
+        "a service. To find a host by its name, use `resource_name` instead."
     ),
-    "parent_name": (
-        "Substring of the name of the host a service belongs to. Only services have a parent "
-        "(their host); hosts have none, so setting this field returns services only. "
-        "Example: {'parent_name': 'srv-web-01'} returns the services of host 'srv-web-01'. "
-        "Never put a service name here: it goes in `name`."
+    "resource_parent_name": (
+        "The name of the host a service belongs to. Only services have a parent (their host); "
+        "hosts have none, so setting this field returns services only. "
+        "Example: {'resource_parent_name': 'srv-web-01'} returns the services of host "
+        "'srv-web-01'. Never put a service name here: it goes in `resource_name`."
+    ),
+    "information_like": (
+        "The resource output (plugin information) to match, e.g. '%timeout%' for outputs "
+        "containing 'timeout'."
+    ),
+    "information_unlike": (
+        "The resource output (plugin information) to exclude, e.g. '%timeout%' to drop outputs "
+        "containing 'timeout'."
     ),
 }
 
@@ -39,30 +47,30 @@ class ResourceFilter(BaseFilter):
     model_type: Literal["resource"] = "resource"
 
     # Fields available for filtering in Centreon API
-    name: str | None = Field(
+    resource_name: str | None = Field(
         default=None,
         serialization_alias="name $lk",
-        description=DESCRIPTION["name"],
+        description=DESCRIPTION["resource_name"],
     )
-    alias: str | None = Field(
+    resource_alias: str | None = Field(
         default=None,
         serialization_alias="alias $lk",
-        description=DESCRIPTION["alias"],
+        description=DESCRIPTION["resource_alias"],
     )
-    parent_name: str | None = Field(
+    resource_parent_name: str | None = Field(
         default=None,
         serialization_alias="parent_name $lk",
-        description=DESCRIPTION["parent_name"],
+        description=DESCRIPTION["resource_parent_name"],
     )
     information_like: str | None = Field(
         default=None,
         serialization_alias="information $lk",
-        description="Filter resources whose output/information contains this string (case-insensitive substring match)",
+        description=DESCRIPTION["information_like"],
     )
     information_unlike: str | None = Field(
         default=None,
         serialization_alias="information $nk",
-        description="Filter resources whose output/information does not contain this string (case-insensitive substring exclusion)",
+        description=DESCRIPTION["information_unlike"],
     )
 
 

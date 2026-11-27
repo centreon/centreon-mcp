@@ -24,8 +24,8 @@ class ServiceSeverityFilter(BaseFilter):
     model_type: Literal["service_severity"] = "service_severity"
 
     service_severity_id: int | None = Field(default=None, serialization_alias="id $eq")
-    service_severity_name: str | None = Field(default=None, serialization_alias="name $eq")
-    service_severity_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    service_severity_name: str | None = Field(default=None, serialization_alias="name $lk")
+    service_severity_alias: str | None = Field(default=None, serialization_alias="alias $lk")
     min_service_severity_level: int | None = Field(default=None, serialization_alias="level $ge")
     max_service_severity_level: int | None = Field(default=None, serialization_alias="level $le")
     service_severity_is_activated: bool | None = Field(

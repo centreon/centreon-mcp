@@ -25,8 +25,8 @@ class HostSeverityFilter(BaseFilter):
     model_type: Literal["host_severity"] = "host_severity"
 
     host_severity_id: int | None = Field(default=None, serialization_alias="id $eq")
-    host_severity_name: str | None = Field(default=None, serialization_alias="name $eq")
-    host_severity_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    host_severity_name: str | None = Field(default=None, serialization_alias="name $lk")
+    host_severity_alias: str | None = Field(default=None, serialization_alias="alias $lk")
     min_host_severity_level: int | None = Field(default=None, serialization_alias="level $ge")
     max_host_severity_level: int | None = Field(default=None, serialization_alias="level $le")
     host_severity_is_activated: bool | None = Field(

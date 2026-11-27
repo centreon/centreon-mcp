@@ -21,7 +21,7 @@ from centreon_mcp.types.configuration.mapping import (
     MODELS_MIXIN_UPDATE,
 )
 from centreon_mcp.types.configuration.monitoring_server import MonitoringServer
-from centreon_mcp.utils.base import Page
+from centreon_mcp.utils.base import FILTERS_FIELD, Page
 
 configuration = FastMCP()
 
@@ -52,7 +52,7 @@ async def list_configurations(
         "service_template",
         "time_period",
     ],
-    filters: Sequence[ConfigurationFilter] | None = None,
+    filters: Annotated[Sequence[ConfigurationFilter] | None, FILTERS_FIELD] = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: ConfigurationOrder | None = None,

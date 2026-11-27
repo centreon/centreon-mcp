@@ -7,7 +7,7 @@ from pydantic import Field
 from centreon_mcp import logger
 from centreon_mcp.auth import Role, require_roles
 from centreon_mcp.types.monitoring.timeline import TimelineEvent, TimelineFilter, TimelineOrder
-from centreon_mcp.utils.base import Page
+from centreon_mcp.utils.base import FILTERS_FIELD, Page
 
 timeline = FastMCP()
 
@@ -24,7 +24,7 @@ timeline = FastMCP()
 )
 async def get_host_timeline(
     host_id: int,
-    filters: list[TimelineFilter] | None = None,
+    filters: Annotated[list[TimelineFilter] | None, FILTERS_FIELD] = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: TimelineOrder | None = None,
@@ -61,7 +61,7 @@ async def get_host_timeline(
 async def get_service_timeline(
     host_id: int,
     service_id: int,
-    filters: list[TimelineFilter] | None = None,
+    filters: Annotated[list[TimelineFilter] | None, FILTERS_FIELD] = None,
     limit: Annotated[int, Field(ge=1)] = 50,
     page: Annotated[int, Field(ge=1)] = 1,
     order: TimelineOrder | None = None,

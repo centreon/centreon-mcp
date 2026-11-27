@@ -24,19 +24,19 @@ class ServiceGroupFilter(BaseFilter):
     model_type: Literal["service_group"] = "service_group"
 
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
-    host_alias: str | None = Field(default=None, serialization_alias="host.alias $eq")
-    host_address: str | None = Field(default=None, serialization_alias="host.address $eq")
+    host_name: str | None = Field(default=None, serialization_alias="host.name $lk")
+    host_alias: str | None = Field(default=None, serialization_alias="host.alias $lk")
+    host_address: str | None = Field(default=None, serialization_alias="host.address $lk")
     host_state: HostState | None = Field(default=None, serialization_alias="host.state $eq")
     poller_id: int | None = Field(default=None, serialization_alias="poller.id $eq")
     host_group_id: int | None = Field(default=None, serialization_alias="host_group.id $eq")
     service_group_id: int | None = Field(default=None, serialization_alias="id $eq")
-    service_group_name: str | None = Field(default=None, serialization_alias="name $eq")
-    service_name: str | None = Field(default=None, serialization_alias="service.name $eq")
+    service_group_name: str | None = Field(default=None, serialization_alias="name $lk")
+    service_name: str | None = Field(default=None, serialization_alias="service.name $lk")
     service_display_name: str | None = Field(
-        default=None, serialization_alias="service.display_name $eq"
+        default=None, serialization_alias="service.display_name $lk"
     )
-    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="host_group.name $lk")
 
 
 class ServiceGroup(BaseModel, ListMixin[ServiceGroupFilter, ServiceGroupOrder]):

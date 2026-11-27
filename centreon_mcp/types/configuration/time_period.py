@@ -78,8 +78,8 @@ class TimePeriodFilter(BaseFilter):
     model_type: Literal["time_period"] = "time_period"
 
     time_period_id: int | None = Field(default=None, serialization_alias="id $eq")
-    time_period_name: str | None = Field(default=None, serialization_alias="name $eq")
-    time_period_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    time_period_name: str | None = Field(default=None, serialization_alias="name $lk")
+    time_period_alias: str | None = Field(default=None, serialization_alias="alias $lk")
 
 
 class TimePeriodBaseParams(BaseParams):

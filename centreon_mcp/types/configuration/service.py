@@ -91,20 +91,20 @@ class ServiceOrder(BaseOrder):
 class ServiceFilter(BaseFilter):
     model_type: Literal["service"] = "service"
 
-    name: str | None = Field(default=None, serialization_alias="name $eq")
+    service_name: str | None = Field(default=None, serialization_alias="name $lk")
     host_id: int | None = Field(default=None, serialization_alias="host.id $eq")
-    host_name: str | None = Field(default=None, serialization_alias="host.name $eq")
+    host_name: str | None = Field(default=None, serialization_alias="host.name $lk")
     service_category_id: int | None = Field(default=None, serialization_alias="category.id $eq")
-    service_category_name: str | None = Field(default=None, serialization_alias="category.name $eq")
-    severity_id: int | None = Field(default=None, serialization_alias="severity.id $eq")
-    severity_name: str | None = Field(default=None, serialization_alias="severity.name $eq")
+    service_category_name: str | None = Field(default=None, serialization_alias="category.name $lk")
+    service_severity_id: int | None = Field(default=None, serialization_alias="severity.id $eq")
+    service_severity_name: str | None = Field(default=None, serialization_alias="severity.name $lk")
     service_group_id: int | None = Field(default=None, serialization_alias="group.id $eq")
-    service_group_name: str | None = Field(default=None, serialization_alias="group.name $eq")
+    service_group_name: str | None = Field(default=None, serialization_alias="group.name $lk")
     host_group_id: int | None = Field(default=None, serialization_alias="hostgroup.id $eq")
-    host_group_name: str | None = Field(default=None, serialization_alias="hostgroup.name $eq")
+    host_group_name: str | None = Field(default=None, serialization_alias="hostgroup.name $lk")
     host_category_id: int | None = Field(default=None, serialization_alias="hostcategory.id $eq")
     host_category_name: str | None = Field(
-        default=None, serialization_alias="hostcategory.name $eq"
+        default=None, serialization_alias="hostcategory.name $lk"
     )
 
 

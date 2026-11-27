@@ -77,7 +77,7 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
             Downtime,
             [DowntimeFilter(host_name="host_name", is_fixed=True)],
             DowntimeOrder(order="DESC", field="start_time"),
-            '{"$or": [{"$and": [{"host.name": {"$eq": "host_name"}}, {"is_fixed": {"$eq": true}}]}]}',
+            '{"$or": [{"$and": [{"host.name": {"$lk": "host_name"}}, {"is_fixed": {"$eq": true}}]}]}',
             '{"order":"DESC","field":"start_time"}',
             "monitoring/downtimes",
             {
@@ -96,7 +96,7 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
             MonitoringServer,
             [MonitoringServerFilter(monitoring_server_id=10, monitoring_server_name="poller_name")],
             MonitoringServerOrder(order="ASC", field="name"),
-            '{"$or": [{"$and": [{"id": {"$eq": 10}}, {"name": {"$eq": "poller_name"}}]}]}',
+            '{"$or": [{"$and": [{"id": {"$eq": 10}}, {"name": {"$lk": "poller_name"}}]}]}',
             '{"order":"ASC","field":"name"}',
             "monitoring/servers",
             {"id": 10, "name": "monitoring_server_name", "is_running": True},
@@ -105,7 +105,7 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
             HostGroup,
             [HostGroupFilter(poller_id=10, host_address="host_address")],
             HostGroupOrder(order="ASC", field="host.state"),
-            '{"$or": [{"$and": [{"host.address": {"$eq": "host_address"}}, {"poller.id": {"$eq": 10}}]}]}',
+            '{"$or": [{"$and": [{"host.address": {"$lk": "host_address"}}, {"poller.id": {"$eq": 10}}]}]}',
             '{"order":"ASC","field":"host.state"}',
             "monitoring/hostgroups",
             {
@@ -117,7 +117,7 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
             ServiceGroup,
             [ServiceGroupFilter(poller_id=10, host_address="host_address")],
             ServiceGroupOrder(order="ASC", field="host.state"),
-            '{"$or": [{"$and": [{"host.address": {"$eq": "host_address"}}, {"poller.id": {"$eq": 10}}]}]}',
+            '{"$or": [{"$and": [{"host.address": {"$lk": "host_address"}}, {"poller.id": {"$eq": 10}}]}]}',
             '{"order":"ASC","field":"host.state"}',
             "monitoring/servicegroups",
             {
@@ -127,7 +127,7 @@ class TestDeleteMixinMonitoring(TestDeleteMixinBase):
         ),
         (
             Resource,
-            [ResourceFilter(parent_name="parent_name", information_like="info_like")],
+            [ResourceFilter(resource_parent_name="parent_name", information_like="info_like")],
             ResourceOrder(order="DESC", field="host.address"),
             '{"$or": [{"$and": [{"parent_name": {"$lk": "parent_name"}}, {"information": {"$lk": "info_like"}}]}]}',
             '{"order":"DESC","field":"host.address"}',
@@ -214,7 +214,7 @@ class TestSetMixinMonitoring(TestSetMixinBase):
         (
             HostStatusCount,
             [HostStatusCountFilter(host_group_name="host_group_name")],
-            '{"$or": [{"$and": [{"host_group.name": {"$eq": "host_group_name"}}]}]}',
+            '{"$or": [{"$and": [{"host_group.name": {"$lk": "host_group_name"}}]}]}',
             "monitoring/hosts/status",
             {
                 "total": 10,
@@ -227,7 +227,7 @@ class TestSetMixinMonitoring(TestSetMixinBase):
         (
             ServiceStatusCount,
             [ServiceStatusCountFilter(service_category_name="service_category_name")],
-            '{"$or": [{"$and": [{"service_category.name": {"$eq": "service_category_name"}}]}]}',
+            '{"$or": [{"$and": [{"service_category.name": {"$lk": "service_category_name"}}]}]}',
             "monitoring/services/status",
             {
                 "total": 10,

@@ -23,8 +23,8 @@ class HostCategoryFilter(BaseFilter):
     model_type: Literal["host_category"] = "host_category"
 
     host_category_id: int | None = Field(default=None, serialization_alias="id $eq")
-    host_category_name: str | None = Field(default=None, serialization_alias="name $eq")
-    host_category_alias: str | None = Field(default=None, serialization_alias="alias $eq")
+    host_category_name: str | None = Field(default=None, serialization_alias="name $lk")
+    host_category_alias: str | None = Field(default=None, serialization_alias="alias $lk")
     host_category_is_activated: bool | None = Field(
         default=None, serialization_alias="is_activated $eq"
     )
